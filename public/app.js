@@ -41,26 +41,61 @@ function showToast(message, type = 'success') {
   }, 2500);
 }
 
-// Convert chosen gallery files comfortably
+// Smart Canvas Helper to Compress Heavy Mobile Photos instantly
+function compressImageAsync(file, maxWidth = 800, quality = 0.7) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Convert to highly optimized low-size JPEG string
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = (err) => reject(err);
+      img.src = e.target.result;
+    };
+    reader.onerror = (err) => reject(err);
+    reader.readAsDataURL(file);
+  });
+}
+
+// Handle Gallery Image Selection with Compression Pipeline
 fileInput.addEventListener('change', async (e) => {
   const files = Array.from(e.target.files);
   base64ImagesArray = [];
   previewContainer.innerHTML = '';
   
   if(files.length > 0) {
-    uploadStatus.innerText = `${files.length} Photo(s) Selected from Device`;
+    uploadStatus.innerText = `Processing & Compressing ${files.length} Photo(s)...`;
     previewContainer.classList.remove('hidden');
     
-    for(let file of files) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        base64ImagesArray.push(event.target.result);
+    try {
+      for(let file of files) {
+        const compressedBase64 = await compressImageAsync(file);
+        base64ImagesArray.push(compressedBase64);
+        
         const img = document.createElement('img');
-        img.src = event.target.result;
+        img.src = compressedBase64;
         img.className = "w-12 h-12 object-cover border-2 border-black rounded-lg shadow-sm";
         previewContainer.appendChild(img);
-      };
-      reader.readAsDataURL(file);
+      }
+      uploadStatus.innerText = `${files.length} Photo(s) Compressed & Ready!`;
+    } catch (err) {
+      showToast('Image processing failed.', 'error');
     }
   }
 });
@@ -73,12 +108,11 @@ async function loadProducts() {
     productGrid.innerHTML = '';
     adminManagementList.innerHTML = '';
     
-    loadedGlobalProducts.forEach((p, index) => {
-      // Main view cards injection
+    loadedGlobalProducts.forEach((p) => {
       productGrid.innerHTML += `
         <div onclick="openProductPage('${p._id}')" class="neo-3d-card flex flex-col justify-between overflow-hidden cursor-pointer">
           <div class="aspect-[3/4] w-full bg-[#E8EFEA] overflow-hidden relative border-b-4 border-black">
-            <img src="${p.images[0]}" class="w-full h-full object-cover object-center" loading="lazy">
+            <img src="${p.images && p.images.length > 0 ? p.images[0] : 'https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=600'}" class="w-full h-full object-cover object-center" loading="lazy">
             <div class="absolute top-4 left-4 bg-[#141414] text-[#FBBF24] font-extrabold text-[9px] tracking-widest px-3 py-1.5 rounded-sm border border-black">
               LIVE LOOK
             </div>
@@ -96,11 +130,10 @@ async function loadProducts() {
         </div>
       `;
 
-      // Admin Dashboard control list deletion management tracking block
       adminManagementList.innerHTML += `
         <div class="flex items-center justify-between p-3 bg-neutral-50 border-2 border-black rounded-xl">
           <div class="flex items-center gap-3">
-            <img src="${p.images[0]}" class="w-10 h-10 object-cover border border-black rounded-md">
+            <img src="${p.images && p.images.length > 0 ? p.images[0] : 'https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=600'}" class="w-10 h-10 object-cover border border-black rounded-md">
             <div>
               <h4 class="text-xs font-bold uppercase tracking-tight text-black line-clamp-1">${p.title}</h4>
               <p class="text-[10px] font-bold text-neutral-400">${p.price}</p>
@@ -117,13 +150,14 @@ async function loadProducts() {
   }
 }
 
-// Product Details Activation Trigger
 window.openProductPage = function(id) {
   const targetItem = loadedGlobalProducts.find(item => item._id === id);
   if(!targetItem) return;
 
   detailSlider.innerHTML = '';
-  targetItem.images.forEach(imgData => {
+  const imagesToShow = targetItem.images && targetItem.images.length > 0 ? targetItem.images : [targetItem.image];
+  
+  imagesToShow.forEach(imgData => {
     detailSlider.innerHTML += `
       <img src="${imgData}" class="w-full h-full object-cover flex-shrink-0 snap-start snap-always">
     `;
@@ -144,21 +178,24 @@ backToGridBtn.addEventListener('click', () => {
   mainWebsiteView.classList.remove('hidden');
 });
 
-// Admin Product Deletion Matrix Request Action
 window.deleteProduct = async function(id, event) {
   event.stopPropagation();
   if(!confirm("Are you absolute sure to purge this item from Lavegious catalog?")) return;
 
-  const res = await fetch(`/api/products/${id}`, {
-    method: 'DELETE',
-    headers: { 'x-admin-password': adminPasswordSaved }
-  });
+  try {
+    const res = await fetch(`/api/products/${id}`, {
+      method: 'DELETE',
+      headers: { 'x-admin-password': adminPasswordSaved }
+    });
 
-  if (res.ok) {
-    showToast('Product successfully deleted from local stream.');
-    loadProducts();
-  } else {
-    showToast('Authentication failure during purge process.', 'error');
+    if (res.ok) {
+      showToast('Product successfully deleted.');
+      loadProducts();
+    } else {
+      showToast('Authentication failure during purge.', 'error');
+    }
+  } catch(e) {
+    showToast('Network error during deletion.', 'error');
   }
 };
 
@@ -199,24 +236,28 @@ productForm.addEventListener('submit', async (e) => {
     link: document.getElementById('pLink').value
   };
 
-  const res = await fetch('/api/products', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-admin-password': adminPasswordSaved
-    },
-    body: JSON.stringify(productData)
-  });
+  try {
+    const res = await fetch('/api/products', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-admin-password': adminPasswordSaved
+      },
+      body: JSON.stringify(productData)
+    });
 
-  if (res.ok) {
-    productForm.reset();
-    uploadStatus.innerText = "Tap to add photos from device gallery";
-    previewContainer.classList.add('hidden');
-    base64ImagesArray = [];
-    loadProducts();
-    showToast('Asset published live to matrix console stream.');
-  } else {
-    showToast('Publishing failed. Session expired.', 'error');
+    if (res.ok) {
+      productForm.reset();
+      uploadStatus.innerText = "Tap to add photos from device gallery";
+      previewContainer.classList.add('hidden');
+      base64ImagesArray = [];
+      loadProducts();
+      showToast('Asset published live to matrix console stream.');
+    } else {
+      showToast('Publishing failed. Session expired.', 'error');
+    }
+  } catch (err) {
+    showToast('Payload submission failed. Request too large or offline.', 'error');
   }
 });
 
