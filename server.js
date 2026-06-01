@@ -25,14 +25,13 @@ let localProducts = [
 const checkPassword = (password) => {
   const inputPass = (password || '').trim().toLowerCase();
   
-  // Hardcoded master bypass list to ignore Render dashboard dashboard bugs
-  const allowedPasswords = ['kajal', '1234', 'piyush'];
+  // Master password list including your new updated password
+  const allowedPasswords = ['kajal', '1234', 'piyush', 'yts@12345'];
   
   if (process.env.ADMIN_PASSWORD) {
     allowedPasswords.push(process.env.ADMIN_PASSWORD.trim().toLowerCase());
   }
   
-  console.log(`[AUTH LOG] Received: '${inputPass}' | Allowed: ${JSON.stringify(allowedPasswords)}`);
   return allowedPasswords.includes(inputPass);
 };
 
