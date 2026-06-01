@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LAVEGIOUS — Creative Sandbox Grid</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] } } }
+    }
+  </script>
+  <style>
+    .neo-3d-card {
+      background: white; border: 3px solid #141414;
+      box-shadow: 6px 6px 0px 0px #10B981;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+    }
+    .neo-3d-card:hover { transform: translate(-4px, -4px); box-shadow: 10px 10px 0px 0px #FBBF24; }
+    .neo-3d-btn { border: 2.5px solid #141414; box-shadow: 3px 3px 0px 0px #141414; transition: all 0.1s ease; }
+    .neo-3d-btn:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0px 0px #10B981; }
+    .neo-3d-btn:active { transform: translate(2px, 2px); box-shadow: 0px 0px 0px 0px #141414; }
+    /* Hide scrollbars but keep swipe action */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scroll-scrollbar-width: none; }
+  </style>
+</head>
+<body class="bg-[#F4F7F5] text-[#141414] font-sans antialiased">
+
+  <!-- Main Grid View Website Screen -->
+  <div id="mainWebsiteView">
+    <nav class="sticky top-0 bg-white/90 backdrop-blur-md border-b-4 border-black z-40 px-6 py-5 flex justify-between items-center">
+      <a href="#" class="text-2xl font-extrabold tracking-tighter text-black">LAVEGIOUS<span class="inline-block w-2.5 h-2.5 bg-emerald-500 rounded-full ml-1"></span></a>
+      <button id="adminBtn" class="neo-3d-btn bg-[#FBBF24] p-2.5 rounded-xl font-bold">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7 0 3.75 3.75 0 0 1 7 0zM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632z"></path></svg>
+      </button>
+    </nav>
+
+    <header class="max-w-4xl mx-auto text-center mt-12 mb-12 px-6">
+      <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight uppercase mb-2">CURATED <span class="text-emerald-500 underline decoration-yellow-400">STREETWEAR</span></h1>
+      <p class="text-xs uppercase tracking-widest text-neutral-400 font-bold">Premium Live Action Grid Matrix</p>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-6 mb-32">
+      <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10"></div>
+    </main>
+  </div>
+
+  <!-- STUNNING 3D PRODUCT DETAIL VIEW PAGE OVERLAY (Hidden initially) -->
+  <div id="productDetailPage" class="fixed inset-0 bg-[#F4F7F5] z-50 hidden overflow-y-auto flex flex-col">
+    <header class="p-6 border-b-4 border-black bg-white sticky top-0 flex items-center justify-between z-10">
+      <button id="backToGridBtn" class="neo-3d-btn bg-white text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-xl flex items-center gap-2">
+        ← Back To Matrix
+      </button>
+      <span class="text-xs font-extrabold tracking-widest text-neutral-400 uppercase">Product Specs View</span>
+    </header>
+
+    <div class="max-w-5xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 gap-8 p-6 md:p-12 flex-1">
+      <!-- Side Swipe Image Gallery View Container -->
+      <div class="space-y-3">
+        <div id="detailSlider" class="w-full aspect-[3/4] bg-white border-4 border-black rounded-3xl overflow-x-auto snap-x snap-mandatory flex no-scrollbar shadow-[6px_6px_0px_0px_#141414]">
+          <!-- Images injected here dynamically -->
+        </div>
+        <p class="text-center text-[10px] uppercase tracking-widest text-neutral-400 font-bold">← Swipe horizontally to see more images →</p>
+      </div>
+
+      <!-- Content Specs Panel with GIGANTIC FONTS -->
+      <div class="flex flex-col justify-between space-y-6">
+        <div>
+          <h1 id="detailTitle" class="text-4xl md:text-6xl font-extrabold tracking-tighter text-black uppercase leading-none mb-6">OUTFIT TITLE</h1>
+          <div class="inline-block bg-[#FBBF24] border-2 border-black font-extrabold text-xs px-3 py-1 rounded-md mb-6 uppercase tracking-wider">Premium Selection</div>
+          <p id="detailDesc" class="text-neutral-600 text-base md:text-lg leading-relaxed font-medium">Detailed description stream.</p>
+        </div>
+
+        <div class="p-6 bg-white border-4 border-black rounded-3xl shadow-[6px_6px_0px_0px_#10B981] flex items-center justify-between">
+          <div>
+            <span class="text-[10px] font-bold text-neutral-400 uppercase tracking-widest block">Price Value</span>
+            <span id="detailPrice" class="text-3xl font-extrabold tracking-tight text-black">₹0</span>
+          </div>
+          <a id="detailBuyBtn" href="#" target="_blank" class="neo-3d-btn bg-[#10B981] text-white text-xs font-bold uppercase tracking-widest px-6 py-4 rounded-xl">
+            Grab On Flipkart
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notices Panel -->
+  <div id="customToast" class="fixed bottom-6 right-6 z-50 bg-[#141414] text-white border-2 border-black font-bold px-6 py-4 rounded-xl text-xs transform translate-y-20 opacity-0 transition-all duration-300">
+    <span id="toastMessage">Done</span>
+  </div>
+
+  <!-- Admin Pass Gateway Modal -->
+  <div id="adminModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-white border-4 border-black rounded-3xl max-w-sm w-full p-8 shadow-[6px_6px_0px_0px_#141414]">
+      <h3 class="text-md font-extrabold uppercase text-black mb-2">Admin Gateway</h3>
+      <input type="password" id="adminPass" class="w-full bg-neutral-50 border-2 border-black rounded-xl px-4 py-3 text-sm mb-4 focus:outline-none" placeholder="Enter Token Key">
+      <div class="flex justify-end gap-2">
+        <button id="closeModal" class="text-xs font-bold uppercase text-neutral-400 mr-2">Abort</button>
+        <button id="loginBtn" class="neo-3d-btn bg-[#10B981] text-white text-xs font-bold px-4 py-2 rounded-xl">Unlock</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Control Deck Dashboard -->
+  <section id="adminPanel" class="max-w-xl mx-auto my-12 p-8 bg-white border-4 border-black rounded-3xl shadow-[8px_8px_0px_0px_#10B981] hidden">
+    <div class="flex justify-between items-center pb-4 border-b-2 border-neutral-100 mb-6">
+      <h2 class="text-lg font-extrabold uppercase">Console Studio</h2>
+      <button id="logoutBtn" class="text-xs font-bold uppercase text-red-500 bg-red-50 border border-red-200 px-3 py-1.5 rounded-xl">Exit Mode</button>
+    </div>
+    
+    <form id="productForm" class="space-y-5 border-b-4 border-neutral-100 pb-8 mb-8">
+      <div>
+        <label class="block text-xs uppercase font-extrabold mb-1.5">Upload Outfits (Multiple Allowed)</label>
+        <div class="border-2 border-dashed border-black rounded-xl p-4 bg-neutral-50 text-center relative hover:bg-emerald-50/40">
+          <input type="file" id="pImg" accept="image/*" multiple required class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+          <p id="uploadStatus" class="text-xs text-neutral-500 font-semibold">Tap to add photos from device gallery</p>
+          <div id="previewContainer" class="flex flex-wrap gap-2 mt-3 justify-center hidden"></div>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <input type="text" id="pTitle" required class="w-full bg-neutral-50 border-2 border-black rounded-xl px-4 py-3 text-sm focus:outline-none" placeholder="Concept Heading">
+        <input type="text" id="pPrice" required class="w-full bg-neutral-50 border-2 border-black rounded-xl px-4 py-3 text-sm focus:outline-none" placeholder="Price (e.g. ₹1,999)">
+      </div>
+      <textarea id="pDesc" rows="2" required class="w-full bg-neutral-50 border-2 border-black rounded-xl px-4 py-3 text-sm focus:outline-none resize-none" placeholder="Editorial details style..."></textarea>
+      <input type="url" id="pLink" required class="w-full bg-neutral-50 border-2 border-black rounded-xl px-4 py-3 text-sm focus:outline-none" placeholder="Flipkart Deal Link URL">
+      <button type="submit" class="w-full neo-3d-btn bg-[#FBBF24] text-xs font-extrabold uppercase py-4 rounded-xl">Publish Directly Live</button>
+    </form>
+
+    <!-- Product Removal Management Console Block -->
+    <div>
+      <h3 class="text-sm font-extrabold uppercase mb-4 tracking-wider text-neutral-700">Manage/Delete Active Catalog Items</h3>
+      <div id="adminManagementList" class="space-y-3"></div>
+    </div>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>
