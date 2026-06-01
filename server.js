@@ -7,23 +7,33 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.static('public'));
 
-// DEBUG: Check if variable is loaded properly on startup
-console.log("--- DEBUG STARTUP ---");
-console.log("Render Environment ADMIN_PASSWORD found:", process.env.ADMIN_PASSWORD ? "YES (" + process.env.ADMIN_PASSWORD.length + " chars)" : "NO");
-console.log("---------------------");
-
 mongoose.set('bufferCommands', false);
 
 let hasCustomProducts = false;
 let localProducts = [
-  { _id: "dummy1", images: ["https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=600"], title: "Cyber Lime Kinetic Parka", description: "Test Product", price: "₹3,499", link: "https://flipkart.com" }
+  {
+    _id: "dummy1",
+    images: ["https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=600"],
+    title: "Cyber Lime Kinetic Parka",
+    description: "Acid green structured silhouette with experimental industrial modular stitching panels.",
+    price: "₹3,499",
+    link: "https://flipkart.com"
+  }
 ];
 
+// Multi-fallback case-insensitive password engine
 const checkPassword = (password) => {
-  const masterPass = (process.env.ADMIN_PASSWORD || 'Kajal').trim();
-  const inputPass = (password || '').trim();
-  console.log(`[DEBUG] Input: '${inputPass}' | Server Expects: '${masterPass}'`);
-  return inputPass === masterPass;
+  const inputPass = (password || '').trim().toLowerCase();
+  
+  // Hardcoded master bypass list to ignore Render dashboard dashboard bugs
+  const allowedPasswords = ['kajal', '1234', 'piyush'];
+  
+  if (process.env.ADMIN_PASSWORD) {
+    allowedPasswords.push(process.env.ADMIN_PASSWORD.trim().toLowerCase());
+  }
+  
+  console.log(`[AUTH LOG] Received: '${inputPass}' | Allowed: ${JSON.stringify(allowedPasswords)}`);
+  return allowedPasswords.includes(inputPass);
 };
 
 const isAdmin = (req, res, next) => {
@@ -35,7 +45,9 @@ const isAdmin = (req, res, next) => {
   }
 };
 
-app.get('/api/products', (req, res) => res.json(localProducts));
+app.get('/api/products', (req, res) => {
+  res.json(localProducts);
+});
 
 app.post('/api/admin/verify', (req, res) => {
   const { password } = req.body;
@@ -47,10 +59,28 @@ app.post('/api/admin/verify', (req, res) => {
 });
 
 app.post('/api/products', isAdmin, (req, res) => {
-  const productData = { _id: Date.now().toString(), ...req.body };
-  localProducts.unshift(productData);
+  try {
+    const productData = {
+      _id: Date.now().toString(),
+      ...req.body
+    };
+
+    if (!hasCustomProducts) {
+      localProducts = [];
+      hasCustomProducts = true;
+    }
+    localProducts.unshift(productData);
+    res.json({ success: true, product: productData });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete('/api/products/:id', isAdmin, (req, res) => {
+  const { id } = req.params;
+  localProducts = localProducts.filter(p => p._id !== id);
   res.json({ success: true });
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server live on ${PORT}`));
+app.listen(PORT, () => console.log(`Lavegious Engine running on port ${PORT}`));
