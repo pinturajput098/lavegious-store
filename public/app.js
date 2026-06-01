@@ -160,6 +160,12 @@ backToGridBtn.addEventListener('click', () => {
   mainWebsiteView.classList.remove('hidden');
 });
 
+function handleAuthFailure() {
+  localStorage.removeItem('adminToken');
+  adminPasswordSaved = '';
+  adminPanel.classList.add('hidden');
+}
+
 window.deleteProduct = async function(id, event) {
   event.stopPropagation();
   if(!confirm("Are you sure you want to delete this product?")) return;
@@ -171,8 +177,11 @@ window.deleteProduct = async function(id, event) {
     if (res.ok) {
       showToast('Product successfully deleted.');
       loadProducts();
+    } else if (res.status === 401) {
+      handleAuthFailure();
+      showToast('Session expired. Unauthorized.', 'error');
     } else {
-      showToast('Authentication failure during purge.', 'error');
+      showToast('Failed to delete item.', 'error');
     }
   } catch(e) {
     showToast('Network error during deletion.', 'error');
@@ -189,7 +198,6 @@ adminBtn.addEventListener('click', () => {
 
 closeModal.addEventListener('click', () => adminModal.classList.add('hidden'));
 
-// REAL LIVE SERVER PASSWORD VALIDATION
 loginBtn.addEventListener('click', async () => {
   const pass = adminPass.value;
   if(!pass) return;
@@ -216,9 +224,7 @@ loginBtn.addEventListener('click', async () => {
 });
 
 logoutBtn.addEventListener('click', () => {
-  localStorage.removeItem('adminToken');
-  adminPasswordSaved = '';
-  adminPanel.classList.add('hidden');
+  handleAuthFailure();
   showToast('Console Deactivated.');
 });
 
@@ -254,8 +260,11 @@ productForm.addEventListener('submit', async (e) => {
       base64ImagesArray = [];
       await loadProducts();
       showToast('Asset published live to matrix console stream.');
+    } else if (res.status === 401) {
+      handleAuthFailure();
+      showToast('Publishing rejected: Unauthorized password block.', 'error');
     } else {
-      showToast('Publishing failed. Session Unauthorized.', 'error');
+      showToast('Publishing failed server side error.', 'error');
     }
   } catch (err) {
     showToast('Payload submission failed. Connection timeout.', 'error');

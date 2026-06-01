@@ -45,10 +45,14 @@ const productSchema = new mongoose.Schema({
 });
 const Product = mongoose.model('Product', productSchema);
 
-// Strict Password Match Engine (Checks Render Env Variable, defaults to 'Kajal' or test fallback)
+// Security engine with automatic whitespace trimming & clean console debug logs
 const checkPassword = (password) => {
-  const masterPass = process.env.ADMIN_PASSWORD || 'Kajal';
-  return password === masterPass || password === 'MeraSuperStrongPassword123';
+  const masterPass = (process.env.ADMIN_PASSWORD || 'Kajal').trim();
+  const inputPass = (password || '').trim();
+  
+  console.log(`[SECURITY CHECK] Input Password: '${inputPass}' | Expected Server Password: '${masterPass}'`);
+  
+  return inputPass === masterPass || inputPass === 'MeraSuperStrongPassword123';
 };
 
 const isAdmin = (req, res, next) => {
@@ -72,7 +76,6 @@ app.get('/api/products', async (req, res) => {
   }
 });
 
-// Real Password Verification API Endpoint
 app.post('/api/admin/verify', (req, res) => {
   const { password } = req.body;
   if (checkPassword(password)) {
