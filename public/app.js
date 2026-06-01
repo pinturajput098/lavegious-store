@@ -12,7 +12,6 @@ const uploadStatus = document.getElementById('uploadStatus');
 const previewContainer = document.getElementById('previewContainer');
 const adminManagementList = document.getElementById('adminManagementList');
 
-// Detail Page View Dom links
 const mainWebsiteView = document.getElementById('mainWebsiteView');
 const productDetailPage = document.getElementById('productDetailPage');
 const backToGridBtn = document.getElementById('backToGridBtn');
@@ -41,7 +40,6 @@ function showToast(message, type = 'success') {
   }, 3000);
 }
 
-// Highly Optimized Compression (600px Max Width / 0.5 Quality for Instant Upload)
 function compressImageAsync(file, maxWidth = 600, quality = 0.5) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -51,17 +49,15 @@ function compressImageAsync(file, maxWidth = 600, quality = 0.5) {
         const canvas = document.createElement('canvas');
         let width = img.width;
         let height = img.height;
-        
         if (width > maxWidth) {
           height = Math.round((height * maxWidth) / width);
           width = maxWidth;
         }
-        
         canvas.width = width;
         canvas.height = height;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, width, height);
-        resolve(canvas.toToDataURL ? canvas.toDataURL('image/jpeg', quality) : canvas.toDataURL('image/jpeg', quality));
+        resolve(canvas.toDataURL('image/jpeg', quality));
       };
       img.onerror = (err) => reject(err);
       img.src = e.target.result;
@@ -71,21 +67,17 @@ function compressImageAsync(file, maxWidth = 600, quality = 0.5) {
   });
 }
 
-// Handle Gallery Image Selection
 fileInput.addEventListener('change', async (e) => {
   const files = Array.from(e.target.files);
   base64ImagesArray = [];
   previewContainer.innerHTML = '';
-  
   if(files.length > 0) {
     uploadStatus.innerText = `Processing ${files.length} Photo(s)...`;
     previewContainer.classList.remove('hidden');
-    
     try {
       for(let file of files) {
         const compressedBase64 = await compressImageAsync(file);
         base64ImagesArray.push(compressedBase64);
-        
         const img = document.createElement('img');
         img.src = compressedBase64;
         img.className = "w-12 h-12 object-cover border-2 border-black rounded-lg shadow-sm";
@@ -98,7 +90,6 @@ fileInput.addEventListener('change', async (e) => {
   }
 });
 
-// Master Load and Dynamic Card Engine Mapping
 async function loadProducts() {
   try {
     const res = await fetch('/api/products');
@@ -114,9 +105,7 @@ async function loadProducts() {
         <div onclick="openProductPage('${p._id}')" class="neo-3d-card flex flex-col justify-between overflow-hidden cursor-pointer">
           <div class="aspect-[3/4] w-full bg-[#E8EFEA] overflow-hidden relative border-b-4 border-black">
             <img src="${displayImg}" class="w-full h-full object-cover object-center" loading="lazy">
-            <div class="absolute top-4 left-4 bg-[#141414] text-[#FBBF24] font-extrabold text-[9px] tracking-widest px-3 py-1.5 rounded-sm border border-black">
-              LIVE LOOK
-            </div>
+            <div class="absolute top-4 left-4 bg-[#141414] text-[#FBBF24] font-extrabold text-[9px] tracking-widest px-3 py-1.5 rounded-sm border border-black">LIVE LOOK</div>
           </div>
           <div class="p-6 flex-1 flex flex-col justify-between">
             <div>
@@ -140,9 +129,7 @@ async function loadProducts() {
               <p class="text-[10px] font-bold text-neutral-400">${p.price}</p>
             </div>
           </div>
-          <button onclick="deleteProduct('${p._id}', event)" class="px-3 py-1.5 bg-red-100 border border-red-300 text-red-600 rounded-lg text-[10px] font-bold uppercase hover:bg-red-200 transition-colors">
-            Wipe / Delete
-          </button>
+          <button onclick="deleteProduct('${p._id}', event)" class="px-3 py-1.5 bg-red-100 border border-red-300 text-red-600 rounded-lg text-[10px] font-bold uppercase hover:bg-red-200 transition-colors">Wipe / Delete</button>
         </div>
       `;
     });
@@ -154,21 +141,15 @@ async function loadProducts() {
 window.openProductPage = function(id) {
   const targetItem = loadedGlobalProducts.find(item => item._id === id);
   if(!targetItem) return;
-
   detailSlider.innerHTML = '';
   const imagesToShow = targetItem.images && targetItem.images.length > 0 ? targetItem.images : [targetItem.image || 'https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=600'];
-  
   imagesToShow.forEach(imgData => {
-    detailSlider.innerHTML += `
-      <img src="${imgData}" class="w-full h-full object-cover flex-shrink-0 snap-start snap-always">
-    `;
+    detailSlider.innerHTML += `<img src="${imgData}" class="w-full h-full object-cover flex-shrink-0 snap-start snap-always">`;
   });
-
   detailTitle.innerText = targetItem.title;
   detailDesc.innerText = targetItem.description;
   detailPrice.innerText = targetItem.price;
   detailBuyBtn.href = targetItem.link;
-
   mainWebsiteView.classList.add('hidden');
   productDetailPage.classList.remove('hidden');
   window.scrollTo({ top: 0 });
@@ -181,14 +162,12 @@ backToGridBtn.addEventListener('click', () => {
 
 window.deleteProduct = async function(id, event) {
   event.stopPropagation();
-  if(!confirm("Are you absolute sure to purge this item from Lavegious catalog?")) return;
-
+  if(!confirm("Are you sure you want to delete this product?")) return;
   try {
     const res = await fetch(`/api/products/${id}`, {
       method: 'DELETE',
       headers: { 'x-admin-password': adminPasswordSaved }
     });
-
     if (res.ok) {
       showToast('Product successfully deleted.');
       loadProducts();
@@ -210,13 +189,30 @@ adminBtn.addEventListener('click', () => {
 
 closeModal.addEventListener('click', () => adminModal.classList.add('hidden'));
 
+// REAL LIVE SERVER PASSWORD VALIDATION
 loginBtn.addEventListener('click', async () => {
-  localStorage.setItem('adminToken', adminPass.value || 'test');
-  adminPasswordSaved = adminPass.value || 'test';
-  adminPanel.classList.remove('hidden');
-  adminModal.classList.add('hidden');
-  adminPass.value = '';
-  showToast('Handshake Authenticated.');
+  const pass = adminPass.value;
+  if(!pass) return;
+  try {
+    const res = await fetch('/api/admin/verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pass })
+    });
+    if (res.ok) {
+      localStorage.setItem('adminToken', pass);
+      adminPasswordSaved = pass;
+      adminPanel.classList.remove('hidden');
+      adminModal.classList.add('hidden');
+      adminPass.value = '';
+      showToast('Handshake Authenticated.');
+      loadProducts();
+    } else {
+      showToast('Wrong password! Access denied.', 'error');
+    }
+  } catch (err) {
+    showToast('Validation handshake pipeline broken.', 'error');
+  }
 });
 
 logoutBtn.addEventListener('click', () => {
@@ -228,15 +224,12 @@ logoutBtn.addEventListener('click', () => {
 
 productForm.addEventListener('submit', async (e) => {
   e.preventDefault();
-  
   const submitBtn = productForm.querySelector('button[type="submit"]');
   const originalText = submitBtn.innerText;
-  
-  // Set Loading visual feedback layout instantly
   submitBtn.innerText = "PUBLISHING LIVE... PLEASE WAIT";
   submitBtn.disabled = true;
   submitBtn.style.opacity = "0.6";
-  
+
   const productData = {
     images: base64ImagesArray,
     title: document.getElementById('pTitle').value,
@@ -254,7 +247,6 @@ productForm.addEventListener('submit', async (e) => {
       },
       body: JSON.stringify(productData)
     });
-
     if (res.ok) {
       productForm.reset();
       uploadStatus.innerText = "Tap to add photos from device gallery";
@@ -263,13 +255,11 @@ productForm.addEventListener('submit', async (e) => {
       await loadProducts();
       showToast('Asset published live to matrix console stream.');
     } else {
-      const data = await res.json().catch(() => ({}));
-      showToast(data.message || 'Publishing failed. Check password.', 'error');
+      showToast('Publishing failed. Session Unauthorized.', 'error');
     }
   } catch (err) {
     showToast('Payload submission failed. Connection timeout.', 'error');
   } finally {
-    // Reset button states cleanly
     submitBtn.innerText = originalText;
     submitBtn.disabled = false;
     submitBtn.style.opacity = "1";

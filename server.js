@@ -9,7 +9,6 @@ app.use(express.static('public'));
 
 mongoose.set('bufferCommands', false);
 
-// Global In-Memory Store for instant local validation if DB is offline
 let hasCustomProducts = false;
 let localProducts = [
   {
@@ -46,17 +45,21 @@ const productSchema = new mongoose.Schema({
 });
 const Product = mongoose.model('Product', productSchema);
 
+// Strict Password Match Engine (Checks Render Env Variable, defaults to 'Kajal' or test fallback)
+const checkPassword = (password) => {
+  const masterPass = process.env.ADMIN_PASSWORD || 'Kajal';
+  return password === masterPass || password === 'MeraSuperStrongPassword123';
+};
+
 const isAdmin = (req, res, next) => {
   const password = req.headers['x-admin-password'];
-  // Allow fallback password for local testing
-  if (password === process.env.ADMIN_PASSWORD || password === 'MeraSuperStrongPassword123' || password === '') {
+  if (checkPassword(password)) {
     next();
   } else {
     res.status(401).json({ success: false, message: 'Unauthorized' });
   }
 };
 
-// GET Route
 app.get('/api/products', async (req, res) => {
   try {
     if (mongoose.connection.readyState === 1) {
@@ -69,12 +72,16 @@ app.get('/api/products', async (req, res) => {
   }
 });
 
-// VERIFY Route
+// Real Password Verification API Endpoint
 app.post('/api/admin/verify', (req, res) => {
-  res.json({ success: true });
+  const { password } = req.body;
+  if (checkPassword(password)) {
+    res.json({ success: true });
+  } else {
+    res.status(401).json({ success: false, message: 'Wrong Password' });
+  }
 });
 
-// POST Route (Handles local memory switch to clear dummies instantly)
 app.post('/api/products', isAdmin, async (req, res) => {
   try {
     const productData = {
@@ -83,7 +90,7 @@ app.post('/api/products', isAdmin, async (req, res) => {
     };
 
     if (!hasCustomProducts) {
-      localProducts = []; // Wipe out dummy items instantly on first add
+      localProducts = [];
       hasCustomProducts = true;
     }
     localProducts.unshift(productData);
@@ -98,7 +105,6 @@ app.post('/api/products', isAdmin, async (req, res) => {
   }
 });
 
-// DELETE Route
 app.delete('/api/products/:id', isAdmin, async (req, res) => {
   const { id } = req.params;
   localProducts = localProducts.filter(p => p._id !== id);
