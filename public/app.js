@@ -38,11 +38,11 @@ function showToast(message, type = 'success') {
   setTimeout(() => {
     toast.classList.remove('translate-y-0', 'opacity-100');
     toast.classList.add('translate-y-20', 'opacity-0');
-  }, 2500);
+  }, 3000);
 }
 
-// Smart Canvas Helper to Compress Heavy Mobile Photos instantly
-function compressImageAsync(file, maxWidth = 800, quality = 0.7) {
+// Highly Optimized Compression (600px Max Width / 0.5 Quality for Instant Upload)
+function compressImageAsync(file, maxWidth = 600, quality = 0.5) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -61,9 +61,7 @@ function compressImageAsync(file, maxWidth = 800, quality = 0.7) {
         canvas.height = height;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, width, height);
-        
-        // Convert to highly optimized low-size JPEG string
-        resolve(canvas.toDataURL('image/jpeg', quality));
+        resolve(canvas.toToDataURL ? canvas.toDataURL('image/jpeg', quality) : canvas.toDataURL('image/jpeg', quality));
       };
       img.onerror = (err) => reject(err);
       img.src = e.target.result;
@@ -73,14 +71,14 @@ function compressImageAsync(file, maxWidth = 800, quality = 0.7) {
   });
 }
 
-// Handle Gallery Image Selection with Compression Pipeline
+// Handle Gallery Image Selection
 fileInput.addEventListener('change', async (e) => {
   const files = Array.from(e.target.files);
   base64ImagesArray = [];
   previewContainer.innerHTML = '';
   
   if(files.length > 0) {
-    uploadStatus.innerText = `Processing & Compressing ${files.length} Photo(s)...`;
+    uploadStatus.innerText = `Processing ${files.length} Photo(s)...`;
     previewContainer.classList.remove('hidden');
     
     try {
@@ -109,10 +107,13 @@ async function loadProducts() {
     adminManagementList.innerHTML = '';
     
     loadedGlobalProducts.forEach((p) => {
+      const hasImages = p.images && p.images.length > 0;
+      const displayImg = hasImages ? p.images[0] : (p.image || 'https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=600');
+      
       productGrid.innerHTML += `
         <div onclick="openProductPage('${p._id}')" class="neo-3d-card flex flex-col justify-between overflow-hidden cursor-pointer">
           <div class="aspect-[3/4] w-full bg-[#E8EFEA] overflow-hidden relative border-b-4 border-black">
-            <img src="${p.images && p.images.length > 0 ? p.images[0] : 'https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=600'}" class="w-full h-full object-cover object-center" loading="lazy">
+            <img src="${displayImg}" class="w-full h-full object-cover object-center" loading="lazy">
             <div class="absolute top-4 left-4 bg-[#141414] text-[#FBBF24] font-extrabold text-[9px] tracking-widest px-3 py-1.5 rounded-sm border border-black">
               LIVE LOOK
             </div>
@@ -133,7 +134,7 @@ async function loadProducts() {
       adminManagementList.innerHTML += `
         <div class="flex items-center justify-between p-3 bg-neutral-50 border-2 border-black rounded-xl">
           <div class="flex items-center gap-3">
-            <img src="${p.images && p.images.length > 0 ? p.images[0] : 'https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=600'}" class="w-10 h-10 object-cover border border-black rounded-md">
+            <img src="${displayImg}" class="w-10 h-10 object-cover border border-black rounded-md">
             <div>
               <h4 class="text-xs font-bold uppercase tracking-tight text-black line-clamp-1">${p.title}</h4>
               <p class="text-[10px] font-bold text-neutral-400">${p.price}</p>
@@ -155,7 +156,7 @@ window.openProductPage = function(id) {
   if(!targetItem) return;
 
   detailSlider.innerHTML = '';
-  const imagesToShow = targetItem.images && targetItem.images.length > 0 ? targetItem.images : [targetItem.image];
+  const imagesToShow = targetItem.images && targetItem.images.length > 0 ? targetItem.images : [targetItem.image || 'https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=600'];
   
   imagesToShow.forEach(imgData => {
     detailSlider.innerHTML += `
@@ -228,6 +229,14 @@ logoutBtn.addEventListener('click', () => {
 productForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   
+  const submitBtn = productForm.querySelector('button[type="submit"]');
+  const originalText = submitBtn.innerText;
+  
+  // Set Loading visual feedback layout instantly
+  submitBtn.innerText = "PUBLISHING LIVE... PLEASE WAIT";
+  submitBtn.disabled = true;
+  submitBtn.style.opacity = "0.6";
+  
   const productData = {
     images: base64ImagesArray,
     title: document.getElementById('pTitle').value,
@@ -251,13 +260,19 @@ productForm.addEventListener('submit', async (e) => {
       uploadStatus.innerText = "Tap to add photos from device gallery";
       previewContainer.classList.add('hidden');
       base64ImagesArray = [];
-      loadProducts();
+      await loadProducts();
       showToast('Asset published live to matrix console stream.');
     } else {
-      showToast('Publishing failed. Session expired.', 'error');
+      const data = await res.json().catch(() => ({}));
+      showToast(data.message || 'Publishing failed. Check password.', 'error');
     }
   } catch (err) {
-    showToast('Payload submission failed. Request too large or offline.', 'error');
+    showToast('Payload submission failed. Connection timeout.', 'error');
+  } finally {
+    // Reset button states cleanly
+    submitBtn.innerText = originalText;
+    submitBtn.disabled = false;
+    submitBtn.style.opacity = "1";
   }
 });
 
