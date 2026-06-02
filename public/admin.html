@@ -49,7 +49,6 @@
             <p id="statusTxt" class="text-xs font-extrabold text-neutral-800 uppercase tracking-tight">Tap to add photos from device gallery</p>
             <p class="text-[10px] text-neutral-400 font-bold uppercase tracking-wider mt-1">Images auto-compress for high performance</p>
           </div>
-          <!-- Real-time Image Previews Grid Location -->
           <div id="previews" class="flex gap-3 mt-4 flex-wrap"></div>
         </div>
 
@@ -60,7 +59,7 @@
           </div>
           <div>
             <label class="block text-xs font-black uppercase tracking-wider text-neutral-500 mb-1">Price tag</label>
-            <input type="text" id="pPrice" placeholder="e.g. ₹1,499" required class="w-full p-3.5 border-2 border-black rounded-xl text-sm font-black bg-neutral-50">
+            <input type="text" id="pPrice" placeholder="e.g. 441" required class="w-full p-3.5 border-2 border-black rounded-xl text-sm font-black bg-neutral-50">
           </div>
         </div>
 
@@ -80,20 +79,16 @@
       <!-- ACTIVE CATALOG MANAGEMENT SECTION -->
       <div class="space-y-4">
         <h3 class="font-black text-base uppercase tracking-wider text-neutral-800">📋 Active Catalog Management</h3>
-        <div id="catalogList" class="grid grid-cols-1 gap-3">
-          <!-- Injected dynamically via client engine routing -->
-        </div>
+        <div id="catalogList" class="grid grid-cols-1 gap-3"></div>
       </div>
 
     </div>
   </div>
 
-  <!-- CLIENT ROUTING ENGINE SYSTEM LOGICS -->
   <script>
     let activeToken = localStorage.getItem('studioToken') || '';
     let imagesQueue = [];
 
-    // Validates local persistence token handshake routine
     if(activeToken) {
       document.getElementById('loginGate').classList.add('hidden');
       document.getElementById('adminTerminal').classList.remove('hidden');
@@ -121,7 +116,7 @@
       location.reload();
     });
 
-    // High performance image canvas matrix optimization routine
+    // HIGH PERFORMANCE LITE-WEIGHT COMPRESSION LOGIC (500px Max, 0.4 Quality)
     function compressImg(file) {
       return new Promise((resolve) => {
         const reader = new FileReader();
@@ -130,10 +125,10 @@
           img.onload = () => {
             const canvas = document.createElement('canvas');
             let w = img.width, h = img.height;
-            if (w > 800) { h = Math.round((h * 800) / w); w = 800; }
+            if (w > 500) { h = Math.round((h * 500) / w); w = 500; }
             canvas.width = w; canvas.height = h;
             canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-            resolve(canvas.toDataURL('image/jpeg', 0.6));
+            resolve(canvas.toDataURL('image/jpeg', 0.4));
           };
           img.src = e.target.result;
         };
@@ -147,7 +142,7 @@
       previews.innerHTML = '';
       const files = Array.from(e.target.files);
       
-      document.getElementById('statusTxt').innerText = `PROCESSING ${files.length} PHOTOS INTO DATABASE MATRIX...`;
+      document.getElementById('statusTxt').innerText = `COMPRESSING IMAGES... PLEASE WAIT`;
       
       for(let f of files) {
         const b64 = await compressImg(f);
@@ -157,12 +152,12 @@
             <img src="${b64}" class="w-full h-full object-cover">
           </div>`;
       }
-      document.getElementById('statusTxt').innerText = `${files.length} OUTFIT IMAGE(S) ARCHITECTURE SYNC READY`;
+      document.getElementById('statusTxt').innerText = `${files.length} IMAGE(S) OPTIMIZED & READY`;
     });
 
     document.getElementById('uploadForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      if(imagesQueue.length === 0) return alert('Verification Interrupted: Please push at least 1 image block asset.');
+      if(imagesQueue.length === 0) return alert('Verification Interrupted: Please add at least 1 image.');
       
       const btn = document.getElementById('subBtn');
       btn.innerText = "STREAMING INTO CLOUD DB MAP... WAIT";
@@ -186,7 +181,7 @@
         alert('System Handshake Success: Product locked into live collection streams!');
         location.reload();
       } else {
-        alert('Transaction Revoked: Verify database status token endpoints.');
+        alert('Transaction Revoked: Verify database status endpoints.');
         btn.innerText = "Publish Directly Live";
         btn.disabled = false;
       }
@@ -199,7 +194,7 @@
       list.innerHTML = data.length === 0 ? '<p class="text-xs text-neutral-400 font-bold uppercase tracking-wider py-4 text-center bg-white border-2 border-black rounded-xl">Catalog empty inside cloud node</p>' : '';
       
       data.forEach(p => {
-        const img = p.images && p.images.length > 0 ? p.images[0] : 'https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=600';
+        const img = p.images && p.images.length > 0 ? p.images[0] : '';
         list.innerHTML += `
           <div class="flex items-center justify-between p-3 bg-white border-2 border-black rounded-xl shadow-sm">
             <div class="flex items-center gap-3 min-w-0">
