@@ -3,70 +3,159 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LAVEGIOUS | Shop Grid Matrix</title>
+  <title>LAVEGIOUS | Premium App View</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #FAFAFA; scroll-behavior: smooth; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F3F2F7; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
     .scrollbar-none::-webkit-scrollbar { display: none; }
     .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
-    .neo-card { border: 3px solid #000000; box-shadow: 5px 5px 0px 0px #000000; transition: all 0.2s ease; }
-    .neo-card:hover { transform: translate(-1px, -1px); box-shadow: 7px 7px 0px 0px #000000; }
-    .neo-btn { border: 2px solid #000000; box-shadow: 3px 3px 0px 0px #000000; transition: all 0.1s ease; }
-    .neo-btn:active { transform: translate(1px, 1px); box-shadow: 0px 0px 0px 0px #000000; }
-    .detail-overlay { position: fixed; inset: 0; background-color: #FFFFFF; z-index: 100; overflow-y: auto; }
+    .category-chip { transition: all 0.2s ease; }
+    .category-chip.active { background-color: #7C3AED; color: #FFFFFF; }
+    .detail-overlay { position: fixed; inset: 0; background-color: #F3F2F7; z-index: 100; overflow-y: auto; }
   </style>
 </head>
-<body class="text-black p-4 sm:p-8">
+<body class="text-neutral-900 antialiased">
 
-  <!-- MAIN SHOP LAYOUT GRID -->
-  <div id="shopMainView" class="max-w-7xl mx-auto min-h-screen pb-16">
-    <header class="flex items-center justify-between mb-8 pb-4 border-b-4 border-black">
-      <a href="/" class="neo-btn bg-white text-black px-4 py-2 font-bold text-xs uppercase rounded-lg shadow-sm">← Back Home</a>
-      <span class="font-extrabold text-xl tracking-tighter uppercase">LAVEGIOUS</span>
-    </header>
-
-    <div class="mb-10 text-center md:text-left">
-      <h2 class="font-black text-3xl sm:text-4xl uppercase tracking-tight text-black">ALL PRODUCTS</h2>
-      <p class="text-neutral-400 text-xs font-bold uppercase tracking-widest mt-1">Premium Curated Drops Grid</p>
-    </div>
-
-    <!-- Live Dynamic Injection Feed Area -->
-    <div id="dynamicProductGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"></div>
-  </div>
-
-  <!-- PREMIUM DETAIL CAROUSEL OVERLAY -->
-  <div id="productDetailPage" class="detail-overlay hidden flex flex-col justify-between pb-10">
-    <div class="w-full">
-      <div class="relative bg-neutral-100 aspect-square sm:aspect-[16/9] md:aspect-[21/9] w-full overflow-hidden border-b-4 border-black shadow-inner">
-        <button id="backToGridBtn" class="absolute top-6 left-6 z-50 neo-btn bg-white text-black border-2 border-black px-5 py-2.5 font-black text-xs uppercase rounded-xl shadow-md">← BACK TO SHOP</button>
-        <div id="detailSlider" class="w-full h-full flex overflow-x-auto snap-x snap-mandatory scrollbar-none"></div>
-      </div>
-
-      <div class="max-w-3xl mx-auto px-6 py-10 space-y-4">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-6">
-          <h2 id="detailTitle" class="font-black text-2xl sm:text-3xl uppercase tracking-tight text-black max-w-xl leading-tight"></h2>
+  <!-- MAIN APP WINDOW VIEW -->
+  <div id="shopMainView" class="max-w-md mx-auto min-h-screen bg-[#F3F2F7] flex flex-col justify-between pb-6 shadow-2xl relative">
+    
+    <!-- APP HEADER CONTAINER -->
+    <div class="px-5 pt-6 space-y-4 bg-[#F3F2F7] sticky top-0 z-40 pb-2">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-purple-200 border-2 border-white flex items-center justify-center font-bold text-purple-700 shadow-sm">LV</div>
           <div>
-            <span id="detailPrice" class="inline-block bg-black text-white font-black px-4 py-2 rounded-xl text-lg shadow"></span>
+            <h1 class="text-xs font-bold text-neutral-400 uppercase tracking-wider leading-none">Welcome to</h1>
+            <span class="text-lg font-extrabold text-neutral-900 tracking-tight uppercase">LAVEGIOUS</span>
           </div>
         </div>
-        <div>
-          <h4 class="font-extrabold text-xs uppercase text-neutral-400 tracking-widest mb-2">Specifications &amp; Fit Details</h4>
-          <p id="detailDesc" class="text-neutral-700 text-sm sm:text-base font-medium leading-relaxed bg-neutral-50 p-5 rounded-2xl border border-neutral-100 whitespace-pre-line"></p>
+        <a href="/" class="w-9 h-9 bg-white rounded-full flex items-center justify-center shadow-sm border border-neutral-100 font-bold text-xs text-neutral-700">←</a>
+      </div>
+
+      <!-- SEARCH BAR MATRIX -->
+      <div class="relative">
+        <span class="absolute inset-y-0 left-4 flex items-center text-neutral-400">🔍</span>
+        <input type="text" id="appSearchInput" placeholder="Search outfits, brands, drops..." class="w-full pl-11 pr-4 py-3.5 bg-white rounded-2xl text-sm font-semibold shadow-sm focus:outline-none border border-neutral-100 placeholder-neutral-400">
+      </div>
+
+      <!-- DYNAMIC HORIZONTAL SCROLLABLE CATEGORIES -->
+      <div class="flex gap-2.5 overflow-x-auto scrollbar-none py-1">
+        <button onclick="filterByCategory('all', this)" class="category-chip active px-5 py-2.5 bg-white rounded-xl text-xs font-bold shadow-sm border border-neutral-100 flex-shrink-0 tracking-wide uppercase">All Mix</button>
+        <button onclick="filterByCategory('shirt', this)" class="category-chip px-5 py-2.5 bg-white rounded-xl text-xs font-bold shadow-sm border border-neutral-100 flex-shrink-0 tracking-wide uppercase">Shirt</button>
+        <button onclick="filterByCategory('pant', this)" class="category-chip px-5 py-2.5 bg-white rounded-xl text-xs font-bold shadow-sm border border-neutral-100 flex-shrink-0 tracking-wide uppercase">Pant</button>
+        <button onclick="filterByCategory('jeans', this)" class="category-chip px-5 py-2.5 bg-white rounded-xl text-xs font-bold shadow-sm border border-neutral-100 flex-shrink-0 tracking-wide uppercase">Jeans</button>
+        <button onclick="filterByCategory('lower', this)" class="category-chip px-5 py-2.5 bg-white rounded-xl text-xs font-bold shadow-sm border border-neutral-100 flex-shrink-0 tracking-wide uppercase">Lower</button>
+        <button onclick="filterByCategory('shoes', this)" class="category-chip px-5 py-2.5 bg-white rounded-xl text-xs font-bold shadow-sm border border-neutral-100 flex-shrink-0 tracking-wide uppercase">Shoes</button>
+        <button onclick="filterByCategory('tshirt', this)" class="category-chip px-5 py-2.5 bg-white rounded-xl text-xs font-bold shadow-sm border border-neutral-100 flex-shrink-0 tracking-wide uppercase">T-Shirt</button>
+      </div>
+
+      <!-- ADVANCED FILTERS AND SORTING ROW -->
+      <div class="bg-white p-3 rounded-2xl shadow-sm flex flex-col gap-2.5 border border-neutral-100">
+        <div class="flex items-center justify-between text-xs font-bold text-neutral-500 uppercase tracking-wider px-1">
+          <span>🎛️ Sort Price:</span>
+          <select id="priceSorter" onchange="applyFiltersAndSorting()" class="bg-transparent text-purple-600 font-extrabold focus:outline-none cursor-pointer">
+            <option value="default">Default Sync</option>
+            <option value="lowHigh">Low to High</option>
+            <option value="highLow">High to Low</option>
+          </select>
+        </div>
+        <div class="h-[1px] bg-neutral-100 w-full"></div>
+        <div class="flex items-center justify-between text-xs font-bold text-neutral-500 uppercase tracking-wider px-1">
+          <span>💰 Max Limit:</span>
+          <div class="flex items-center gap-2">
+            <input type="range" id="priceRangeSlider" min="0" max="5000" value="5000" oninput="updateRangeLabel(this.value)" class="w-24 h-1 bg-neutral-200 rounded-lg appearance-none cursor-pointer accent-purple-600">
+            <span id="rangeLabel" class="text-purple-600 font-extrabold">₹5000</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN APP PRODUCT CARDS STREAM FEED -->
+    <div class="px-5 py-4 flex-1">
+      <div id="appProductGrid" class="grid grid-cols-2 gap-4">
+        <!-- Injected dynamically via client engine routing -->
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ==================== SINGLE PRODUCT DETAIL VIEW APP OVERLAY ==================== -->
+  <div id="productDetailPage" class="detail-overlay hidden max-w-md mx-auto min-h-screen flex flex-col justify-between pb-6">
+    <div class="w-full">
+      
+      <!-- Top Action Navigation Layer -->
+      <div class="px-5 pt-6 flex items-center justify-between absolute top-0 left-0 right-0 z-50">
+        <button id="backToGridBtn" class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md font-bold text-sm">✕</button>
+        <span class="font-extrabold text-sm uppercase tracking-widest text-neutral-800 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-sm">Details View</span>
+        <button class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md text-red-500 font-bold text-base">♥</button>
+      </div>
+
+      <!-- App Swipable Image Showcase Canvas -->
+      <div class="relative bg-neutral-200 aspect-square w-full overflow-hidden rounded-b-[36px] shadow-sm">
+        <div id="detailSlider" class="w-full h-full flex overflow-x-auto snap-x snap-mandatory scrollbar-none"></div>
+        <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-1.5 pointer-events-none">
+          <span class="w-2 h-2 bg-purple-600 rounded-full"></span>
+          <span class="w-2 h-2 bg-neutral-300 rounded-full"></span>
+          <span class="w-2 h-2 bg-neutral-300 rounded-full"></span>
+        </div>
+      </div>
+
+      <!-- Specs Frame Area Description Sheets -->
+      <div class="px-5 pt-6 space-y-4">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <h2 id="detailTitle" class="font-extrabold text-xl text-neutral-900 uppercase tracking-tight leading-tight"></h2>
+            <!-- Embedded Core Required 4.1 Star Layout Tags Matrix -->
+            <div class="flex items-center gap-1.5 mt-1.5">
+              <span class="text-amber-500 font-bold text-sm">★ 4.1</span>
+              <span class="text-neutral-400 text-xs font-bold tracking-tight">(10.2K+ Verified Reviews)</span>
+            </div>
+          </div>
+          <div class="text-right">
+            <span id="detailPrice" class="inline-block bg-purple-600 text-white font-black px-3.5 py-2 rounded-2xl text-base shadow-sm"></span>
+          </div>
+        </div>
+
+        <!-- Simulated Size Selection Matrix chips exactly matching layout aesthetics -->
+        <div class="space-y-2 border-t border-neutral-200/60 pt-4">
+          <span class="block text-xs font-black uppercase tracking-wider text-neutral-400">Select Fit Size</span>
+          <div class="flex gap-2">
+            <span class="w-9 h-9 bg-white border border-neutral-200 text-xs font-bold rounded-xl flex items-center justify-center cursor-pointer hover:border-purple-600">XS</span>
+            <span class="w-9 h-9 bg-white border border-neutral-200 text-xs font-bold rounded-xl flex items-center justify-center cursor-pointer hover:border-purple-600">S</span>
+            <span class="w-9 h-9 bg-purple-600 text-white text-xs font-bold rounded-xl flex items-center justify-center cursor-pointer shadow-sm">M</span>
+            <span class="w-9 h-9 bg-white border border-neutral-200 text-xs font-bold rounded-xl flex items-center justify-center cursor-pointer hover:border-purple-600">L</span>
+            <span class="w-9 h-9 bg-white border border-neutral-200 text-xs font-bold rounded-xl flex items-center justify-center cursor-pointer hover:border-purple-600">XL</span>
+          </div>
+        </div>
+
+        <!-- Simulated Palette Selection -->
+        <div class="space-y-2 pt-1">
+          <span class="block text-xs font-black uppercase tracking-wider text-neutral-400">Select Tone Palette</span>
+          <div class="flex gap-2.5 items-center">
+            <span class="w-5 h-5 rounded-full bg-neutral-900 ring-2 ring-offset-2 ring-purple-600 cursor-pointer"></span>
+            <span class="w-5 h-5 rounded-full bg-emerald-800 cursor-pointer"></span>
+            <span class="w-5 h-5 rounded-full bg-slate-400 cursor-pointer"></span>
+          </div>
+        </div>
+
+        <div class="border-t border-neutral-200/60 pt-4 space-y-1.5">
+          <span class="block text-xs font-black uppercase tracking-wider text-neutral-400">Product Specifications</span>
+          <p id="detailDesc" class="text-neutral-500 text-xs font-medium leading-relaxed bg-white p-4 rounded-2xl border border-neutral-100 whitespace-pre-line shadow-sm"></p>
         </div>
       </div>
     </div>
     
-    <div class="max-w-3xl w-full mx-auto px-6 pt-4">
-      <a id="detailBuyBtn" target="_blank" class="block w-full text-center neo-btn bg-[#10B981] hover:bg-emerald-600 text-white border-2 border-black font-black uppercase py-5 rounded-2xl text-sm tracking-wider shadow-md">
-        GET OUTFIT VIA FLIPKART
+    <div class="px-5 pt-4">
+      <a id="detailBuyBtn" target="_blank" class="block w-full text-center bg-purple-600 hover:bg-purple-700 text-white font-extrabold uppercase py-4 rounded-2xl text-xs tracking-widest shadow-md transition duration-200">
+        Buy Outfit Matrix (Flipkart)
       </a>
     </div>
   </div>
 
-  <!-- LOOPS MECHANICS HANDLING ENGINE -->
+  <!-- APPLICATION COMPILER INTERFACE LOGICS -->
   <script>
-    const dynamicProductGrid = document.getElementById('dynamicProductGrid');
+    const appProductGrid = document.getElementById('appProductGrid');
     const shopMainView = document.getElementById('shopMainView');
     const productDetailPage = document.getElementById('productDetailPage');
     const backToGridBtn = document.getElementById('backToGridBtn');
@@ -75,64 +164,124 @@
     const detailDesc = document.getElementById('detailDesc');
     const detailPrice = document.getElementById('detailPrice');
     const detailBuyBtn = document.getElementById('detailBuyBtn');
-    let storeItemsStream = [];
+    
+    let rawInventoryMaster = [];
+    let activeCategoryFilter = 'all';
+    let currentMaxPrice = 5000;
 
-    // Formats any raw string or number into a strictly structured Rupee output loop
-    function sanitizeAndFormatPrice(priceInput) {
-      let numericalValue = priceInput.toString().replace(/[^0-9.,]/g, '').trim();
-      return '支'.replace('支', '₹') + numericalValue;
+    function formatRupeeSymbol(priceText) {
+      let pureDigits = priceText.toString().replace(/[^0-9]/g, '').trim();
+      return '₹' + (pureDigits || '0');
     }
 
-    async function initShopGrid() {
+    function updateRangeLabel(val) {
+      currentMaxPrice = parseInt(val);
+      document.getElementById('rangeLabel').innerText = '₹' + val;
+      applyFiltersAndSorting();
+    }
+
+    function filterByCategory(categoryKey, chipRef) {
+      activeCategoryFilter = categoryKey.toLowerCase().trim();
+      document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
+      chipRef.classList.add('active');
+      applyFiltersAndSorting();
+    }
+
+    // High performance search mapping loop binds input sequence streams
+    document.getElementById('appSearchInput').addEventListener('input', () => {
+      applyFiltersAndSorting();
+    });
+
+    async function bootstrapAppView() {
       try {
-        const res = await fetch('/api/products');
-        storeItemsStream = await res.json();
-        
-        dynamicProductGrid.innerHTML = storeItemsStream.length === 0 
-          ? '<div class="col-span-full py-12 text-center text-xs font-bold text-neutral-400 uppercase tracking-widest">No Drops Active Inside Dynamic Sync Map.</div>' 
-          : '';
-          
-        storeItemsStream.forEach(p => {
-          const bannerImg = p.images && p.images.length > 0 ? p.images[0] : 'https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=600';
-          const accuratePrice = sanitizeAndFormatPrice(p.price);
-          
-          dynamicProductGrid.innerHTML += `
-            <div onclick="triggerProductOverlay('${p._id}')" class="neo-card bg-white p-4 rounded-[24px] cursor-pointer flex flex-col justify-between group">
-              <div>
-                <div class="aspect-[3/4] w-full bg-neutral-100 rounded-[18px] overflow-hidden relative mb-4">
-                  <img src="${bannerImg}" class="w-full h-full object-cover transition duration-300 group-hover:scale-103">
-                </div>
-                <h3 class="font-extrabold text-sm sm:text-base uppercase tracking-tight text-neutral-900 leading-snug px-1 mb-1 truncate">${p.title}</h3>
-              </div>
-              <div class="pt-3 border-t border-neutral-100 px-1 mt-2">
-                <span class="font-black text-lg text-black block mb-3">${accuratePrice}</span>
-                <button class="w-full neo-btn bg-black text-white text-center py-3 rounded-xl font-bold uppercase text-xs tracking-wider">Specs Feed</button>
-              </div>
-            </div>`;
-        });
+        const networkResponse = await fetch('/api/products');
+        rawInventoryMaster = await networkResponse.json();
+        applyFiltersAndSorting();
       } catch (err) {
-        dynamicProductGrid.innerHTML = '<div class="col-span-full text-center font-bold text-red-500">Error rendering shop collection grid endpoints.</div>';
+        appProductGrid.innerHTML = '<div class="col-span-full py-10 text-center text-xs font-bold text-red-400 uppercase tracking-widest">Pipeline Stream Error.</div>';
       }
     }
 
-    window.triggerProductOverlay = function(id) {
-      const activeObject = storeItemsStream.find(item => item._id === id);
-      if(!activeObject) return;
+    // Engine executing data filters, sorting, search tracking matrices instantly
+    function applyFiltersAndSorting() {
+      let processStream = [...rawInventoryMaster];
+      const keyword = document.getElementById('appSearchInput').value.toLowerCase().trim();
+
+      // 1. Text Keyword Filter
+      if(keyword) {
+        processStream = processStream.filter(p => p.title.toLowerCase().includes(keyword) || p.description.toLowerCase().includes(keyword));
+      }
+
+      // 2. Chip Category Selection Filter Matcher
+      if(activeCategoryFilter !== 'all') {
+        processStream = processStream.filter(p => {
+          let t = p.title.toLowerCase();
+          let d = p.description.toLowerCase();
+          return t.includes(activeCategoryFilter) || d.includes(activeCategoryFilter);
+        });
+      }
+
+      // 3. Sliding Price Range Node Filter
+      processStream = processStream.filter(p => {
+        let numericPrice = parseInt(p.price.toString().replace(/[^0-9]/g, '')) || 0;
+        return numericPrice <= currentMaxPrice;
+      });
+
+      // 4. Sorting Parameters Evaluation
+      const sortingMode = document.getElementById('priceSorter').value;
+      if(sortingMode === 'lowHigh') {
+        processStream.sort((a,b) => (parseInt(a.price.toString().replace(/[^0-9]/g, '')) || 0) - (parseInt(b.price.toString().replace(/[^0-9]/g, '')) || 0));
+      } else if(sortingMode === 'highLow') {
+        processStream.sort((a,b) => (parseInt(b.price.toString().replace(/[^0-9]/g, '')) || 0) - (parseInt(a.price.toString().replace(/[^0-9]/g, '')) || 0));
+      }
+
+      renderAppGridCards(processStream);
+    }
+
+    function renderAppGridCards(renderedArray) {
+      appProductGrid.innerHTML = renderedArray.length === 0 
+        ? '<div class="col-span-full py-12 text-center text-xs font-bold text-neutral-400 uppercase tracking-widest">No matching outfits dropped.</div>' 
+        : '';
+
+      renderedArray.forEach(p => {
+        const gridFirstImage = p.images && p.images.length > 0 ? p.images[0] : 'https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=400';
+        const customPriceTag = formatRupeeSymbol(p.price);
+
+        appProductGrid.innerHTML += `
+          <div onclick="launchOverlayProductPage('${p._id}')" class="bg-white rounded-[24px] p-3 shadow-sm hover:shadow-md transition duration-200 cursor-pointer flex flex-col justify-between border border-neutral-100/40 relative">
+            <div>
+              <div class="aspect-square w-full bg-neutral-100 rounded-[18px] overflow-hidden relative mb-2.5 shadow-inner">
+                <img src="${gridFirstImage}" class="w-full h-full object-cover">
+                <div class="absolute top-2 right-2 bg-white/80 backdrop-blur-sm px-1.5 py-0.5 rounded-full text-[9px] font-black text-amber-600 shadow-sm flex items-center gap-0.5">★ 4.1</div>
+              </div>
+              <h3 class="font-bold text-xs uppercase tracking-tight text-neutral-800 line-clamp-2 px-0.5 leading-snug">${p.title}</h3>
+            </div>
+            <div class="flex items-center justify-between pt-2.5 border-t border-neutral-100/80 mt-2 px-0.5">
+              <span class="font-extrabold text-neutral-900 text-sm tracking-tight">${customPriceTag}</span>
+              <div class="w-7 h-7 bg-purple-600 text-white rounded-xl flex items-center justify-center font-bold text-xs shadow-sm">+</div>
+            </div>
+          </div>`;
+      });
+    }
+
+    window.launchOverlayProductPage = function(id) {
+      const activeItem = rawInventoryMaster.find(item => item._id === id);
+      if(!activeItem) return;
 
       detailSlider.innerHTML = '';
-      const assetImagesArray = activeObject.images && activeObject.images.length > 0 ? activeObject.images : ['https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=600'];
+      const loopImages = activeItem.images && activeItem.images.length > 0 ? activeItem.images : ['https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=400'];
       
-      assetImagesArray.forEach(img => {
+      loopImages.forEach(img => {
         detailSlider.innerHTML += `
           <div class="w-full h-full flex-shrink-0 snap-start bg-neutral-900 flex justify-center items-center">
             <img src="${img}" class="w-full h-full object-contain">
           </div>`;
       });
 
-      detailTitle.innerText = activeObject.title;
-      detailDesc.innerText = activeObject.description;
-      detailPrice.innerText = sanitizeAndFormatPrice(activeObject.price);
-      detailBuyBtn.href = activeObject.link;
+      detailTitle.innerText = activeItem.title;
+      detailDesc.innerText = activeItem.description;
+      detailPrice.innerText = formatRupeeSymbol(activeItem.price);
+      detailBuyBtn.href = activeItem.link;
 
       shopMainView.classList.add('hidden');
       productDetailPage.classList.remove('hidden');
@@ -144,7 +293,7 @@
       shopMainView.classList.remove('hidden');
     });
 
-    initShopGrid();
+    bootstrapAppView();
   </script>
 </body>
 </html>
