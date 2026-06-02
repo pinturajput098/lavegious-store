@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F3F2F7; }
-    .app-box { background-color: #FFFFFF; border-radius: 28px; border: 1px solid rgba(0,0,0,0.05); shadow-sm: 0 4px 6px -1px rgba(0,0,0,0.05); }
+    .app-box { background-color: #FFFFFF; border-radius: 28px; border: 1px solid rgba(0,0,0,0.05); }
     .app-btn { background-color: #7C3AED; color: #FFFFFF; transition: all 0.2s ease; }
     .app-btn:active { transform: scale(0.97); opacity: 0.9; }
   </style>
@@ -31,7 +31,7 @@
       <!-- Dashboard Top Header Row -->
       <div class="flex items-center justify-between border-b border-neutral-200/60 pb-4">
         <div>
-          <h1 class="font-black text-xl tracking-tight text-neutral-900 uppercase">Lavegious Engine</h1>
+          <h1 class="font-black text-xl tracking-tight text-neutral-900 uppercase">Lavegious Studio</h1>
           <p class="text-neutral-400 text-[10px] font-black uppercase tracking-widest mt-0.5">App Cloud Control Panel</p>
         </div>
         <button id="logoutBtn" class="px-4 py-2 bg-white border border-neutral-200 text-red-500 font-extrabold text-xs rounded-xl uppercase tracking-wider shadow-sm">Exit</button>
@@ -52,24 +52,44 @@
           <div id="previews" class="flex gap-2.5 mt-3 flex-wrap"></div>
         </div>
 
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-[10px] font-black uppercase tracking-wider text-neutral-400 mb-1">Select Category</label>
+            <select id="pCategory" class="w-full p-3.5 bg-neutral-50 border border-neutral-200 rounded-xl text-xs font-bold focus:outline-none focus:border-purple-500 cursor-pointer">
+              <option value="Shirt">Shirt</option>
+              <option value="Pant">Pant</option>
+              <option value="Jeans">Jeans</option>
+              <option value="Lower">Lower</option>
+              <option value="Shoes">Shoes</option>
+              <option value="T-Shirt">T-Shirt</option>
+            </select>
+          </div>
+          <div class="flex items-center pt-5 pl-2">
+            <label class="flex items-center gap-2 cursor-pointer select-none">
+              <input type="checkbox" id="pFeatured" class="w-4 h-4 rounded text-purple-600 focus:ring-purple-500 border-neutral-300 accent-purple-600">
+              <span class="text-[11px] font-bold text-neutral-600 uppercase tracking-tight">Set as Hero Main</span>
+            </label>
+          </div>
+        </div>
+
         <div class="space-y-4">
           <div>
-            <label class="block text-[10px] font-black uppercase tracking-wider text-neutral-400 mb-1">Product Title (Add category keyword like Shirt, Pant, Shoes inside)</label>
-            <input type="text" id="pTitle" placeholder="e.g., Modern Sneakers White Shirt" required class="w-full p-3.5 bg-neutral-50 border border-neutral-200 rounded-xl text-xs font-bold focus:outline-none focus:border-purple-500">
+            <label class="block text-[10px] font-black uppercase tracking-wider text-neutral-400 mb-1">Product Title</label>
+            <input type="text" id="pTitle" placeholder="e.g., Premium Regular Fit Striped Shirt" required class="w-full p-3.5 bg-neutral-50 border border-neutral-200 rounded-xl text-xs font-bold focus:outline-none focus:border-purple-500">
           </div>
           <div>
             <label class="block text-[10px] font-black uppercase tracking-wider text-neutral-400 mb-1">Price Tag (Plain Number Only)</label>
-            <input type="text" id="pPrice" placeholder="e.g., 441" required class="w-full p-3.5 bg-neutral-50 border border-neutral-200 rounded-xl text-xs font-black focus:outline-none focus:border-purple-500">
+            <input type="text" id="pPrice" placeholder="e.g., 448" required class="w-full p-3.5 bg-neutral-50 border border-neutral-200 rounded-xl text-xs font-black focus:outline-none focus:border-purple-500">
           </div>
         </div>
 
         <div>
           <label class="block text-[10px] font-black uppercase tracking-wider text-neutral-400 mb-1">Specifications &amp; Fit Details</label>
-          <textarea id="pDesc" placeholder="Describe fabrics, stitching matrices..." required class="w-full p-3.5 bg-neutral-50 border border-neutral-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-purple-500 h-24 resize-none"></textarea>
+          <textarea id="pDesc" placeholder="Describe fabrics, stitching matrices..." required class="w-full p-3.5 bg-neutral-50 border border-neutral-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-purple-500 h-22 resize-none"></textarea>
         </div>
 
         <div>
-          <label class="block text-[10px] font-black uppercase tracking-wider text-neutral-400 mb-1">Affiliate Destination Endpoint Link</label>
+          <label class="block text-[10px] font-black uppercase tracking-wider text-neutral-400 mb-1">Affiliate Link Destination</label>
           <input type="url" id="pLink" placeholder="https://fktr.in/..." required class="w-full p-3.5 bg-neutral-50 border border-neutral-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-purple-500">
         </div>
 
@@ -85,7 +105,6 @@
     </div>
   </div>
 
-  <!-- COMPILER LOGICS INFRASTRUCTURE ENGINE -->
   <script>
     let activeToken = localStorage.getItem('studioToken') || '';
     let imagesQueue = [];
@@ -117,7 +136,6 @@
       location.reload();
     });
 
-    // HIGH SPEED HIGH RATIO COMPRESSION PROTOCOL (500px, 0.4 Quality)
     function compressImg(file) {
       return new Promise((resolve) => {
         const reader = new FileReader();
@@ -142,9 +160,7 @@
       const previews = document.getElementById('previews');
       previews.innerHTML = '';
       const files = Array.from(e.target.files);
-      
       document.getElementById('statusTxt').innerText = `OPTIMIZING PLOTS... STANDBY`;
-      
       for(let f of files) {
         const b64 = await compressImg(f);
         imagesQueue.push(b64);
@@ -169,7 +185,9 @@
         title: document.getElementById('pTitle').value,
         price: document.getElementById('pPrice').value,
         description: document.getElementById('pDesc').value,
-        link: document.getElementById('pLink').value
+        link: document.getElementById('pLink').value,
+        category: document.getElementById('pCategory').value,
+        isFeatured: document.getElementById('pFeatured').checked
       };
 
       const res = await fetch('/api/products', {
@@ -188,6 +206,17 @@
       }
     });
 
+    window.makeHeroFeatured = async function(id) {
+      const res = await fetch(`/api/products/${id}/feature`, {
+        method: 'PUT',
+        headers: {'x-admin-password': activeToken}
+      });
+      if(res.ok) {
+        alert('Success: This item is now your website\'s main hero spotlight!');
+        loadCatalog();
+      }
+    };
+
     async function loadCatalog() {
       const res = await fetch('/api/products');
       const data = await res.json();
@@ -196,16 +225,24 @@
       
       data.forEach(p => {
         const img = p.images && p.images.length > 0 ? p.images[0] : '';
+        const heroTag = p.isFeatured ? `<span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-[8px] font-black tracking-wide uppercase">Active Hero</span>` : '';
+        
         list.innerHTML += `
           <div class="flex items-center justify-between p-3 bg-white rounded-2xl border border-neutral-100 shadow-sm">
             <div class="flex items-center gap-3 min-w-0">
               <img src="${img}" class="w-9 h-11 object-cover rounded-xl border border-neutral-100 flex-shrink-0">
               <div class="min-w-0">
-                <span class="text-xs font-extrabold text-neutral-800 truncate block uppercase">${p.title}</span>
-                <span class="text-[10px] font-black text-purple-600 uppercase block mt-0.5">₹${p.price.toString().replace(/[^0-9]/g, '')}</span>
+                <div class="flex items-center gap-1.5 min-w-0">
+                  <span class="text-xs font-extrabold text-neutral-800 truncate block uppercase">${p.title}</span>
+                  ${heroTag}
+                </div>
+                <span class="text-[9px] font-black text-purple-600 uppercase block mt-0.5">${p.category} | ₹${p.price}</span>
               </div>
             </div>
-            <button onclick="deleteItem('${p._id}')" class="px-3 py-1.5 bg-red-50 hover:bg-red-100 border border-red-200 text-red-500 font-bold text-[10px] uppercase rounded-xl transition">Delete</button>
+            <div class="flex items-center gap-1.5 flex-shrink-0">
+              <button onclick="makeHeroFeatured('${p._id}')" class="px-2.5 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-600 border border-purple-100 font-extrabold text-[9px] uppercase rounded-xl transition">Set Hero</button>
+              <button onclick="deleteItem('${p._id}')" class="px-2.5 py-1.5 bg-red-50 hover:bg-red-100 text-red-500 font-bold text-[9px] uppercase rounded-xl transition">Delete</button>
+            </div>
           </div>`;
       });
     }
