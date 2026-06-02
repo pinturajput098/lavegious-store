@@ -3,24 +3,133 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LAVEGIOUS | Home</title>
+  <title>LAVEGIOUS | Premium Fashion App</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F3F2F7; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+    .scrollbar-none::-webkit-scrollbar { display: none; }
+    .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+    .app-card { border: 1px solid rgba(0,0,0,0.03); shadow-sm: 0 4px 6px -1px rgba(0,0,0,0.05); }
+    .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); w-full: 100%; max-width: 28rem; background-color: #FFFFFF; border-top: 1px solid rgba(0,0,0,0.06); z-index: 50; }
+  </style>
 </head>
-<body class="font-[Plus_Jakarta_Sans] bg-white text-black">
-  <header class="max-w-7xl mx-auto px-6 py-8 flex justify-between items-center">
-    <span class="font-black text-2xl uppercase tracking-tighter">LAVEGIOUS</span>
-    <nav class="hidden md:flex gap-8 font-bold text-sm uppercase"><a href="/shop">Shop</a><a href="/shop">Catalogue</a></nav>
-  </header>
-  <section class="max-w-7xl mx-auto px-6 py-20 flex flex-col md:flex-row items-center gap-12">
-    <div class="w-full md:w-1/2 space-y-6">
-      <h1 class="text-6xl md:text-8xl font-black uppercase leading-none">LET'S EXPLORE UNIQUE CLOTHES.</h1>
-      <p class="text-gray-500 font-medium">Live for Influential and Innovative fashion!</p>
-      <button onclick="window.location.href='/shop'" class="bg-black text-white px-10 py-4 rounded-xl font-bold uppercase tracking-widest hover:bg-neutral-800">Shop Now →</button>
+<body class="text-neutral-900 antialiased">
+
+  <!-- MAIN APP CONTAINER WRAPPER -->
+  <div class="max-w-md mx-auto min-h-screen bg-[#F3F2F7] flex flex-col justify-between pb-24 shadow-2xl relative">
+    
+    <!-- HEADER AND WELCOME PROFILE BANNER -->
+    <div class="px-5 pt-6 space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-full bg-purple-600 border-2 border-white flex items-center justify-center font-extrabold text-white text-sm shadow-md shadow-purple-600/20">LV</div>
+          <div>
+            <h1 class="text-xs font-bold text-neutral-400 uppercase tracking-wider leading-none">Good Morning</h1>
+            <span class="text-base font-extrabold text-neutral-900 tracking-tight">Hey, Fashionista</span>
+          </div>
+        </div>
+        <!-- Notification bell simulation icon element -->
+        <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm border border-neutral-100/60 text-lg cursor-pointer">🔔</div>
+      </div>
+
+      <!-- REDIRECT SEARCH CAPABILITY BAR LINK -->
+      <div onclick="window.location.href='/shop'" class="relative cursor-pointer">
+        <span class="absolute inset-y-0 left-4 flex items-center text-neutral-400">🔍</span>
+        <div class="w-full pl-11 pr-4 py-3.5 bg-white rounded-2xl text-sm font-semibold shadow-sm border border-neutral-100/60 text-neutral-400 select-none">
+          Search outfits, brands, categories...
+        </div>
+      </div>
+
+      <!-- SIMULATED CATEGORIES CHIPS PREVIEW ROW -->
+      <div class="flex gap-2.5 overflow-x-auto scrollbar-none py-1">
+        <span onclick="window.location.href='/shop'" class="px-5 py-2.5 bg-purple-600 text-white rounded-xl text-xs font-bold shadow-sm cursor-pointer tracking-wide uppercase">Trending</span>
+        <span onclick="window.location.href='/shop'" class="px-5 py-2.5 bg-white rounded-xl text-xs font-bold shadow-sm border border-neutral-100/60 text-neutral-500 cursor-pointer tracking-wide uppercase">Shirt</span>
+        <span onclick="window.location.href='/shop'" class="px-5 py-2.5 bg-white rounded-xl text-xs font-bold shadow-sm border border-neutral-100/60 text-neutral-500 cursor-pointer tracking-wide uppercase">Pant</span>
+        <span onclick="window.location.href='/shop'" class="px-5 py-2.5 bg-white rounded-xl text-xs font-bold shadow-sm border border-neutral-100/60 text-neutral-500 cursor-pointer tracking-wide uppercase">Shoes</span>
+      </div>
+
+      <!-- IMAGE 13916 COMPLIANT MAIN FEATURED SNEAKER HERO BANNER -->
+      <div onclick="window.location.href='/shop'" class="bg-white rounded-[32px] p-4 app-card shadow-sm border border-neutral-100/30 block cursor-pointer group relative overflow-hidden">
+        <div class="aspect-[4/3] w-full bg-neutral-50 rounded-[24px] overflow-hidden relative mb-4 shadow-inner flex items-center justify-center">
+          <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=600" class="w-full h-full object-cover transform group-hover:scale-102 transition duration-300">
+          <div class="absolute top-3 left-3 bg-neutral-900/80 backdrop-blur-sm text-amber-400 font-black text-[9px] uppercase tracking-widest px-2.5 py-1 rounded-full shadow-sm flex items-center gap-0.5">★ 4.1</div>
+        </div>
+        <div class="flex items-center justify-between px-1">
+          <div>
+            <h3 class="font-extrabold text-sm text-neutral-400 uppercase tracking-wider leading-none">Men's Premium</h3>
+            <span class="text-lg font-black text-neutral-900 uppercase tracking-tight block mt-0.5">Air Edition Drops</span>
+          </div>
+          <div class="text-right">
+            <span class="block text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Price</span>
+            <span class="text-base font-black text-purple-600 block leading-none mt-0.5">₹1,999</span>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="w-full md:w-1/2">
-      <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=800" class="rounded-3xl shadow-2xl">
+
+    <!-- NEW ARRIVALS INTRO GRID BANNER -->
+    <div class="px-5 py-6 space-y-4">
+      <div class="flex items-center justify-between px-0.5">
+        <h2 class="font-black text-base uppercase tracking-tight text-neutral-900">New Collections</h2>
+        <span onclick="window.location.href='/shop'" class="text-xs font-bold text-purple-600 uppercase tracking-wider cursor-pointer hover:underline">See All</span>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <!-- Grid Item 1 -->
+        <div onclick="window.location.href='/shop'" class="bg-white p-3 rounded-[24px] app-card shadow-sm border border-neutral-100/40 cursor-pointer flex flex-col justify-between">
+          <div>
+            <div class="aspect-square w-full bg-neutral-50 rounded-[18px] overflow-hidden relative mb-2.5 shadow-inner">
+              <img src="https://images.unsplash.com/photo-1608231387042-66d1773070a5?q=80&w=400" class="w-full h-full object-cover">
+            </div>
+            <h4 class="font-bold text-xs uppercase text-neutral-800 tracking-tight truncate px-0.5">Sport Street Shoes</h4>
+          </div>
+          <div class="flex items-center justify-between pt-2 mt-1 border-t border-neutral-50 px-0.5">
+            <span class="font-black text-neutral-900 text-xs">₹1,499</span>
+            <div class="w-6 h-6 bg-purple-600 text-white rounded-lg flex items-center justify-center font-bold text-xs shadow-sm">+</div>
+          </div>
+        </div>
+
+        <!-- Grid Item 2 -->
+        <div onclick="window.location.href='/shop'" class="bg-white p-3 rounded-[24px] app-card shadow-sm border border-neutral-100/40 cursor-pointer flex flex-col justify-between">
+          <div>
+            <div class="aspect-square w-full bg-neutral-50 rounded-[18px] overflow-hidden relative mb-2.5 shadow-inner">
+              <img src="https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?q=80&w=400" class="w-full h-full object-cover">
+            </div>
+            <h4 class="font-bold text-xs uppercase text-neutral-800 tracking-tight truncate px-0.5">Classic Premium Tee</h4>
+          </div>
+          <div class="flex items-center justify-between pt-2 mt-1 border-t border-neutral-50 px-0.5">
+            <span class="font-black text-neutral-900 text-xs">₹799</span>
+            <div class="w-6 h-6 bg-purple-600 text-white rounded-lg flex items-center justify-center font-bold text-xs shadow-sm">+</div>
+          </div>
+        </div>
+      </div>
     </div>
-  </section>
+
+    <!-- MAIN APP CALL TO ACTION ACTION PORTAL BUTTON -->
+    <div class="px-5 pb-8 pt-2">
+      <button onclick="window.location.href='/shop'" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-black uppercase py-4.5 rounded-2xl text-xs tracking-widest shadow-lg shadow-purple-600/10 transition duration-200">
+        Enter Premium Store Room →
+      </button>
+    </div>
+
+    <!-- NATIVE MOCKED MOBILE APPLICATION BOTTOM NAVIGATION BAR BAR -->
+    <div class="bottom-nav flex items-center justify-around py-3 px-2 shadow-inner">
+      <div onclick="window.location.href='/'" class="flex flex-col items-center gap-0.5 text-purple-600 cursor-pointer">
+        <span class="text-xl leading-none">🏠</span>
+        <span class="text-[9px] font-black uppercase tracking-wider">Home</span>
+      </div>
+      <div onclick="window.location.href='/shop'" class="flex flex-col items-center gap-0.5 text-neutral-400 hover:text-purple-600 cursor-pointer transition">
+        <span class="text-xl leading-none">🛍️</span>
+        <span class="text-[9px] font-black uppercase tracking-wider">Shop</span>
+      </div>
+      <div onclick="window.location.href='/admin'" class="flex flex-col items-center gap-0.5 text-neutral-400 hover:text-purple-600 cursor-pointer transition">
+        <span class="text-xl leading-none">🎛️</span>
+        <span class="text-[9px] font-black uppercase tracking-wider">Studio</span>
+      </div>
+    </div>
+
+  </div>
+
 </body>
 </html>
