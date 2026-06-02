@@ -3,29 +3,148 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LAVEGIOUS | Shop</title>
+  <title>LAVEGIOUS | Shop Grid Matrix</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #FAFAFA; scroll-behavior: smooth; }
+    .scrollbar-none::-webkit-scrollbar { display: none; }
+    .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+    .neo-card { border: 3px solid #000000; box-shadow: 5px 5px 0px 0px #000000; transition: all 0.2s ease; }
+    .neo-card:hover { transform: translate(-1px, -1px); box-shadow: 7px 7px 0px 0px #000000; }
+    .neo-btn { border: 2px solid #000000; box-shadow: 3px 3px 0px 0px #000000; transition: all 0.1s ease; }
+    .neo-btn:active { transform: translate(1px, 1px); box-shadow: 0px 0px 0px 0px #000000; }
+    .detail-overlay { position: fixed; inset: 0; background-color: #FFFFFF; z-index: 100; overflow-y: auto; }
+  </style>
 </head>
-<body class="bg-gray-50 text-black p-6">
-  <a href="/" class="text-sm font-bold uppercase underline">← Back Home</a>
-  <h1 class="text-4xl font-black uppercase my-8">All Products</h1>
-  <div id="dynamicProductGrid" class="grid grid-cols-1 md:grid-cols-4 gap-6"></div>
+<body class="text-black p-4 sm:p-8">
+
+  <!-- MAIN SHOP LAYOUT GRID -->
+  <div id="shopMainView" class="max-w-7xl mx-auto min-h-screen pb-16">
+    <header class="flex items-center justify-between mb-8 pb-4 border-b-4 border-black">
+      <a href="/" class="neo-btn bg-white text-black px-4 py-2 font-bold text-xs uppercase rounded-lg shadow-sm">← Back Home</a>
+      <span class="font-extrabold text-xl tracking-tighter uppercase">LAVEGIOUS</span>
+    </header>
+
+    <div class="mb-10 text-center md:text-left">
+      <h2 class="font-black text-3xl sm:text-4xl uppercase tracking-tight text-black">ALL PRODUCTS</h2>
+      <p class="text-neutral-400 text-xs font-bold uppercase tracking-widest mt-1">Premium Curated Drops Grid</p>
+    </div>
+
+    <!-- Live Dynamic Injection Feed Area -->
+    <div id="dynamicProductGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"></div>
+  </div>
+
+  <!-- PREMIUM DETAIL CAROUSEL OVERLAY -->
+  <div id="productDetailPage" class="detail-overlay hidden flex flex-col justify-between pb-10">
+    <div class="w-full">
+      <div class="relative bg-neutral-100 aspect-square sm:aspect-[16/9] md:aspect-[21/9] w-full overflow-hidden border-b-4 border-black shadow-inner">
+        <button id="backToGridBtn" class="absolute top-6 left-6 z-50 neo-btn bg-white text-black border-2 border-black px-5 py-2.5 font-black text-xs uppercase rounded-xl shadow-md">← BACK TO SHOP</button>
+        <div id="detailSlider" class="w-full h-full flex overflow-x-auto snap-x snap-mandatory scrollbar-none"></div>
+      </div>
+
+      <div class="max-w-3xl mx-auto px-6 py-10 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-6">
+          <h2 id="detailTitle" class="font-black text-2xl sm:text-3xl uppercase tracking-tight text-black max-w-xl leading-tight"></h2>
+          <div>
+            <span id="detailPrice" class="inline-block bg-black text-white font-black px-4 py-2 rounded-xl text-lg shadow"></span>
+          </div>
+        </div>
+        <div>
+          <h4 class="font-extrabold text-xs uppercase text-neutral-400 tracking-widest mb-2">Specifications &amp; Fit Details</h4>
+          <p id="detailDesc" class="text-neutral-700 text-sm sm:text-base font-medium leading-relaxed bg-neutral-50 p-5 rounded-2xl border border-neutral-100 whitespace-pre-line"></p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="max-w-3xl w-full mx-auto px-6 pt-4">
+      <a id="detailBuyBtn" target="_blank" class="block w-full text-center neo-btn bg-[#10B981] hover:bg-emerald-600 text-white border-2 border-black font-black uppercase py-5 rounded-2xl text-sm tracking-wider shadow-md">
+        GET OUTFIT VIA FLIPKART
+      </a>
+    </div>
+  </div>
+
+  <!-- LOOPS MECHANICS HANDLING ENGINE -->
   <script>
-    async function loadShop() {
-      const res = await fetch('/api/products');
-      const products = await res.json();
-      const grid = document.getElementById('dynamicProductGrid');
-      products.forEach(p => {
-        grid.innerHTML += `
-          <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-            <img src="${p.images[0]}" class="w-full h-64 object-cover rounded-xl mb-4">
-            <h3 class="font-bold uppercase">${p.title}</h3>
-            <p class="font-black text-lg">${p.price}</p>
-            <a href="${p.link}" target="_blank" class="block bg-black text-white text-center py-2 mt-4 rounded-lg font-bold uppercase text-xs">Buy Now</a>
+    const dynamicProductGrid = document.getElementById('dynamicProductGrid');
+    const shopMainView = document.getElementById('shopMainView');
+    const productDetailPage = document.getElementById('productDetailPage');
+    const backToGridBtn = document.getElementById('backToGridBtn');
+    const detailSlider = document.getElementById('detailSlider');
+    const detailTitle = document.getElementById('detailTitle');
+    const detailDesc = document.getElementById('detailDesc');
+    const detailPrice = document.getElementById('detailPrice');
+    const detailBuyBtn = document.getElementById('detailBuyBtn');
+    let storeItemsStream = [];
+
+    // Formats any raw string or number into a strictly structured Rupee output loop
+    function sanitizeAndFormatPrice(priceInput) {
+      let numericalValue = priceInput.toString().replace(/[^0-9.,]/g, '').trim();
+      return '支'.replace('支', '₹') + numericalValue;
+    }
+
+    async function initShopGrid() {
+      try {
+        const res = await fetch('/api/products');
+        storeItemsStream = await res.json();
+        
+        dynamicProductGrid.innerHTML = storeItemsStream.length === 0 
+          ? '<div class="col-span-full py-12 text-center text-xs font-bold text-neutral-400 uppercase tracking-widest">No Drops Active Inside Dynamic Sync Map.</div>' 
+          : '';
+          
+        storeItemsStream.forEach(p => {
+          const bannerImg = p.images && p.images.length > 0 ? p.images[0] : 'https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=600';
+          const accuratePrice = sanitizeAndFormatPrice(p.price);
+          
+          dynamicProductGrid.innerHTML += `
+            <div onclick="triggerProductOverlay('${p._id}')" class="neo-card bg-white p-4 rounded-[24px] cursor-pointer flex flex-col justify-between group">
+              <div>
+                <div class="aspect-[3/4] w-full bg-neutral-100 rounded-[18px] overflow-hidden relative mb-4">
+                  <img src="${bannerImg}" class="w-full h-full object-cover transition duration-300 group-hover:scale-103">
+                </div>
+                <h3 class="font-extrabold text-sm sm:text-base uppercase tracking-tight text-neutral-900 leading-snug px-1 mb-1 truncate">${p.title}</h3>
+              </div>
+              <div class="pt-3 border-t border-neutral-100 px-1 mt-2">
+                <span class="font-black text-lg text-black block mb-3">${accuratePrice}</span>
+                <button class="w-full neo-btn bg-black text-white text-center py-3 rounded-xl font-bold uppercase text-xs tracking-wider">Specs Feed</button>
+              </div>
+            </div>`;
+        });
+      } catch (err) {
+        dynamicProductGrid.innerHTML = '<div class="col-span-full text-center font-bold text-red-500">Error rendering shop collection grid endpoints.</div>';
+      }
+    }
+
+    window.triggerProductOverlay = function(id) {
+      const activeObject = storeItemsStream.find(item => item._id === id);
+      if(!activeObject) return;
+
+      detailSlider.innerHTML = '';
+      const assetImagesArray = activeObject.images && activeObject.images.length > 0 ? activeObject.images : ['https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=600'];
+      
+      assetImagesArray.forEach(img => {
+        detailSlider.innerHTML += `
+          <div class="w-full h-full flex-shrink-0 snap-start bg-neutral-900 flex justify-center items-center">
+            <img src="${img}" class="w-full h-full object-contain">
           </div>`;
       });
-    }
-    loadShop();
+
+      detailTitle.innerText = activeObject.title;
+      detailDesc.innerText = activeObject.description;
+      detailPrice.innerText = sanitizeAndFormatPrice(activeObject.price);
+      detailBuyBtn.href = activeObject.link;
+
+      shopMainView.classList.add('hidden');
+      productDetailPage.classList.remove('hidden');
+      window.scrollTo({ top: 0 });
+    };
+
+    backToGridBtn.addEventListener('click', () => {
+      productDetailPage.classList.add('hidden');
+      shopMainView.classList.remove('hidden');
+    });
+
+    initShopGrid();
   </script>
 </body>
 </html>
