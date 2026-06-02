@@ -3,56 +3,298 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LAVEGIOUS | Curated Streetwear</title>
+  <title>LAVEGIOUS | Explore Unique Clothes</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #FAFAFA; }
-    .neo-card { border: 4px solid #141414; box-shadow: 6px 6px 0px 0px #141414; transition: all 0.2s ease; }
-    .neo-card:hover { transform: translate(-2px, -2px); box-shadow: 8px 8px 0px 0px #141414; }
-    .neo-btn { border: 3px solid #141414; box-shadow: 4px 4px 0px 0px #141414; }
-    .neo-btn:active { transform: translate(2px, 2px); box-shadow: 0px 0px 0px 0px #141414; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #FFFFFF; overflow-x: hidden; }
+    .scrollbar-none::-webkit-scrollbar { display: none; }
+    .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+    .neo-btn { transition: all 0.2s ease; }
+    .neo-btn:active { transform: scale(0.96); }
+    .brand-banner { background-color: #E6F0FA; }
+    .hero-bg { background-color: #F4F6F5; }
+    .yellow-sale-bg { background-color: #F3D250; }
+    .yellow-highlight { background-color: #E2F0FF; position: relative; z-index: 1; }
+    .yellow-highlight::after { content: ''; position: absolute; bottom: 4px; left: 0; width: 100%; height: 12px; background-color: #FBD46D; z-index: -1; transform: skewX(-10deg); }
+    .product-img-frame { border-radius: 24px; overflow: hidden; }
+    .detail-overlay { position: fixed; inset: 0; background-color: #FFFFFF; z-index: 100; overflow-y: auto; }
   </style>
 </head>
 <body class="text-black">
 
-  <!-- Main Website Stream -->
-  <div id="mainWebsiteView" class="max-w-md mx-auto min-h-screen flex flex-col justify-between px-4 pt-6 pb-24">
-    <div>
-      <header class="flex items-center justify-between mb-8 pb-4 border-b-4 border-black">
-        <h1 class="font-extrabold text-2xl tracking-tighter uppercase">LAVEGIOUS<span class="text-[#10B981]">.</span></h1>
-      </header>
+  <div id="mainWebsiteView" class="w-full">
+    
+    <!-- 1. HEADER / NAVIGATION -->
+    <header class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex items-center justify-between sticky top-0 bg-white z-50">
+      <div class="flex items-center gap-2">
+        <svg class="w-6 h-6 text-black" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 2L2 22h20L12 2zm0 3.99L19.53 19H4.47L12 5.99z"/>
+        </svg>
+        <span class="font-extrabold text-2xl tracking-tighter uppercase">LAVEGIOUS</span>
+      </div>
+      
+      <nav class="hidden md:flex items-center gap-10 font-semibold text-sm tracking-widest text-neutral-800 uppercase">
+        <a href="#" class="hover:text-black transition">Catalogue</a>
+        <a href="#" class="hover:text-black transition">Fashion</a>
+        <a href="#" class="hover:text-black transition">Favourite</a>
+        <a href="#" class="hover:text-black transition">Lifestyle</a>
+      </nav>
+      
+      <div>
+        <a href="/admin" class="neo-btn bg-black text-white font-bold text-xs uppercase tracking-wider px-6 py-3 rounded-lg shadow-md hover:bg-neutral-800">Sign Up</a>
+      </div>
+    </header>
 
-      <div class="text-center mb-8">
-        <h2 class="font-extrabold text-3xl uppercase tracking-tight mb-1">CURATED<br><span class="text-[#10B981] underline decoration-4">STREETWEAR</span></h2>
-        <p class="text-neutral-400 text-[10px] font-bold uppercase tracking-widest">Premium Live Action Grid Matrix</p>
+    <!-- 2. HERO SECTION -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-4">
+      <div class="hero-bg rounded-[40px] p-8 md:p-16 flex flex-col md:flex-row items-center justify-between gap-12 relative overflow-hidden">
+        <div class="absolute top-12 left-12 text-neutral-300 font-extrabold text-3xl select-none">★</div>
+        <div class="absolute bottom-16 right-1/2 text-neutral-300 font-extrabold text-4xl select-none">★</div>
+        
+        <div class="w-full md:w-1/2 space-y-6 md:space-y-8 z-10 text-center md:text-left">
+          <h1 class="font-black text-5xl sm:text-6xl lg:text-7xl tracking-tight text-black leading-none uppercase">
+            <span class="block bg-white inline-block px-4 py-1 transform -rotate-1 mb-2 rounded shadow-sm">LET’S</span><br>
+            EXPLORE<br>
+            <span class="yellow-highlight inline-block px-2">UNIQUE</span><br>
+            CLOTHES.
+          </h1>
+          <p class="text-neutral-600 font-medium text-base md:text-lg max-w-sm mx-auto md:mx-0">
+            Live for Influential and Innovative fashion! Curated premium drops selected explicitly for your elite style representation.
+          </p>
+          <div class="pt-2">
+            <button class="neo-btn bg-black text-white font-extrabold text-sm uppercase tracking-widest px-8 py-4 rounded-xl shadow-lg hover:bg-neutral-800 flex items-center gap-3 mx-auto md:mx-0">
+              Shop Now <span class="text-lg">→</span>
+            </button>
+          </div>
+        </div>
+        
+        <div class="w-full md:w-1/2 flex justify-center items-center z-10">
+          <div class="relative max-w-md w-full aspect-[4/5] rounded-[30px] overflow-hidden shadow-2xl bg-neutral-200 border-4 border-white">
+            <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover object-top" alt="Lavegious Hero Fashion Presentation">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. BRAND LOGOS BANNER ROW -->
+    <section class="brand-banner w-full py-8 md:py-12 my-12 overflow-hidden border-y-2 border-neutral-100">
+      <div class="max-w-7xl mx-auto px-4 flex flex-wrap items-center justify-center md:justify-between gap-8 md:gap-4 text-center">
+        <span class="font-black text-3xl tracking-tighter text-black uppercase opacity-80 px-4">H&amp;M</span>
+        <span class="font-extrabold text-2xl tracking-widest text-black uppercase opacity-90 px-4" style="font-family: 'Impact', sans-serif;">OBEY</span>
+        <span class="font-bold text-2xl text-black lowercase tracking-tight opacity-80 px-4" style="font-family: 'Futura', sans-serif;">shopify</span>
+        <span class="font-extrabold text-xl tracking-wider text-black uppercase italic opacity-80 px-4">LACOSTE</span>
+        <span class="font-black text-2xl tracking-tight text-red-600 uppercase opacity-90 px-4" style="font-family: 'Arial Black', sans-serif;">LEVI'S</span>
+        <span class="font-bold text-2xl tracking-tighter text-black opacity-80 px-4">amazon</span>
+      </div>
+    </section>
+
+    <!-- 4. NEW ARRIVALS -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-16">
+      <div class="mb-12 relative">
+        <h2 class="font-black text-3xl sm:text-4xl uppercase tracking-tight text-black inline-block z-10 relative">NEW ARRIVALS</h2>
+        <div class="w-32 h-3 bg-[#84A9FF] rounded absolute bottom-1 left-0 z-0 opacity-40"></div>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <div class="group cursor-pointer">
+          <div class="product-img-frame aspect-[3/4] bg-neutral-100 mb-4 shadow-md overflow-hidden relative">
+            <img src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+          </div>
+          <div class="flex items-center justify-between px-2">
+            <div>
+              <h3 class="font-extrabold text-xl tracking-tight text-black">Hoodies &amp; Sweatshirt</h3>
+              <p class="text-neutral-400 text-xs font-bold uppercase tracking-wider mt-0.5">Explore Now!</p>
+            </div>
+            <div class="text-neutral-400 font-bold text-xl group-hover:text-black transition px-2">➔</div>
+          </div>
+        </div>
+        
+        <div class="group cursor-pointer">
+          <div class="product-img-frame aspect-[3/4] bg-neutral-100 mb-4 shadow-md overflow-hidden relative">
+            <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+          </div>
+          <div class="flex items-center justify-between px-2">
+            <div>
+              <h3 class="font-extrabold text-xl tracking-tight text-black">Coats &amp; Parkas</h3>
+              <p class="text-neutral-400 text-xs font-bold uppercase tracking-wider mt-0.5">Explore Now!</p>
+            </div>
+            <div class="text-neutral-400 font-bold text-xl group-hover:text-black transition px-2">➔</div>
+          </div>
+        </div>
+        
+        <div class="group cursor-pointer">
+          <div class="product-img-frame aspect-[3/4] bg-neutral-100 mb-4 shadow-md overflow-hidden relative">
+            <img src="https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+          </div>
+          <div class="flex items-center justify-between px-2">
+            <div>
+              <h3 class="font-extrabold text-xl tracking-tight text-black">Tees &amp; T-Shirt</h3>
+              <p class="text-neutral-400 text-xs font-bold uppercase tracking-wider mt-0.5">Explore Now!</p>
+            </div>
+            <div class="text-neutral-400 font-bold text-xl group-hover:text-black transition px-2">➔</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. DYNAMIC MONGODB LIVE DROPS STREAM CATALOG -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-20 bg-neutral-50 rounded-[32px] p-8 md:p-12 border border-neutral-100">
+      <div class="mb-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h2 class="font-black text-3xl uppercase tracking-tight text-black">LIVE STREAM CATALOG</h2>
+          <p class="text-neutral-400 text-xs font-bold uppercase tracking-widest mt-1">Real-time Affiliate Outfit Feed Matrix</p>
+        </div>
+        <span class="inline-flex items-center gap-2 bg-emerald-50 text-emerald-600 font-extrabold text-xs uppercase tracking-wider px-4 py-2 rounded-full border border-emerald-200">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Cloud Stream Sync Active
+        </span>
       </div>
 
-      <!-- Live Product Cards Grid -->
-      <div id="productGrid" class="grid grid-cols-1 gap-6"></div>
-    </div>
+      <div id="dynamicProductGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"></div>
+    </section>
+
+    <!-- 6. PROMO BANNER (PAYDAY SALE) -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-20">
+      <div class="yellow-sale-bg rounded-[40px] flex flex-col md:flex-row items-center justify-between overflow-hidden shadow-xl border-4 border-black">
+        <div class="w-full md:w-1/2 aspect-square md:aspect-[5/4] bg-neutral-300 overflow-hidden relative border-b-4 md:border-b-0 md:border-r-4 border-black">
+          <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover object-top">
+        </div>
+        <div class="w-full md:w-1/2 p-8 md:p-16 space-y-6 text-center md:text-left">
+          <h2 class="font-black text-5xl sm:text-6xl tracking-tighter uppercase text-black leading-none">
+            <span class="bg-white inline-block px-4 py-1 rounded shadow-sm transform -rotate-1 mb-2">PAYDAY</span><br>
+            SALE NOW
+          </h2>
+          <p class="text-neutral-800 font-semibold text-sm sm:text-base max-w-sm mx-auto md:mx-0 leading-relaxed">
+            Spend minimal ₹1,999 get 30% off voucher code instantly applied for your subsequent luxury purchase setup routines.
+          </p>
+          <div class="text-xs font-black uppercase tracking-widest text-neutral-900 border-l-4 border-black pl-3 inline-block">
+            01 June - 10 June 2026<br>
+            <span class="text-neutral-600 font-bold text-[10px]">*Terms &amp; Conditions apply</span>
+          </div>
+          <div class="pt-2">
+            <button class="neo-btn bg-black text-white font-extrabold text-xs uppercase tracking-widest px-8 py-4 rounded-xl shadow-md hover:bg-neutral-800">
+              SHOP NOW
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. MOBILE APP PREVIEW -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-24 flex flex-col md:flex-row items-center justify-between gap-16">
+      <div class="w-full md:w-1/2 space-y-6 text-center md:text-left">
+        <h2 class="font-black text-4xl sm:text-5xl uppercase tracking-tight text-black leading-none">
+          DOWNLOAD APP &amp;<br>GET THE VOUCHER!
+        </h2>
+        <p class="text-neutral-500 font-medium text-sm sm:text-base max-w-sm mx-auto md:mx-0">
+          Get 30% off for first transaction using Lavegious mobile application dashboard software widget stream loops. Available directly below.
+        </p>
+        <div class="flex items-center justify-center md:justify-start gap-4 pt-4">
+          <a href="#" class="block w-36 h-12 bg-black text-white rounded-lg flex items-center justify-center gap-2 border border-neutral-800 shadow hover:bg-neutral-900 transition">
+            <span class="text-xl"></span>
+            <div class="text-left leading-none">
+              <span class="text-[9px] block text-neutral-400 uppercase font-medium">Download on the</span>
+              <span class="text-xs font-bold block tracking-tight">App Store</span>
+            </div>
+          </a>
+          <a href="#" class="block w-36 h-12 bg-black text-white rounded-lg flex items-center justify-center gap-2 border border-neutral-800 shadow hover:bg-neutral-900 transition">
+            <span class="text-lg">▲</span>
+            <div class="text-left leading-none">
+              <span class="text-[9px] block text-neutral-400 uppercase font-medium">GET IT ON</span>
+              <span class="text-xs font-bold block tracking-tight">Google Play</span>
+            </div>
+          </a>
+        </div>
+      </div>
+      
+      <div class="w-full md:w-1/2 flex justify-center">
+        <div class="relative w-64 aspect-[9/19] bg-neutral-900 rounded-[40px] p-3 shadow-2xl border-4 border-neutral-800">
+          <div class="absolute top-4 left-1/2 transform -translate-x-1/2 w-20 h-4 bg-neutral-900 rounded-full z-20"></div>
+          <div class="w-full h-full bg-white rounded-[32px] overflow-hidden relative px-4 py-6 flex flex-col justify-between">
+            <div class="flex items-center justify-between border-b pb-2 mb-2">
+              <span class="font-black text-xs uppercase tracking-tight">LAVEGIOUS</span>
+              <span class="text-xs">☰</span>
+            </div>
+            <div class="flex-1 space-y-3 py-2 scrollbar-none overflow-y-auto">
+              <div class="w-full aspect-[4/3] bg-neutral-100 rounded-xl overflow-hidden relative">
+                <img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?q=80&w=300" class="w-full h-full object-cover">
+              </div>
+              <div class="h-3 w-3/4 bg-neutral-200 rounded"></div>
+              <div class="h-2 w-1/2 bg-neutral-100 rounded"></div>
+            </div>
+            <div class="bg-amber-400 p-2 text-center rounded-xl font-black text-[9px] uppercase tracking-wider text-black">
+              Match Your Style Matrix
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. NEWSLETTER -->
+    <section class="w-full bg-[#EAF1F9] py-16 text-center border-t border-neutral-200">
+      <div class="max-w-4xl mx-auto px-4 space-y-6">
+        <h2 class="font-black text-3xl sm:text-4xl tracking-tight text-black uppercase leading-none">
+          JOIN SHOPPING COMMUNITY TO<br>GET MONTHLY PROMO
+        </h2>
+        <p class="text-neutral-500 font-medium text-xs sm:text-sm tracking-wider uppercase">
+          Type your email down below and be young wild generation network.
+        </p>
+        <div class="max-w-md mx-auto bg-white p-2 rounded-xl shadow-md flex items-center border border-neutral-200">
+          <input type="email" placeholder="Add your email here" class="w-full px-4 py-2 text-sm text-black focus:outline-none font-medium">
+          <button class="neo-btn bg-black text-white font-extrabold text-xs uppercase tracking-wider px-6 py-3 rounded-lg hover:bg-neutral-800">SEND</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. FOOTER -->
+    <footer class="w-full bg-black text-neutral-400 py-16 text-xs font-medium border-t border-neutral-900">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-5 gap-10">
+        <div class="col-span-2 space-y-4">
+          <span class="font-extrabold text-xl tracking-tighter uppercase text-white">LAVEGIOUS</span>
+          <p class="max-w-xs text-neutral-500 leading-relaxed">Complete high-end conceptual streetwear fashion matrix architecture loops.</p>
+        </div>
+        <div class="space-y-3">
+          <h4 class="text-white font-bold uppercase tracking-wider text-xs">Company</h4>
+          <a href="#" class="block hover:text-white transition">About</a>
+          <a href="#" class="block hover:text-white transition">Contact us</a>
+        </div>
+        <div class="space-y-3">
+          <h4 class="text-white font-bold uppercase tracking-wider text-xs">Quick Link</h4>
+          <a href="#" class="block hover:text-white transition">Orders Tracking</a>
+          <a href="#" class="block hover:text-white transition">Size Guide</a>
+        </div>
+        <div class="space-y-3">
+          <h4 class="text-white font-bold uppercase tracking-wider text-xs">Legal</h4>
+          <a href="#" class="block hover:text-white transition">Terms &amp; Conditions</a>
+          <a href="#" class="block hover:text-white transition">Privacy Policy</a>
+        </div>
+      </div>
+    </footer>
+
   </div>
 
-  <!-- Product Detail Overlay Page -->
-  <div id="productDetailPage" class="max-w-md mx-auto min-h-screen bg-white hidden flex flex-col justify-between pb-6">
-    <div>
-      <div class="relative border-b-4 border-black bg-neutral-100 aspect-[3/4] w-full overflow-hidden">
-        <button id="backToGridBtn" class="absolute top-4 left-4 z-10 neo-btn bg-white text-black px-4 py-2 font-extrabold text-xs uppercase rounded-lg">← Back</button>
+  <!-- 10. PRODUCT DETAIL OVERLAY -->
+  <div id="productDetailPage" class="detail-overlay hidden flex flex-col justify-between pb-10">
+    <div class="w-full">
+      <div class="relative bg-neutral-100 aspect-square sm:aspect-[16/9] md:aspect-[21/9] w-full overflow-hidden border-b-4 border-black shadow-inner">
+        <button id="backToGridBtn" class="absolute top-6 left-6 z-50 neo-btn bg-white text-black border-2 border-black px-5 py-2.5 font-black text-xs uppercase rounded-xl shadow-md">← BACK TO FEED</button>
         <div id="detailSlider" class="w-full h-full flex overflow-x-auto snap-x snap-mandatory scrollbar-none"></div>
       </div>
-      <div class="p-6">
-        <h2 id="detailTitle" class="font-extrabold text-2xl uppercase tracking-tight text-black mb-2"></h2>
-        <span id="detailPrice" class="inline-block bg-black text-white font-extrabold px-3 py-1.5 rounded-md text-sm mb-4"></span>
-        <p id="detailDesc" class="text-neutral-600 text-sm font-medium leading-relaxed border-t-2 border-neutral-100 pt-4"></p>
+      <div class="max-w-3xl mx-auto px-6 py-10 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-6">
+          <h2 id="detailTitle" class="font-black text-3xl sm:text-4xl uppercase tracking-tight text-black"></h2>
+          <div><span id="detailPrice" class="inline-block bg-black text-white font-black px-4 py-2 rounded-xl text-lg shadow"></span></div>
+        </div>
+        <p id="detailDesc" class="text-neutral-700 text-sm sm:text-base font-medium leading-relaxed bg-neutral-50 p-5 rounded-2xl border border-neutral-100"></p>
       </div>
     </div>
-    <div class="px-6 pt-4">
-      <a id="detailBuyBtn" target="_blank" class="block w-full text-center neo-btn bg-[#FBBF24] text-black font-extrabold uppercase py-4 rounded-xl text-sm tracking-wider">Get Outfit via Flipkart</a>
+    <div class="max-w-3xl w-full mx-auto px-6 pt-4">
+      <a id="detailBuyBtn" target="_blank" class="block w-full text-center neo-btn bg-[#10B981] hover:bg-emerald-600 text-white border-2 border-black font-black uppercase py-5 rounded-2xl text-sm tracking-wider shadow-md">GET OUTFIT SOURCE (FLIPKART)</a>
     </div>
   </div>
 
   <script>
-    const productGrid = document.getElementById('productGrid');
+    const dynamicProductGrid = document.getElementById('dynamicProductGrid');
     const mainWebsiteView = document.getElementById('mainWebsiteView');
     const productDetailPage = document.getElementById('productDetailPage');
     const backToGridBtn = document.getElementById('backToGridBtn');
@@ -61,39 +303,42 @@
     const detailDesc = document.getElementById('detailDesc');
     const detailPrice = document.getElementById('detailPrice');
     const detailBuyBtn = document.getElementById('detailBuyBtn');
-    let globalProducts = [];
+    let dbCollectionProducts = [];
 
-    async function loadStore() {
+    async function loadDatabaseStorefrontStream() {
       try {
         const res = await fetch('/api/products');
-        globalProducts = await res.json();
-        productGrid.innerHTML = globalProducts.length === 0 ? '<p class="text-center font-bold text-neutral-400 py-12">No Outfits Dropped Yet.</p>' : '';
-        globalProducts.forEach(p => {
-          const img = p.images && p.images.length > 0 ? p.images[0] : 'https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=600';
-          productGrid.innerHTML += `
-            <div onclick="openProduct('${p._id}')" class="neo-card bg-white overflow-hidden cursor-pointer flex flex-col">
-              <div class="aspect-[3/4] w-full bg-neutral-100 border-b-4 border-black relative">
-                <img src="${img}" class="w-full h-full object-cover">
-                <div class="absolute top-3 left-3 bg-black text-[#FBBF24] font-extrabold text-[9px] px-2 py-1 rounded-sm">LIVE LOOK</div>
-              </div>
-              <div class="p-5 flex-1 flex flex-col justify-between">
-                <h3 class="font-extrabold text-lg uppercase tracking-tight mb-1">${p.title}</h3>
-                <div class="flex items-center justify-between pt-3 border-t-2 border-neutral-100 mt-3">
-                  <span class="font-extrabold text-base">${p.price}</span>
-                  <button class="neo-btn bg-[#10B981] text-white font-bold text-[10px] uppercase px-3 py-1.5 rounded-md">View Specs</button>
+        dbCollectionProducts = await res.json();
+        dynamicProductGrid.innerHTML = dbCollectionProducts.length === 0 ? '<div class="col-span-full py-12 text-center text-xs font-bold text-neutral-400 uppercase tracking-widest">No Active Catalog Drops Live inside Cloud Stream.</div>' : '';
+        dbCollectionProducts.forEach(p => {
+          const firstImage = p.images && p.images.length > 0 ? p.images[0] : 'https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=600';
+          dynamicProductGrid.innerHTML += `
+            <div onclick="triggerOverlayProductDetails('${p._id}')" class="group bg-white border border-neutral-200 rounded-[24px] p-4 shadow-sm hover:shadow-md transition duration-300 cursor-pointer flex flex-col justify-between">
+              <div>
+                <div class="aspect-[3/4] w-full bg-neutral-100 rounded-[20px] overflow-hidden relative mb-4">
+                  <img src="${firstImage}" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                  <div class="absolute top-3 left-3 bg-black text-[#FBBF24] font-black text-[9px] uppercase tracking-widest px-2 py-1 rounded">LIVE DROP</div>
                 </div>
+                <h3 class="font-bold text-base uppercase tracking-tight text-neutral-900 truncate px-1">${p.title}</h3>
+              </div>
+              <div class="flex items-center justify-between pt-3 mt-2 border-t border-neutral-100 px-1">
+                <span class="font-extrabold text-neutral-900 text-sm">${p.price}</span>
+                <span class="text-neutral-400 font-bold text-sm group-hover:text-black transition">➔</span>
               </div>
             </div>`;
         });
-      } catch (err) {}
+      } catch (err) {
+        dynamicProductGrid.innerHTML = '<div class="col-span-full py-12 text-center text-xs font-bold text-red-400 uppercase tracking-widest">Network Interruption Reading Cloud Stream.</div>';
+      }
     }
 
-    window.openProduct = function(id) {
-      const p = globalProducts.find(item => item._id === id);
+    window.triggerOverlayProductDetails = function(id) {
+      const p = dbCollectionProducts.find(item => item._id === id);
       if(!p) return;
       detailSlider.innerHTML = '';
-      (p.images && p.images.length > 0 ? p.images : [p.image]).forEach(img => {
-        detailSlider.innerHTML += `<img src="${img}" class="w-full h-full object-cover flex-shrink-0 snap-start">`;
+      const fallbackImagesArray = p.images && p.images.length > 0 ? p.images : ['https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=600'];
+      fallbackImagesArray.forEach(img => {
+        detailSlider.innerHTML += `<div class="w-full h-full flex-shrink-0 snap-start bg-neutral-900 flex justify-center items-center"><img src="${img}" class="w-full h-full object-contain"></div>`;
       });
       detailTitle.innerText = p.title;
       detailDesc.innerText = p.description;
@@ -109,7 +354,7 @@
       mainWebsiteView.classList.remove('hidden');
     });
 
-    loadStore();
+    loadDatabaseStorefrontStream();
   </script>
 </body>
 </html>
