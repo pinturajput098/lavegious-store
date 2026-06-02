@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LAVEGIOUS | Admin Matrix Console</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #FAFAFA; }
+    .neo-box { border: 4px solid #141414; box-shadow: 5px 5px 0px 0px #141414; }
+    .neo-btn { border: 3px solid #141414; box-shadow: 3px 3px 0px 0px #141414; }
+    .neo-btn:active { transform: translate(1px, 1px); box-shadow: 0px 0px 0px 0px #141414; }
+  </style>
+</head>
+<body class="text-black py-8 px-4">
+  <div class="max-w-md mx-auto">
+    
+    <!-- Login Gate UI -->
+    <div id="loginGate" class="neo-box bg-white p-6 rounded-xl text-center">
+      <h2 class="font-extrabold text-xl uppercase mb-4 tracking-tight">🔒 Console Access Required</h2>
+      <input type="password" id="gatePass" placeholder="Enter Studio Token" class="w-full p-3 border-2 border-black rounded-lg text-center font-bold mb-4">
+      <button id="loginBtn" class="w-full neo-btn bg-black text-white font-bold py-3 uppercase rounded-lg">Authenticate Handshake</button>
+    </div>
+
+    <!-- Hidden Admin Terminal Panel -->
+    <div id="adminTerminal" class="hidden space-y-6">
+      <div class="flex items-center justify-between border-b-4 border-black pb-3">
+        <h2 class="font-extrabold text-lg uppercase">🎛️ STUDIO DASHBOARD</h2>
+        <button id="logoutBtn" class="px-3 py-1 bg-red-100 border border-red-400 text-red-600 font-bold text-xs rounded-md uppercase">Lock Console</button>
+      </div>
+
+      <!-- Upload Form -->
+      <form id="uploadForm" class="neo-box bg-white p-5 rounded-xl space-y-4">
+        <div>
+          <label class="block text-xs font-bold uppercase mb-1">Upload Outfits</label>
+          <input type="file" id="pImg" multiple accept="image/*" class="w-full text-xs p-2 border-2 border-dashed border-neutral-300 rounded-lg">
+          <p id="statusTxt" class="text-[10px] text-neutral-400 font-semibold mt-1">Select photos to compress and queue.</p>
+          <div id="previews" class="flex gap-2 mt-2 flex-wrap"></div>
+        </div>
+        <input type="text" id="pTitle" placeholder="Concept Heading" required class="w-full p-2.5 border-2 border-black rounded-lg text-sm">
+        <input type="text" id="pPrice" placeholder="Price (e.g. ₹1,999)" required class="w-full p-2.5 border-2 border-black rounded-lg text-sm">
+        <textarea id="pDesc" placeholder="Material and Fit Instructions" required class="w-full p-2.5 border-2 border-black rounded-lg text-sm h-20"></textarea>
+        <input type="url" id="pLink" placeholder="Flipkart Affiliate URL Link" required class="w-full p-2.5 border-2 border-black rounded-lg text-sm">
+        <button type="submit" id="subBtn" class="w-full neo-btn bg-[#FBBF24] text-black font-extrabold py-3.5 rounded-xl text-xs uppercase tracking-wider">Publish Directly Live</button>
+      </form>
+
+      <!-- Delete Section -->
+      <div class="space-y-3">
+        <h3 class="font-extrabold text-sm uppercase">Active Catalog Management</h3>
+        <div id="catalogList" class="space-y-2"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    let activeToken = localStorage.getItem('studioToken') || '';
+    let imagesQueue = [];
+
+    if(activeToken) {
+      document.getElementById('loginGate').classList.add('hidden');
+      document.getElementById('adminTerminal').classList.remove('hidden');
+      loadCatalog();
+    }
+
+    document.getElementById('loginBtn').addEventListener('click', async () => {
+      const pass = document.getElementById('gatePass').value;
+      const res = await fetch('/api/admin/verify', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({password: pass})
+      });
+      if(res.ok) {
+        localStorage.setItem('studioToken', pass);
+        activeToken = pass;
+        location.reload();
+      } else {
+        alert('Access Denied. Invalid Token.');
+      }
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('studioToken');
+      location.reload();
+    });
+
+    function compressImg(file) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let w = img.width, h = img.height;
+            if (w > 600) { h = Math.round((h * 600) / w); w = 600; }
+            canvas.width = w; canvas.height = h;
+            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+            resolve(canvas.toDataURL('image/jpeg', 0.5));
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    document.getElementById('pImg').addEventListener('change', async (e) => {
+      imagesQueue = [];
+      const previews = document.getElementById('previews');
+      previews.innerHTML = '';
+      const files = Array.from(e.target.files);
+      document.getElementById('statusTxt').innerText = `Processing ${files.length} Photo(s)...`;
+      for(let f of files) {
+        const b64 = await compressImg(f);
+        imagesQueue.push(b64);
+        previews.innerHTML += `<img src="${b64}" class="w-10 h-10 object-cover border border-black rounded">`;
+      }
+      document.getElementById('statusTxt').innerText = `${files.length} Photo(s) Ready to Drop.`;
+    });
+
+    document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('subBtn');
+      btn.innerText = "PUBLISHING LIVE... PLEASE WAIT";
+      btn.disabled = true;
+
+      const payload = {
+        images: imagesQueue,
+        title: document.getElementById('pTitle').value,
+        price: document.getElementById('pPrice').value,
+        description: document.getElementById('pDesc').value,
+        link: document.getElementById('pLink').value
+      };
+
+      const res = await fetch('/api/products', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', 'x-admin-password': activeToken},
+        body: JSON.stringify(payload)
+      });
+
+      if(res.ok) {
+        alert('Product Uploaded Safely Matrix Stream!');
+        location.reload();
+      } else {
+        alert('Upload Blocked. Verify Database Sync or Token.');
+        btn.innerText = "Publish Directly Live";
+        btn.disabled = false;
+      }
+    });
+
+    async function loadCatalog() {
+      const res = await fetch('/api/products');
+      const data = await res.json();
+      const list = document.getElementById('catalogList');
+      list.innerHTML = data.length === 0 ? '<p class="text-xs text-neutral-400 font-bold">Catalog Empty</p>' : '';
+      data.forEach(p => {
+        const img = p.images && p.images.length > 0 ? p.images[0] : '';
+        list.innerHTML += `
+          <div class="flex items-center justify-between p-2.5 bg-white border-2 border-black rounded-lg">
+            <div class="flex items-center gap-2">
+              <img src="${img}" class="w-8 h-8 object-cover rounded">
+              <span class="text-xs font-bold uppercase truncate max-w-[150px]">${p.title}</span>
+            </div>
+            <button onclick="deleteItem('${p._id}')" class="px-2 py-1 bg-red-500 text-white font-bold text-[10px] uppercase rounded">Delete</button>
+          </div>`;
+      });
+    }
+
+    window.deleteItem = async function(id) {
+      if(!confirm('Delete this product permanently?')) return;
+      const res = await fetch(`/api/products/${id}`, {
+        method: 'DELETE',
+        headers: {'x-admin-password': activeToken}
+      });
+      if(res.ok) { loadCatalog(); }
+    };
+  </script>
+</body>
+</html>
