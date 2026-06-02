@@ -8,18 +8,16 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.static('public'));
 
-// AUTO-CORRECT ENGINE: Automatically fixes the ':8750' typo from your Render settings
 let mongoURI = process.env.MONGO_URI || "";
 if (mongoURI.includes("mongodb+srv://") && mongoURI.includes("@")) {
   let parts = mongoURI.split("@");
-  parts[1] = parts[1].replace(/:[0-9]+/g, ""); // Strips out any illegal ports like :8750 dynamically
+  parts[1] = parts[1].replace(/:[0-9]+/g, "");
   mongoURI = parts.join("@");
 }
 
-mongoose.set('bufferCommands', false);
 mongoose.connect(mongoURI || 'mongodb://localhost:27017/lavegious')
-  .then(() => console.log('Database Permanently Connected and Secured!'))
-  .catch(err => console.log('Database Error Fallback:', err.message));
+  .then(() => console.log('Database Permanently Connected!'))
+  .catch(err => console.log('Database Error:', err.message));
 
 const Product = mongoose.model('Product', new mongoose.Schema({
   images: [String],
@@ -30,17 +28,13 @@ const Product = mongoose.model('Product', new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 }));
 
-// Serve Admin Dashboard Page on a clean hidden route
-app.get('/admin', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'admin.html'));
-});
+// Routes
+app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
+app.get('/shop', (req, res) => res.sendFile(path.join(__dirname, 'public', 'shop.html')));
 
-// APIs
 app.get('/api/products', async (req, res) => {
-  try {
-    const products = await Product.find().sort({ createdAt: -1 });
-    res.json(products);
-  } catch (err) { res.json([]); }
+  try { const products = await Product.find().sort({ createdAt: -1 }); res.json(products); }
+  catch (err) { res.json([]); }
 });
 
 app.post('/api/admin/verify', (req, res) => {
@@ -50,20 +44,15 @@ app.post('/api/admin/verify', (req, res) => {
 
 app.post('/api/products', async (req, res) => {
   if ((req.headers['x-admin-password'] || '').trim() !== 'Yts@12345') return res.status(401).json({ success: false });
-  try {
-    const newProduct = new Product(req.body);
-    await newProduct.save();
-    res.json({ success: true });
-  } catch (err) { res.status(500).json({ error: err.message }); }
+  try { await new Product(req.body).save(); res.json({ success: true }); }
+  catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.delete('/api/products/:id', async (req, res) => {
   if ((req.headers['x-admin-password'] || '').trim() !== 'Yts@12345') return res.status(401).json({ success: false });
-  try {
-    await Product.findByIdAndDelete(req.params.id);
-    res.json({ success: true });
-  } catch (err) { res.status(500).json({ error: err.message }); }
+  try { await Product.findByIdAndDelete(req.params.id); res.json({ success: true }); }
+  catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Lavegious Engine Matrix Online`));
+app.listen(PORT, () => console.log(`Server Live`));
