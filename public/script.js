@@ -1,5 +1,5 @@
 // =======================================================
-// LAVEGIOUS NUMERIC CRYPTO-ID ENGINE V9 (ULTIMATE STABLE)
+// LAVEGIOUS NUMERIC CRYPTO-ID ENGINE V9.1 (BUG FIXED)
 // =======================================================
 function initLavegiousNumericShareSystem() {
     
@@ -152,8 +152,9 @@ function initLavegiousNumericShareSystem() {
     }, 1000);
 }
 
+// Fixed core trigger callback node mapping
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', UrbanNumericShareEngine);
+    document.addEventListener('DOMContentLoaded', initLavegiousNumericShareSystem);
 } else {
     initLavegiousNumericShareSystem();
 }
