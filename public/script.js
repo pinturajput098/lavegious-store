@@ -1,8 +1,8 @@
 // =======================================================
-// LAVEGIOUS CLEAN UI CORE ENGINE V4 (ISOLATED WRAPPER)
+// LAVEGIOUS STABLE UI ENGINE V5 (STRICT TARGET MATRIX)
 // =======================================================
-function initLavegiousIsolatedShare() {
-    // 1. URL Deep Link Check Matrix
+function initLavegiousSafeShare() {
+    // 1. Deep Link Direct Parameter Routing
     const urlParams = new URLSearchParams(window.location.search);
     const sharedProductId = urlParams.get('pid');
     if (sharedProductId) {
@@ -27,55 +27,58 @@ function initLavegiousIsolatedShare() {
         setTimeout(() => clearInterval(findProductInterval), 10000);
     }
 
-    // 2. Isolated Injection Engine (Leaves Parent Styles Completely Untouched)
+    // 2. Strict Target Injector (ONLY scans real clickable buttons, completely ignores layout divs)
     setInterval(() => {
-        const buyButtons = document.querySelectorAll('button, a, div');
-        buyButtons.forEach(el => {
-            if (el.offsetWidth === 0 && el.offsetHeight === 0) return; // Skip invisible nodes
+        // STRICT RULE: Only target interactive native buttons or anchor links
+        const realButtons = document.querySelectorAll('button, a');
+        
+        realButtons.forEach(el => {
+            // Skip hidden elements or already wrapped items safely
+            if (el.offsetWidth === 0 && el.offsetHeight === 0 || el.hasAttribute('data-lavegious-locked')) return;
             
             const txt = el.textContent ? el.textContent.toUpperCase() : '';
             
-            // Targeted matching for your exact premium buttons
-            if ((txt.includes('BUY NOW') || txt.includes('OUTFIT MATRIX') || txt.includes('FLIPKART')) && !el.hasAttribute('data-lavegious-wrapped')) {
+            // Explicitly match your purple button variations only
+            if (txt.includes('BUY NOW') || txt.includes('OUTFIT MATRIX') || txt.includes('FLIPKART')) {
                 
-                // Mark element to completely secure it from infinite loops
-                el.setAttribute('data-lavegious-wrapped', 'true');
+                // Set absolute injection freeze lock attribute
+                el.setAttribute('data-lavegious-locked', 'true');
                 
-                // Create a completely local, micro flex container just for these two buttons
-                const rowWrapper = document.createElement('div');
-                rowWrapper.className = 'lavegious-isolated-btn-row';
-                rowWrapper.style.display = 'flex';
-                rowWrapper.style.alignItems = 'center';
-                rowWrapper.style.gap = '12px';
-                rowWrapper.style.width = '100%';
-                rowWrapper.style.boxSizing = 'border-box';
+                // Create an isolated micro-row container that takes layout parameters of the button itself
+                const microRow = document.createElement('div');
+                microRow.className = 'lavegious-micro-action-row';
+                microRow.style.display = 'flex';
+                microRow.style.alignItems = 'center';
+                microRow.style.gap = '8px';
+                microRow.style.width = '100%';
+                microRow.style.boxSizing = 'border-box';
                 
-                // Carry over the original button's vertical spacing natively
-                rowWrapper.style.marginTop = window.getComputedStyle(el).marginTop || '16px';
-                rowWrapper.style.marginBottom = window.getComputedStyle(el).marginBottom || '16px';
+                // Steal margins naturally to preserve mobile spacing grid perfectly
+                microRow.style.marginTop = window.getComputedStyle(el).marginTop || '12px';
+                microRow.style.marginBottom = window.getComputedStyle(el).marginBottom || '12px';
                 
-                // Insert the wrapper row directly into the DOM right before the button
-                el.parentNode.insertBefore(rowWrapper, el);
+                // Insert micro row into the DOM node tree structure safely
+                el.parentNode.insertBefore(microRow, el);
                 
-                // Clean internal button margins to fit the row smoothly
+                // Clear inline vertical offset shifts from original target
                 el.style.marginTop = '0px';
                 el.style.marginBottom = '0px';
                 el.style.flexGrow = '1';
                 
-                // Safely migrate the buy button inside our micro row
-                rowWrapper.appendChild(el);
+                // Move original purple button inside the clean new mini container row
+                microRow.appendChild(el);
                 
-                // Construct the absolute premium Share Action Button
+                // Construct the Premium Aesthetic Share Node
                 const shareBtn = document.createElement('button');
-                shareBtn.className = 'lavegious-action-share-btn';
+                shareBtn.className = 'lavegious-share-ui-trigger';
                 shareBtn.innerHTML = '🔗 Share';
                 
-                // Custom inline styles tailored to keep the UI clean
-                shareBtn.style.padding = '0 20px';
-                shareBtn.style.backgroundColor = '#1F2937'; // Elegant slate gray matching premium mode
+                // Safe standalone premium style injection 
+                shareBtn.style.padding = '0 16px';
+                shareBtn.style.backgroundColor = '#1F2937'; // Slate dark gray tone
                 shareBtn.style.color = '#FFFFFF';
-                shareBtn.style.border = '1px solid rgba(255,255,255,0.15)';
-                shareBtn.style.borderRadius = '12px'; // Matching original border arcs
+                shareBtn.style.border = '1px solid rgba(255,255,255,0.1)';
+                shareBtn.style.borderRadius = window.getComputedStyle(el).borderRadius || '12px';
                 shareBtn.style.cursor = 'pointer';
                 shareBtn.style.fontWeight = '600';
                 shareBtn.style.fontSize = '14px';
@@ -85,10 +88,10 @@ function initLavegiousIsolatedShare() {
                 shareBtn.style.alignItems = 'center';
                 shareBtn.style.justifyContent = 'center';
                 
-                // Make its height dynamically identical to your purple buttons
-                shareBtn.style.height = window.getComputedStyle(el).height || '48px';
+                // Mirror the exact mobile height of your buy button dynamically
+                shareBtn.style.height = window.getComputedStyle(el).height || '46px';
                 
-                // Execution logic
+                // Direct current URL forwarding system execution mapping
                 shareBtn.onclick = (e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -96,25 +99,26 @@ function initLavegiousIsolatedShare() {
                     
                     if (navigator.share) {
                         navigator.share({
-                            title: 'LAVEGIOUS Hype Drops',
-                            text: 'Bhai, ye outfit check kar LAVEGIOUS par! 🔥',
+                            title: 'LAVEGIOUS Streetwear',
+                            text: 'Bhai, ye outfit dekh ekdam mast h! 🔥',
                             url: currentUrl
                         }).catch(() => {});
                     } else {
                         navigator.clipboard.writeText(currentUrl);
-                        alert('Link copy ho gaya hai! WhatsApp par share karo.');
+                        alert('Link copy ho gaya hai!');
                     }
                 };
                 
-                // Append share button right next to the buy button inside the wrapper row
-                rowWrapper.appendChild(shareBtn);
+                // Put share button inside micro-row right next to the buy button
+                microRow.appendChild(shareBtn);
             }
         });
     }, 1000);
 }
 
+// Runtime Trigger Engine Nodes
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initLavegiousIsolatedShare);
+    document.addEventListener('DOMContentLoaded', initLavegiousSafeShare);
 } else {
-    initLavegiousIsolatedShare();
+    initLavegiousSafeShare();
 }
