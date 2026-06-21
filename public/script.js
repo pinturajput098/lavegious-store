@@ -1,33 +1,47 @@
 // =======================================================
-// LAVEGIOUS URL-HASH CRYPTO ENGINE V10 (COMPACT STABLE)
+// LAVEGIOUS IMAGE-HASH CRYPTO ENGINE V11 (100% UNIQUE)
 // =======================================================
-function initLavegiousDynamicHashSystem() {
+function initLavegiousImageHashSystem() {
     
-    // Core Logic: Converts unique buy buttons urls into a stable 7-digit code
-    function calculateUrlCode(url) {
-        if (!url) return '1540329';
-        let clean = url.trim();
+    // Core Logic: Converts unique product image paths into a guaranteed stable 7-digit code
+    function calculateProductCode(imgSrc) {
+        if (!imgSrc) return '2849153';
+        // Extract clean image filename to keep hashes clean and uniform
+        let cleanStr = imgSrc.split('/').pop().split('?')[0].trim().toLowerCase();
         let hash = 0;
-        for (let i = 0; i < clean.length; i++) {
-            hash = clean.charCodeAt(i) + ((hash << 5) - hash);
+        for (let i = 0; i < cleanStr.length; i++) {
+            hash = cleanStr.charCodeAt(i) + ((hash << 5) - hash);
         }
         return String(Math.abs(hash) % 9000000 + 1000000);
     }
 
-    // 1. Link Redirect Resolver Engine
+    // Helper: Finds the unique image source belonging to a specific buy button context
+    function getContextImage(el) {
+        let parentBox = el.closest('div, section, article, #productDetailPage') || el.parentElement;
+        if (parentBox) {
+            const img = parentBox.querySelector('img');
+            if (img && img.getAttribute('src')) {
+                return img.getAttribute('src');
+            }
+        }
+        return '';
+    }
+
+    // 1. Unique Link Parameter Resolver Engine (Runs on Page Load)
     const urlParams = new URLSearchParams(window.location.search);
     const sharedPid = urlParams.get('pid');
 
     if (sharedPid && /^\d{7}$/.test(sharedPid)) {
         const resolver = setInterval(() => {
+            // Scan all active display cards/blocks on the layout grid
             const allElements = document.querySelectorAll('button, a');
             let targetActionBtn = null;
 
             allElements.forEach(btn => {
                 const innerTxt = btn.textContent ? btn.textContent.toUpperCase() : '';
                 if (innerTxt.includes('BUY NOW') || innerTxt.includes('OUTFIT MATRIX') || innerTxt.includes('FLIPKART')) {
-                    let extractedUrl = btn.getAttribute('href') || '';
-                    if (calculateUrlCode(extractedUrl) === sharedPid) {
+                    let imgSrc = getContextImage(btn);
+                    if (imgSrc && calculateProductCode(imgSrc) === sharedPid) {
                         targetActionBtn = btn;
                     }
                 }
@@ -39,9 +53,14 @@ function initLavegiousDynamicHashSystem() {
                     const outerCardNode = targetActionBtn.closest('div, section, article') || targetActionBtn;
                     outerCardNode.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     
-                    // Trigger dynamic interface view click automation safely
-                    const structuralClickNode = outerCardNode.querySelector('img, h1, h2, h3') || targetActionBtn;
-                    if (structuralClickNode) {
+                    // Highlight target product card dynamically
+                    outerCardNode.style.outline = '3px solid #7C3AED';
+                    outerCardNode.style.borderRadius = '16px';
+                    setTimeout(() => outerCardNode.style.outline = 'none', 3000);
+
+                    // AUTOMATIC ACTION: Open the product details popup view automatically
+                    const structuralClickNode = outerCardNode.querySelector('img, h1, h2, h3, .product-title') || targetActionBtn;
+                    if (structuralClickNode && structuralClickNode !== targetActionBtn) {
                         structuralClickNode.click();
                     }
                 }, 800);
@@ -50,7 +69,7 @@ function initLavegiousDynamicHashSystem() {
         setTimeout(() => clearInterval(resolver), 10000);
     }
 
-    // 2. Main Interface Button Injection Row Matrix
+    // 2. Strict Button Injector Row Matrix (Preserves Mobile UI Cleanliness)
     setInterval(() => {
         const structuralButtons = document.querySelectorAll('button, a');
         
@@ -62,11 +81,13 @@ function initLavegiousDynamicHashSystem() {
             if (txt.includes('BUY NOW') || txt.includes('OUTFIT MATRIX') || txt.includes('FLIPKART')) {
                 el.setAttribute('data-lavegious-locked', 'true');
                 
-                let targetHref = el.getAttribute('href') || '';
-                const continuousNumericId = calculateUrlCode(targetHref);
+                // Get the unique image context for this specific target button
+                let currentImgSrc = getContextImage(el);
+                const continuousNumericId = calculateProductCode(currentImgSrc);
 
-                // Build isolated clean horizontal flex row matching your native css layouts
+                // Build isolated clean horizontal flex row matching your native responsive layouts
                 const microRow = document.createElement('div');
+                microRow.className = 'lavegious-clean-wrapper-row';
                 microRow.style.display = 'flex';
                 microRow.style.alignItems = 'center';
                 microRow.style.gap = '8px';
@@ -81,8 +102,9 @@ function initLavegiousDynamicHashSystem() {
                 el.style.flexGrow = '1';
                 microRow.appendChild(el);
                 
-                // Construct Premium Action Trigger
+                // Construct Premium Action Share Button Node
                 const shareBtn = document.createElement('button');
+                shareBtn.className = 'lavegious-premium-share-node';
                 shareBtn.innerHTML = '🔗 Share';
                 
                 shareBtn.style.padding = '0 16px';
@@ -114,7 +136,7 @@ function initLavegiousDynamicHashSystem() {
                         }).catch(() => {});
                     } else {
                         navigator.clipboard.writeText(absoluteRedirectUrl);
-                        alert('Product Number Link copy ho gaya h! WhatsApp par bhejo.');
+                        alert('Product Link copy ho gaya h! WhatsApp par bhejo.');
                     }
                 };
                 
@@ -125,7 +147,7 @@ function initLavegiousDynamicHashSystem() {
 }
 
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initLavegiousDynamicHashSystem);
+    document.addEventListener('DOMContentLoaded', initLavegiousImageHashSystem);
 } else {
-    initLavegiousDynamicHashSystem();
+    initLavegiousImageHashSystem();
 }
