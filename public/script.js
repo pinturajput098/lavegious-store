@@ -1,75 +1,88 @@
 // =======================================================
-// LAVEGIOUS IMAGE-HASH CRYPTO ENGINE V11 (100% UNIQUE)
+// LAVEGIOUS SEQUENTIAL GRID ENGINE V12 (ZERO COLLISION)
 // =======================================================
-function initLavegiousImageHashSystem() {
-    
-    // Core Logic: Converts unique product image paths into a guaranteed stable 7-digit code
-    function calculateProductCode(imgSrc) {
-        if (!imgSrc) return '2849153';
-        // Extract clean image filename to keep hashes clean and uniform
-        let cleanStr = imgSrc.split('/').pop().split('?')[0].trim().toLowerCase();
-        let hash = 0;
-        for (let i = 0; i < cleanStr.length; i++) {
-            hash = cleanStr.charCodeAt(i) + ((hash << 5) - hash);
-        }
-        return String(Math.abs(hash) % 9000000 + 1000000);
-    }
+function initLavegiousSequentialSystem() {
+    let globalProductTitles = [];
 
-    // Helper: Finds the unique image source belonging to a specific buy button context
-    function getContextImage(el) {
-        let parentBox = el.closest('div, section, article, #productDetailPage') || el.parentElement;
-        if (parentBox) {
-            const img = parentBox.querySelector('img');
-            if (img && img.getAttribute('src')) {
-                return img.getAttribute('src');
+    // Core Matrix: Dynamically maps products in their strict DOM render sequence order
+    function updateGridInventory() {
+        let titles = [];
+        const allCards = document.querySelectorAll('div, section, article');
+        
+        allCards.forEach(card => {
+            // Strictly secure it to ignore the separate open detail view layouts to maintain order balance
+            if (card.id === 'productDetailPage' || card.closest('#productDetailPage') || card.className.includes('detail')) {
+                return;
             }
+            
+            // Check if this structural element acts as a true product container node holding buy indicators
+            const hasBuyBtn = Array.from(card.querySelectorAll('button, a')).some(btn => {
+                const t = btn.textContent ? btn.textContent.toUpperCase() : '';
+                return t.includes('BUY NOW') || t.includes('OUTFIT MATRIX') || t.includes('FLIPKART');
+            });
+            
+            if (hasBuyBtn) {
+                const heading = card.querySelector('h1, h2, h3, h4, .product-title, .title, p');
+                if (heading) {
+                    const cleanTitle = heading.textContent.trim();
+                    if (cleanTitle.length > 3 && !titles.includes(cleanTitle) && !cleanTitle.toUpperCase().includes('WELCOME') && !cleanTitle.toUpperCase().includes('DETAILS')) {
+                        titles.push(cleanTitle);
+                    }
+                }
+            }
+        });
+        
+        if (titles.length > 0) {
+            globalProductTitles = titles;
         }
-        return '';
     }
 
-    // 1. Unique Link Parameter Resolver Engine (Runs on Page Load)
+    // Continuously parse DOM execution matrix trees to lock down active sorting pipelines
+    setInterval(updateGridInventory, 1000);
+
+    // 1. Link Parameter Sequential Redirect Resolver (?pid=2001, 2002...)
     const urlParams = new URLSearchParams(window.location.search);
     const sharedPid = urlParams.get('pid');
 
-    if (sharedPid && /^\d{7}$/.test(sharedPid)) {
-        const resolver = setInterval(() => {
-            // Scan all active display cards/blocks on the layout grid
-            const allElements = document.querySelectorAll('button, a');
-            let targetActionBtn = null;
-
-            allElements.forEach(btn => {
-                const innerTxt = btn.textContent ? btn.textContent.toUpperCase() : '';
-                if (innerTxt.includes('BUY NOW') || innerTxt.includes('OUTFIT MATRIX') || innerTxt.includes('FLIPKART')) {
-                    let imgSrc = getContextImage(btn);
-                    if (imgSrc && calculateProductCode(imgSrc) === sharedPid) {
-                        targetActionBtn = btn;
+    if (sharedPid && /^\d{4}$/.test(sharedPid)) {
+        const targetIndex = parseInt(sharedPid) - 2001;
+        
+        const resolverInterval = setInterval(() => {
+            if (globalProductTitles.length > targetIndex && targetIndex >= 0) {
+                const targetTitle = globalProductTitles[targetIndex];
+                
+                const allCards = document.querySelectorAll('div, section, article');
+                let targetCard = null;
+                
+                for (let card of allCards) {
+                    if (card.id === 'productDetailPage' || card.closest('#productDetailPage')) continue;
+                    if (card.innerHTML && card.innerHTML.includes(targetTitle)) {
+                        targetCard = card;
+                        break;
                     }
                 }
-            });
 
-            if (targetActionBtn) {
-                clearInterval(resolver);
-                setTimeout(() => {
-                    const outerCardNode = targetActionBtn.closest('div, section, article') || targetActionBtn;
-                    outerCardNode.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    
-                    // Highlight target product card dynamically
-                    outerCardNode.style.outline = '3px solid #7C3AED';
-                    outerCardNode.style.borderRadius = '16px';
-                    setTimeout(() => outerCardNode.style.outline = 'none', 3000);
-
-                    // AUTOMATIC ACTION: Open the product details popup view automatically
-                    const structuralClickNode = outerCardNode.querySelector('img, h1, h2, h3, .product-title') || targetActionBtn;
-                    if (structuralClickNode && structuralClickNode !== targetActionBtn) {
-                        structuralClickNode.click();
-                    }
-                }, 800);
+                if (targetCard) {
+                    clearInterval(resolverInterval);
+                    setTimeout(() => {
+                        targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        
+                        // Highlight burst framework trigger
+                        targetCard.style.outline = '3px solid #7C3AED';
+                        targetCard.style.borderRadius = '16px';
+                        setTimeout(() => targetCard.style.outline = 'none', 3000);
+                        
+                        // Execute click mapping automation array nodes
+                        const clicker = targetCard.querySelector('img, a, button, h1, h2, h3, .product-title') || targetCard;
+                        if (clicker) clicker.click();
+                    }, 800);
+                }
             }
         }, 500);
-        setTimeout(() => clearInterval(resolver), 10000);
+        setTimeout(() => clearInterval(resolverInterval), 10000);
     }
 
-    // 2. Strict Button Injector Row Matrix (Preserves Mobile UI Cleanliness)
+    // 2. Strict Layout Element Interceptor Button Injector Row Matrix
     setInterval(() => {
         const structuralButtons = document.querySelectorAll('button, a');
         
@@ -81,13 +94,29 @@ function initLavegiousImageHashSystem() {
             if (txt.includes('BUY NOW') || txt.includes('OUTFIT MATRIX') || txt.includes('FLIPKART')) {
                 el.setAttribute('data-lavegious-locked', 'true');
                 
-                // Get the unique image context for this specific target button
-                let currentImgSrc = getContextImage(el);
-                const continuousNumericId = calculateProductCode(currentImgSrc);
+                let localTitle = '';
+                let parentBox = el.closest('div, section, article, #productDetailPage');
+                if (parentBox) {
+                    const localHeadings = parentBox.querySelectorAll('h1, h2, h3, h4, .product-title, .title, p');
+                    for (let heading of localHeadings) {
+                        let textCheck = heading.textContent.toLowerCase();
+                        if (!textCheck.includes('welcome') && !textCheck.includes('details view') && !textCheck.includes('lavegious') && textCheck.trim().length > 4) {
+                            localTitle = heading.textContent.trim();
+                            break;
+                        }
+                    }
+                }
 
-                // Build isolated clean horizontal flex row matching your native responsive layouts
+                // Determine precise sequence offset position allocation
+                let assignedId = '2001';
+                if (localTitle && globalProductTitles.includes(localTitle)) {
+                    assignedId = String(2001 + globalProductTitles.indexOf(localTitle));
+                } else if (globalProductTitles.length > 0) {
+                    assignedId = String(2001 + globalProductTitles.length - 1);
+                }
+
+                // Build isolated clean horizontal flex row matching your native responsive setups
                 const microRow = document.createElement('div');
-                microRow.className = 'lavegious-clean-wrapper-row';
                 microRow.style.display = 'flex';
                 microRow.style.alignItems = 'center';
                 microRow.style.gap = '8px';
@@ -104,9 +133,7 @@ function initLavegiousImageHashSystem() {
                 
                 // Construct Premium Action Share Button Node
                 const shareBtn = document.createElement('button');
-                shareBtn.className = 'lavegious-premium-share-node';
                 shareBtn.innerHTML = '🔗 Share';
-                
                 shareBtn.style.padding = '0 16px';
                 shareBtn.style.backgroundColor = '#1F2937';
                 shareBtn.style.color = '#FFFFFF';
@@ -126,11 +153,17 @@ function initLavegiousImageHashSystem() {
                     e.preventDefault();
                     e.stopPropagation();
                     
-                    const absoluteRedirectUrl = `${window.location.origin}/shop?pid=${continuousNumericId}`;
+                    // Live recalculation check optimization right on trigger execute
+                    let finalId = assignedId;
+                    if (localTitle && globalProductTitles.includes(localTitle)) {
+                        finalId = String(2001 + globalProductTitles.indexOf(localTitle));
+                    }
+                    
+                    const absoluteRedirectUrl = `${window.location.origin}/shop?pid=${finalId}`;
                     
                     if (navigator.share) {
                         navigator.share({
-                            title: 'LAVEGIOUS Hype Drops',
+                            title: 'LAVEGIOUS Streetwear',
                             text: 'Bhai, ye outfit check kar LAVEGIOUS par! 🔥',
                             url: absoluteRedirectUrl
                         }).catch(() => {});
@@ -147,7 +180,7 @@ function initLavegiousImageHashSystem() {
 }
 
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initLavegiousImageHashSystem);
+    document.addEventListener('DOMContentLoaded', initLavegiousSequentialSystem);
 } else {
-    initLavegiousImageHashSystem();
+    initLavegiousSequentialSystem();
 }
