@@ -1,97 +1,72 @@
 // =======================================================
-// LAVEGIOUS NUMERIC CRYPTO-ID ENGINE V9.1 (BUG FIXED)
+// LAVEGIOUS URL-HASH CRYPTO ENGINE V10 (COMPACT STABLE)
 // =======================================================
-function initLavegiousNumericShareSystem() {
+function initLavegiousDynamicHashSystem() {
     
-    // Core Function: Converts any product title into a unique 7-digit number (e.g., 9462929)
-    function getProductNumericId(text) {
-        if (!text) return '1000000';
-        let cleanText = text.toLowerCase().replace(/[^a-z0-9]/g, '').trim();
+    // Core Logic: Converts unique buy buttons urls into a stable 7-digit code
+    function calculateUrlCode(url) {
+        if (!url) return '1540329';
+        let clean = url.trim();
         let hash = 0;
-        for (let i = 0; i < cleanText.length; i++) {
-            hash = cleanText.charCodeAt(i) + ((hash << 5) - hash);
+        for (let i = 0; i < clean.length; i++) {
+            hash = clean.charCodeAt(i) + ((hash << 5) - hash);
         }
-        // Generates a strict, stable 7-digit positive integer
         return String(Math.abs(hash) % 9000000 + 1000000);
     }
 
-    // 1. Numeric Link Resolver (Runs instantly when someone opens the shared link)
+    // 1. Link Redirect Resolver Engine
     const urlParams = new URLSearchParams(window.location.search);
     const sharedPid = urlParams.get('pid');
-    
-    // Check if the parameter is a valid 7-digit number code
+
     if (sharedPid && /^\d{7}$/.test(sharedPid)) {
-        const resolverInterval = setInterval(() => {
-            const structuralCards = document.querySelectorAll('[data-id], div, section, article');
-            let matchedCard = null;
-            
-            for (let card of structuralCards) {
-                if (card.offsetWidth === 0 && card.offsetHeight === 0) continue; // Skip hidden items
-                
-                // Find local heading inside this card to calculate its numeric ID
-                const cardHeading = card.querySelector('h1, h2, h3, h4, .product-title, .title, p');
-                if (cardHeading) {
-                    let textCheck = cardHeading.textContent.toLowerCase();
-                    // Ignore global layouts boilerplate words
-                    if (!textCheck.includes('welcome') && !textCheck.includes('details view') && !textCheck.includes('lavegious') && textCheck.trim().length > 4) {
-                        if (getProductNumericId(cardHeading.textContent) === sharedPid) {
-                            matchedCard = card;
-                            break;
-                        }
+        const resolver = setInterval(() => {
+            const allElements = document.querySelectorAll('button, a');
+            let targetActionBtn = null;
+
+            allElements.forEach(btn => {
+                const innerTxt = btn.textContent ? btn.textContent.toUpperCase() : '';
+                if (innerTxt.includes('BUY NOW') || innerTxt.includes('OUTFIT MATRIX') || innerTxt.includes('FLIPKART')) {
+                    let extractedUrl = btn.getAttribute('href') || '';
+                    if (calculateUrlCode(extractedUrl) === sharedPid) {
+                        targetActionBtn = btn;
                     }
                 }
-            }
+            });
 
-            if (matchedCard) {
-                clearInterval(resolverInterval);
+            if (targetActionBtn) {
+                clearInterval(resolver);
                 setTimeout(() => {
-                    // Smoothly scroll down directly to the matched product card location
-                    matchedCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    const outerCardNode = targetActionBtn.closest('div, section, article') || targetActionBtn;
+                    outerCardNode.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     
-                    // Direct Action Click: Simulate user tap to open the product page details modal
-                    const actionableClickTarget = matchedCard.querySelector('a, button, img') || matchedCard;
-                    if (actionableClickTarget) {
-                        actionableClickTarget.click();
+                    // Trigger dynamic interface view click automation safely
+                    const structuralClickNode = outerCardNode.querySelector('img, h1, h2, h3') || targetActionBtn;
+                    if (structuralClickNode) {
+                        structuralClickNode.click();
                     }
                 }, 800);
             }
         }, 500);
-        setTimeout(() => clearInterval(resolverInterval), 10000);
+        setTimeout(() => clearInterval(resolver), 10000);
     }
 
-    // 2. Strict UI Button Injector Row Matrix
+    // 2. Main Interface Button Injection Row Matrix
     setInterval(() => {
-        const interactiveButtons = document.querySelectorAll('button, a');
+        const structuralButtons = document.querySelectorAll('button, a');
         
-        interactiveButtons.forEach(el => {
+        structuralButtons.forEach(el => {
             if (el.offsetWidth === 0 && el.offsetHeight === 0 || el.hasAttribute('data-lavegious-locked')) return;
             
-            const btnText = el.textContent ? el.textContent.toUpperCase() : '';
+            const txt = el.textContent ? el.textContent.toUpperCase() : '';
             
-            if (btnText.includes('BUY NOW') || btnText.includes('OUTFIT MATRIX') || btnText.includes('FLIPKART')) {
+            if (txt.includes('BUY NOW') || txt.includes('OUTFIT MATRIX') || txt.includes('FLIPKART')) {
                 el.setAttribute('data-lavegious-locked', 'true');
                 
-                // Local Scoping: Extract correct title near this exact button context
-                let detectedTitle = 'product';
-                let parentBox = el.closest('div, section, article, #productDetailPage');
-                
-                if (parentBox) {
-                    const localHeadings = parentBox.querySelectorAll('h1, h2, h3, h4, .product-title, .title, p');
-                    for (let heading of localHeadings) {
-                        let textCheck = heading.textContent.toLowerCase();
-                        if (!textCheck.includes('welcome') && !textCheck.includes('details view') && !textCheck.includes('lavegious') && textCheck.trim().length > 4) {
-                            detectedTitle = heading.textContent;
-                            break;
-                        }
-                    }
-                }
+                let targetHref = el.getAttribute('href') || '';
+                const continuousNumericId = calculateUrlCode(targetHref);
 
-                // Generate the secret random-looking 7-digit ID for this product name
-                const generatedNumericCode = getProductNumericId(detectedTitle);
-
-                // Create a clean horizontal row wrapper to lock styling layouts perfectly
+                // Build isolated clean horizontal flex row matching your native css layouts
                 const microRow = document.createElement('div');
-                microRow.className = 'lavegious-numeric-row';
                 microRow.style.display = 'flex';
                 microRow.style.alignItems = 'center';
                 microRow.style.gap = '8px';
@@ -106,14 +81,12 @@ function initLavegiousNumericShareSystem() {
                 el.style.flexGrow = '1';
                 microRow.appendChild(el);
                 
-                // Build Premium Share Button Node
+                // Construct Premium Action Trigger
                 const shareBtn = document.createElement('button');
-                shareBtn.className = 'lavegious-numeric-share-trigger';
                 shareBtn.innerHTML = '🔗 Share';
                 
-                // Mobile responsive secure alignment styles
                 shareBtn.style.padding = '0 16px';
-                shareBtn.style.backgroundColor = '#1F2937'; // Balanced slate tone
+                shareBtn.style.backgroundColor = '#1F2937';
                 shareBtn.style.color = '#FFFFFF';
                 shareBtn.style.border = '1px solid rgba(255,255,255,0.1)';
                 shareBtn.style.borderRadius = window.getComputedStyle(el).borderRadius || '12px';
@@ -131,17 +104,16 @@ function initLavegiousNumericShareSystem() {
                     e.preventDefault();
                     e.stopPropagation();
                     
-                    // Absolute dynamic numeric query parameter link creation
-                    const dynamicNumericUrl = `${window.location.origin}/shop?pid=${generatedNumericCode}`;
+                    const absoluteRedirectUrl = `${window.location.origin}/shop?pid=${continuousNumericId}`;
                     
                     if (navigator.share) {
                         navigator.share({
-                            title: 'LAVEGIOUS Hype Outfits',
+                            title: 'LAVEGIOUS Hype Drops',
                             text: 'Bhai, ye outfit check kar LAVEGIOUS par! 🔥',
-                            url: dynamicNumericUrl
+                            url: absoluteRedirectUrl
                         }).catch(() => {});
                     } else {
-                        navigator.clipboard.writeText(dynamicNumericUrl);
+                        navigator.clipboard.writeText(absoluteRedirectUrl);
                         alert('Product Number Link copy ho gaya h! WhatsApp par bhejo.');
                     }
                 };
@@ -152,9 +124,8 @@ function initLavegiousNumericShareSystem() {
     }, 1000);
 }
 
-// Fixed core trigger callback node mapping
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initLavegiousNumericShareSystem);
+    document.addEventListener('DOMContentLoaded', initLavegiousDynamicHashSystem);
 } else {
-    initLavegiousNumericShareSystem();
+    initLavegiousDynamicHashSystem();
 }
