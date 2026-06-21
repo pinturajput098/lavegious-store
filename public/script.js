@@ -1,37 +1,58 @@
 // =======================================================
-// LAVEGIOUS DEEP-LINK VIRAL ENGINE V6 (DYNAMIC REDIRECT)
+// LAVEGIOUS ADVANCED SEO SLUG ENGINE V7 (PRO-VIRAL)
 // =======================================================
-function initLavegiousDeepLinkSystem() {
-    // 1. Auto-Open & Scroll Logic for Shared Links
+function initLavegiousSlugShareSystem() {
+    // Helper function to turn any product title into a clean URL slug
+    function generateCleanSlug(text) {
+        return text.toLowerCase()
+            .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+            .trim()
+            .replace(/\s+/g, '-');        // Replace spaces with hyphens
+    }
+
+    // 1. Incoming Deep Link Resolver (Scans slugs and auto-clicks the card)
     const urlParams = new URLSearchParams(window.location.search);
     const sharedProductId = urlParams.get('pid');
     
     if (sharedProductId) {
         const findProductInterval = setInterval(() => {
-            const allCards = document.querySelectorAll('div, section, article, [data-id]');
+            // Scan all possible product container cards on the shop page
+            const allElements = document.querySelectorAll('[data-id], div, section, article');
             let targetCard = null;
             
-            allCards.forEach(card => {
-                if (card.getAttribute('data-id') === sharedProductId || (card.id === sharedProductId)) {
-                    targetCard = card;
+            for (let el of allElements) {
+                // Check if exact database ID matches
+                if (el.getAttribute('data-id') === sharedProductId || el.id === sharedProductId) {
+                    targetCard = el;
+                    break;
                 }
-            });
+                
+                // Fallback: Check if slugified text inside heading matches incoming pid slug
+                const heading = el.querySelector('h1, h2, h3, h4, .product-title, .title, p');
+                if (heading) {
+                    const currentSlug = generateCleanSlug(heading.textContent);
+                    if (currentSlug === sharedProductId && currentSlug.length > 3) {
+                        targetCard = el;
+                        break;
+                    }
+                }
+            }
 
             if (targetCard) {
                 clearInterval(findProductInterval);
                 setTimeout(() => {
-                    // Smooth scroll to target outfit
+                    // Smooth scroll the viewport straight to the matched apparel
                     targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     
-                    // Highlight flash effect
+                    // Premium highlight burst alert
                     targetCard.style.outline = '3px solid #7C3AED';
                     targetCard.style.borderRadius = '16px';
-                    setTimeout(() => targetCard.style.outline = 'none', 4000);
+                    setTimeout(() => targetCard.style.outline = 'none', 3500);
                     
-                    // AUTOMATIC ACTION: Click the card or its view button to auto-open details view!
-                    const triggerClick = targetCard.querySelector('a, button, img') || targetCard;
-                    if (triggerClick) {
-                        triggerClick.click();
+                    // Simulate automatic user tap interaction node to auto-expand details view modal
+                    const clickTarget = targetCard.querySelector('a, button, img') || targetCard;
+                    if (clickTarget) {
+                        clickTarget.click();
                     }
                 }, 800);
             }
@@ -39,7 +60,7 @@ function initLavegiousDeepLinkSystem() {
         setTimeout(() => clearInterval(findProductInterval), 10000);
     }
 
-    // 2. Strict Button Injector & Smart Parameter Link Generator
+    // 2. Strict Target Injection Matrix (Only bounds on real interactive buy targets)
     setInterval(() => {
         const structuralButtons = document.querySelectorAll('button, a');
         
@@ -51,23 +72,17 @@ function initLavegiousDeepLinkSystem() {
             if (txt.includes('BUY NOW') || txt.includes('OUTFIT MATRIX') || txt.includes('FLIPKART')) {
                 el.setAttribute('data-lavegious-locked', 'true');
                 
-                // Find Product ID by climbing up the tree node
-                let currentParent = el.parentElement;
-                let foundId = '';
-                while (currentParent && currentParent !== document.body) {
-                    if (currentParent.hasAttribute('data-id')) {
-                        foundId = currentParent.getAttribute('data-id');
-                        break;
-                    }
-                    if (currentParent.id && currentParent.id.length > 4) {
-                        foundId = currentParent.id;
-                        break;
-                    }
-                    currentParent = currentParent.parentElement;
+                // Extract real dynamic product text slug natively from the open detail view
+                let targetSlug = 'product';
+                const mainHeading = document.querySelector('h1, h2, .product-name, .product-title') || el.parentElement.querySelector('h1, h2, h3');
+                
+                if (mainHeading) {
+                    targetSlug = generateCleanSlug(mainHeading.textContent);
                 }
 
-                // Create isolated row flex layout just for the button structure
+                // Isolate row injection styling layout parameters
                 const microRow = document.createElement('div');
+                microRow.className = 'lavegious-slug-action-row';
                 microRow.style.display = 'flex';
                 microRow.style.alignItems = 'center';
                 microRow.style.gap = '8px';
@@ -82,7 +97,7 @@ function initLavegiousDeepLinkSystem() {
                 el.style.flexGrow = '1';
                 microRow.appendChild(el);
                 
-                // Build pristine Share Node
+                // Build the high-end custom Share element
                 const shareBtn = document.createElement('button');
                 shareBtn.innerHTML = '🔗 Share';
                 shareBtn.style.padding = '0 16px';
@@ -100,23 +115,16 @@ function initLavegiousDeepLinkSystem() {
                 shareBtn.style.justifyContent = 'center';
                 shareBtn.style.height = window.getComputedStyle(el).height || '46px';
                 
-                // Dynamic Link Custom Generation logic on Click
+                // Generate dynamic parameter deep-link on trigger fire
                 shareBtn.onclick = (e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     
-                    // Build deep-link explicitly targeting /shop with query parameters
-                    let dynamicShareUrl = `${window.location.origin}/shop`;
-                    if (foundId) {
-                        dynamicShareUrl += `?pid=${foundId}`;
-                    } else {
-                        // Fallback safely to current URL parameters if extraction fails
-                        dynamicShareUrl = window.location.href;
-                    }
+                    const dynamicShareUrl = `${window.location.origin}/shop?pid=${targetSlug}`;
                     
                     if (navigator.share) {
                         navigator.share({
-                            title: 'LAVEGIOUS Streetwear',
+                            title: 'LAVEGIOUS Streetwear Drop',
                             text: 'Bhai, ye outfit check kar LAVEGIOUS par! 🔥',
                             url: dynamicShareUrl
                         }).catch(() => {});
@@ -133,7 +141,7 @@ function initLavegiousDeepLinkSystem() {
 }
 
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initLavegiousDeepLinkSystem);
+    document.addEventListener('DOMContentLoaded', initLavegiousSlugShareSystem);
 } else {
-    initLavegiousDeepLinkSystem();
+    initLavegiousSlugShareSystem();
 }
