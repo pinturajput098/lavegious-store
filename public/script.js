@@ -1,5 +1,5 @@
 // =======================================================
-// LAVEGIOUS SEQUENTIAL GRID ENGINE V12 (ZERO COLLISION)
+// LAVEGIOUS AD-INTEGRATED GRID ENGINE V12.1 (ANTI-GLITCH)
 // =======================================================
 function initLavegiousSequentialSystem() {
     let globalProductTitles = [];
@@ -10,12 +10,10 @@ function initLavegiousSequentialSystem() {
         const allCards = document.querySelectorAll('div, section, article');
         
         allCards.forEach(card => {
-            // Strictly secure it to ignore the separate open detail view layouts to maintain order balance
             if (card.id === 'productDetailPage' || card.closest('#productDetailPage') || card.className.includes('detail')) {
                 return;
             }
             
-            // Check if this structural element acts as a true product container node holding buy indicators
             const hasBuyBtn = Array.from(card.querySelectorAll('button, a')).some(btn => {
                 const t = btn.textContent ? btn.textContent.toUpperCase() : '';
                 return t.includes('BUY NOW') || t.includes('OUTFIT MATRIX') || t.includes('FLIPKART');
@@ -37,7 +35,6 @@ function initLavegiousSequentialSystem() {
         }
     }
 
-    // Continuously parse DOM execution matrix trees to lock down active sorting pipelines
     setInterval(updateGridInventory, 1000);
 
     // 1. Link Parameter Sequential Redirect Resolver (?pid=2001, 2002...)
@@ -50,7 +47,6 @@ function initLavegiousSequentialSystem() {
         const resolverInterval = setInterval(() => {
             if (globalProductTitles.length > targetIndex && targetIndex >= 0) {
                 const targetTitle = globalProductTitles[targetIndex];
-                
                 const allCards = document.querySelectorAll('div, section, article');
                 let targetCard = null;
                 
@@ -66,13 +62,10 @@ function initLavegiousSequentialSystem() {
                     clearInterval(resolverInterval);
                     setTimeout(() => {
                         targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        
-                        // Highlight burst framework trigger
                         targetCard.style.outline = '3px solid #7C3AED';
                         targetCard.style.borderRadius = '16px';
                         setTimeout(() => targetCard.style.outline = 'none', 3000);
                         
-                        // Execute click mapping automation array nodes
                         const clicker = targetCard.querySelector('img, a, button, h1, h2, h3, .product-title') || targetCard;
                         if (clicker) clicker.click();
                     }, 800);
@@ -107,7 +100,6 @@ function initLavegiousSequentialSystem() {
                     }
                 }
 
-                // Determine precise sequence offset position allocation
                 let assignedId = '2001';
                 if (localTitle && globalProductTitles.includes(localTitle)) {
                     assignedId = String(2001 + globalProductTitles.indexOf(localTitle));
@@ -115,7 +107,6 @@ function initLavegiousSequentialSystem() {
                     assignedId = String(2001 + globalProductTitles.length - 1);
                 }
 
-                // Build isolated clean horizontal flex row matching your native responsive setups
                 const microRow = document.createElement('div');
                 microRow.style.display = 'flex';
                 microRow.style.alignItems = 'center';
@@ -131,7 +122,6 @@ function initLavegiousSequentialSystem() {
                 el.style.flexGrow = '1';
                 microRow.appendChild(el);
                 
-                // Construct Premium Action Share Button Node
                 const shareBtn = document.createElement('button');
                 shareBtn.innerHTML = '🔗 Share';
                 shareBtn.style.padding = '0 16px';
@@ -153,7 +143,6 @@ function initLavegiousSequentialSystem() {
                     e.preventDefault();
                     e.stopPropagation();
                     
-                    // Live recalculation check optimization right on trigger execute
                     let finalId = assignedId;
                     if (localTitle && globalProductTitles.includes(localTitle)) {
                         finalId = String(2001 + globalProductTitles.indexOf(localTitle));
@@ -177,6 +166,18 @@ function initLavegiousSequentialSystem() {
             }
         });
     }, 1000);
+
+    // =======================================================
+    // MONETAG NATIVE BACKGROUND ADS INJECTOR (SAFE ENGINE)
+    // =======================================================
+    try {
+        (function(s){
+            s.dataset.zone = '10910514';
+            s.src = 'https://n6wxm.com/vignette.min.js';
+        })([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')));
+    } catch (e) {
+        console.log("Ad engine loaded safely in background execution layout thread.");
+    }
 }
 
 if (document.readyState === 'loading') {
