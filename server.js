@@ -87,3 +87,57 @@ app.delete('/api/products/:id', async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server Live Engine Running`));
+
+// EDIT PRODUCT BACKEND API
+app.post('/api/products/update/:id', async (req, res) => {
+    try {
+        const { title, price, description, link } = req.body;
+        const updateData = {};
+        if (title) updateData.title = title;
+        if (price) updateData.price = price;
+        if (description) updateData.description = description;
+        if (link) updateData.link = link;
+
+        const updatedProduct = await Product.findByIdAndUpdate(
+            req.params.id,
+            updateData,
+            { new: true }
+        );
+        res.json({ success: true, product: updatedProduct });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// =======================================================
+// LAVEGIOUS PRODUCT EDIT & UPDATE BACKEND API ROUTE
+// =======================================================
+app.post('/api/products/update/:id', async (req, res) => {
+    try {
+        const { title, price, description, link } = req.body;
+        const updatedProduct = await Product.findByIdAndUpdate(
+            req.params.id,
+            { title, price, description, link },
+            { new: true }
+        );
+        res.json({ success: true, product: updatedProduct });
+    } catch (err) {
+        console.error("Update error:", err);
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+app.put('/api/products/:id', async (req, res) => {
+    try {
+        const { title, price, description, link } = req.body;
+        const updatedProduct = await Product.findByIdAndUpdate(
+            req.params.id,
+            { title, price, description, link },
+            { new: true }
+        );
+        res.json({ success: true, product: updatedProduct });
+    } catch (err) {
+        console.error("Update error:", err);
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
