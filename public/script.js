@@ -1,97 +1,79 @@
-const products = [
-    {
-        id: 1,
-        title: "Relaxed Fit Denim Jeans",
-        price: 405,
-        category: "Denims",
-        image: "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=500",
-        tag: "Best Seller"
-    },
-    {
-        id: 2,
-        title: "Liberty Aesthetic Streetwear Shoes",
-        price: 755,
-        category: "Sneakers",
-        image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500",
-        tag: "Trending"
-    },
-    {
-        id: 3,
-        title: "Regular Fit Checked Casual Shirt",
-        price: 359,
-        category: "Shirts",
-        image: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=500",
-        tag: "New Drop"
-    },
-    {
-        id: 4,
-        title: "We Kaika Oversized Graphic Tee",
-        price: 305,
-        category: "Hoodies",
-        image: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500",
-        tag: "Oversized"
-    },
-    {
-        id: 5,
-        title: "Men Striped Casual Party Shirt",
-        price: 448,
-        category: "Shirts",
-        image: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500",
-        tag: "Limited"
-    },
-    {
-        id: 6,
-        title: "Urban Utility Cargo Hoodie",
-        price: 699,
-        category: "Hoodies",
-        image: "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=500",
-        tag: "Streetwear"
-    }
-];
-
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const gridContainer = document.getElementById('mainProductContainer');
     const searchInput = document.getElementById('lavegiousSearchInput');
     const chips = document.querySelectorAll('.chip');
 
+    let products = [];
     let currentCategory = 'All Drops';
     let searchQuery = '';
+
+    // Backend API ya local JSON file se real products fetch karne ka function
+    async function fetchRealProducts() {
+        try {
+            let res = await fetch('/api/products');
+            if (!res.ok) {
+                res = await fetch('/products.json');
+            }
+            products = await res.json();
+        } catch (err) {
+            console.error("Real products fetch nahi ho paaye:", err);
+            products = [];
+        }
+        renderProducts();
+    }
 
     function renderProducts() {
         if (!gridContainer) return;
 
+        const q = searchQuery.toLowerCase();
+
+        // Category + Title + Full Description multi-field search filter
         let filtered = products.filter(item => {
-            const matchesCategory = currentCategory === 'All Drops' || item.category.toLowerCase() === currentCategory.toLowerCase();
-            const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) || item.category.toLowerCase().includes(searchQuery.toLowerCase());
-            return matchesCategory && matchesSearch;
+            const itemCategory = item.category || '';
+            const categoryMatch = currentCategory === 'All Drops' || 
+                itemCategory.toLowerCase() === currentCategory.toLowerCase();
+            
+            const titleMatch = item.title ? item.title.toLowerCase().includes(q) : false;
+            const descMatch = item.description ? item.description.toLowerCase().includes(q) : false;
+            const catMatch = itemCategory.toLowerCase().includes(q);
+            const tagMatch = item.tag ? item.tag.toLowerCase().includes(q) : false;
+
+            const searchMatch = !q || titleMatch || descMatch || catMatch || tagMatch;
+
+            return categoryMatch && searchMatch;
         });
 
         if (filtered.length === 0) {
-            gridContainer.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #6B7280; font-weight: 600;">No streetwear found matching your search.</div>`;
+            gridContainer.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #6B7280;">
+                    <p style="font-size: 16px; font-weight: 700;">Koi real product nahi mila!</p>
+                    <p style="font-size: 13px; margin-top: 6px;">Search term ya category badal kar dekho.</p>
+                </div>`;
             return;
         }
 
         gridContainer.innerHTML = filtered.map(product => `
             <div class="product-card">
                 <div class="card-img-wrap">
-                    <span class="card-badge">${product.tag}</span>
-                    <img src="${product.image}" alt="${product.title}">
+                    ${product.tag ? `<span class="card-badge">${product.tag}</span>` : ''}
+                    <img src="${product.image || product.img_url || 'https://via.placeholder.com/300'}" alt="${product.title}">
                 </div>
                 <div class="card-details">
                     <h3 class="card-title">${product.title}</h3>
+                    ${product.description ? `<p style="font-size: 12px; color: #6B7280; margin-bottom: 8px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${product.description}</p>` : ''}
                     <div class="card-price-row">
                         <span class="card-price">₹${product.price}</span>
-                        <span class="card-tag">${product.category}</span>
+                        <span class="card-tag">${product.category || 'Drop'}</span>
                     </div>
-                    <button class="buy-btn" onclick="alert('Added ${product.title} to cart!')">
+                    <a href="${product.link || product.affiliate_link || '#'}" target="_blank" rel="noopener noreferrer" class="buy-btn">
                         <span>⚡ Grab Drop</span>
-                    </button>
+                    </a>
                 </div>
             </div>
         `).join('');
     }
 
-    // Live Search Event
+    // Live search (Title + Description dono match honge)
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
             searchQuery = e.target.value.trim();
@@ -99,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Filter Chips Event
+    // Category chips selection
     chips.forEach(chip => {
         chip.addEventListener('click', () => {
             chips.forEach(c => c.classList.remove('active'));
@@ -109,6 +91,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Initial Render
-    renderProducts();
+    fetchRealProducts();
 });
