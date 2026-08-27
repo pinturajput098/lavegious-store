@@ -35,7 +35,6 @@
             overflow-x: hidden;
         }
 
-        /* 3D Dynamic Purple Gradient Background Elements */
         .bg-glow-1 {
             position: fixed;
             top: -100px;
@@ -59,7 +58,6 @@
             pointer-events: none;
         }
 
-        /* Navbar Header */
         header {
             position: sticky;
             top: 0;
@@ -80,7 +78,6 @@
             gap: 16px;
         }
 
-        /* Exact Logo Styling matching image 25745.png */
         .brand-logo-wrap {
             display: flex;
             align-items: center;
@@ -161,7 +158,6 @@
             font-size: 14px;
         }
 
-        /* Hero Banner Section */
         .hero-section {
             max-width: 1280px;
             margin: 20px auto 30px;
@@ -179,18 +175,6 @@
             display: flex;
             flex-direction: column;
             gap: 16px;
-        }
-
-        .hero-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -20%;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
-            border-radius: 50%;
-            pointer-events: none;
         }
 
         .hero-badge {
@@ -222,70 +206,6 @@
             line-height: 1.5;
         }
 
-        /* Continuous Moving Clothes Marquee (Right-to-Left Loop) */
-        .marquee-container {
-            width: 100%;
-            overflow: hidden;
-            background: #FFFFFF;
-            border-top: 1px solid rgba(124, 58, 237, 0.1);
-            border-bottom: 1px solid rgba(124, 58, 237, 0.1);
-            padding: 16px 0;
-            margin: 20px 0 35px;
-            position: relative;
-        }
-
-        .marquee-track {
-            display: flex;
-            gap: 20px;
-            width: max-content;
-            animation: scrollRightToLeft 25s linear infinite;
-        }
-
-        .marquee-track:hover {
-            animation-play-state: paused;
-        }
-
-        @keyframes scrollRightToLeft {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-
-        .marquee-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: var(--bg-body);
-            padding: 8px 18px 8px 10px;
-            border-radius: 50px;
-            border: 1px solid var(--purple-light);
-            box-shadow: 0 4px 10px rgba(109, 40, 217, 0.05);
-            white-space: nowrap;
-        }
-
-        .marquee-img {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--purple-accent);
-        }
-
-        .marquee-text {
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--text-dark);
-        }
-
-        .marquee-price {
-            font-size: 12px;
-            font-weight: 800;
-            color: var(--purple-main);
-            background: rgba(124, 58, 237, 0.1);
-            padding: 2px 8px;
-            border-radius: 12px;
-        }
-
-        /* Category Filter Chips */
         .section-header {
             max-width: 1280px;
             margin: 0 auto 20px;
@@ -342,7 +262,6 @@
             box-shadow: 0 6px 16px var(--purple-glow);
         }
 
-        /* Main Product Grid Matrix */
         .catalog-container {
             max-width: 1280px;
             margin: 0 auto 50px;
@@ -355,7 +274,6 @@
             gap: 24px;
         }
 
-        /* 3D Glassmorphic Card Styling */
         .product-card {
             background: #FFFFFF;
             border-radius: var(--radius-xl);
@@ -407,6 +325,7 @@
             font-size: 10px;
             font-weight: 700;
             letter-spacing: 0.5px;
+            z-index: 2;
         }
 
         .card-details {
@@ -466,13 +385,6 @@
             text-decoration: none;
         }
 
-        .buy-btn:hover {
-            opacity: 0.95;
-            box-shadow: 0 12px 25px rgba(109, 40, 217, 0.4);
-            transform: translateY(-1px);
-        }
-
-        /* Footer Section */
         footer {
             background: #FFFFFF;
             border-top: 1px solid rgba(124, 58, 237, 0.1);
@@ -498,23 +410,18 @@
     </style>
 </head>
 <body>
-
     <div class="bg-glow-1"></div>
     <div class="bg-glow-2"></div>
 
-    <!-- Header / Navbar -->
     <header>
         <div class="nav-container">
-            <!-- Brand Logo from Image 25745.png -->
             <a href="/" class="brand-logo-wrap">
                 <div class="logo-graphics">
-                    <!-- Dot Matrix pattern top left -->
                     <svg class="dot-matrix-bg" viewBox="0 0 40 40" fill="#7C3AED">
                         <circle cx="5" cy="5" r="2.5"/><circle cx="15" cy="5" r="2.5"/><circle cx="25" cy="5" r="2.5"/>
                         <circle cx="5" cy="15" r="2.5"/><circle cx="15" cy="15" r="2.5"/><circle cx="25" cy="15" r="2.5"/>
                         <circle cx="5" cy="25" r="2.5"/><circle cx="15" cy="25" r="2.5"/><circle cx="25" cy="25" r="2.5"/>
                     </svg>
-                    <!-- Intertwined LG Monogram Icon -->
                     <svg width="38" height="38" viewBox="0 0 100 100" fill="none">
                         <circle cx="50" cy="50" r="44" stroke="#6D28D9" stroke-width="8"/>
                         <text x="32" y="68" font-family="'Cinzel', serif" font-weight="900" font-size="52" fill="#6D28D9">L</text>
@@ -527,15 +434,13 @@
                 </div>
             </a>
 
-            <!-- Live Search Bar -->
             <div class="search-box">
                 <span class="search-icon">🔍</span>
-                <input type="text" id="lavegiousSearchInput" placeholder="Search streetwear, hoodies, cargos...">
+                <input type="text" id="lavegiousSearchInput" placeholder="Search jeans, t-shirts, shoes, trousers...">
             </div>
         </div>
     </header>
 
-    <!-- Main Hero Banner Section -->
     <section class="hero-section">
         <div class="hero-card">
             <div class="hero-badge">✨ OFFICIAL STREETWEAR DROPS</div>
@@ -544,43 +449,23 @@
         </div>
     </section>
 
-    <!-- Continuous Moving Clothes Loop (Right-to-Left Infinite Scroll) -->
-    <div class="marquee-container">
-        <div class="marquee-track" id="lavegiousMarqueeTrack">
-            <div class="marquee-item"><img src="https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=100" class="marquee-img"><span class="marquee-text">Relaxed Fit Denim</span><span class="marquee-price">₹405</span></div>
-            <div class="marquee-item"><img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100" class="marquee-img"><span class="marquee-text">Liberty Aesthetic Shoes</span><span class="marquee-price">₹755</span></div>
-            <div class="marquee-item"><img src="https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=100" class="marquee-img"><span class="marquee-text">Regular Fit Checked Shirt</span><span class="marquee-price">₹359</span></div>
-            <div class="marquee-item"><img src="https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=100" class="marquee-img"><span class="marquee-text">We Kaika Oversized Tee</span><span class="marquee-price">₹305</span></div>
-            <div class="marquee-item"><img src="https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=100" class="marquee-img"><span class="marquee-text">Men Striped Casual Shirt</span><span class="marquee-price">₹448</span></div>
-            <!-- Duplicate for infinite seamless marquee loop -->
-            <div class="marquee-item"><img src="https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=100" class="marquee-img"><span class="marquee-text">Relaxed Fit Denim</span><span class="marquee-price">₹405</span></div>
-            <div class="marquee-item"><img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100" class="marquee-img"><span class="marquee-text">Liberty Aesthetic Shoes</span><span class="marquee-price">₹755</span></div>
-            <div class="marquee-item"><img src="https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=100" class="marquee-img"><span class="marquee-text">Regular Fit Checked Shirt</span><span class="marquee-price">₹359</span></div>
-            <div class="marquee-item"><img src="https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=100" class="marquee-img"><span class="marquee-text">We Kaika Oversized Tee</span><span class="marquee-price">₹305</span></div>
-            <div class="marquee-item"><img src="https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=100" class="marquee-img"><span class="marquee-text">Men Striped Casual Shirt</span><span class="marquee-price">₹448</span></div>
-        </div>
-    </div>
-
-    <!-- Section Title & Filter Chips -->
+    <!-- Updated Category Chips: Jeans, Trousers, T-Shirt, Shirt, Shoes -->
     <div class="section-header">
         <h2 class="section-title">Live Catalog Index</h2>
         <div class="filter-chips">
             <button class="chip active">All Drops</button>
             <button class="chip">Shirts</button>
-            <button class="chip">Denims</button>
-            <button class="chip">Sneakers</button>
-            <button class="chip">Hoodies</button>
+            <button class="chip">T-Shirts</button>
+            <button class="chip">Jeans</button>
+            <button class="chip">Trousers</button>
+            <button class="chip">Shoes</button>
         </div>
     </div>
 
-    <!-- Catalog Container -->
     <main class="catalog-container">
-        <div class="product-grid" id="mainProductContainer">
-            <!-- Dynamic product cards auto-render here or static fallback -->
-        </div>
+        <div class="product-grid" id="mainProductContainer"></div>
     </main>
 
-    <!-- Footer Section -->
     <footer>
         <div class="footer-container">
             <div class="brand-logo-wrap">

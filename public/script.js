@@ -7,7 +7,50 @@ document.addEventListener('DOMContentLoaded', async () => {
     let currentCategory = 'All Drops';
     let searchQuery = '';
 
-    // Backend API ya local JSON file se real products fetch karne ka function
+    // Multiple Image Key Extractor
+    function extractImageUrl(p) {
+        if (!p) return 'https://via.placeholder.com/300?text=No+Image';
+        if (typeof p.image === 'string' && p.image.trim()) return p.image;
+        if (typeof p.imageUrl === 'string' && p.imageUrl.trim()) return p.imageUrl;
+        if (typeof p.img_url === 'string' && p.img_url.trim()) return p.img_url;
+        if (typeof p.img === 'string' && p.img.trim()) return p.img;
+        if (typeof p.photo === 'string' && p.photo.trim()) return p.photo;
+        if (Array.isArray(p.images) && p.images.length > 0) return p.images[0];
+        if (Array.isArray(p.image) && p.image.length > 0) return p.image[0];
+        return 'https://via.placeholder.com/300?text=Lavegious+Drop';
+    }
+
+    // Smart Category Matching (e.g., Lower/Pants -> Trousers, Tees -> T-Shirts)
+    function matchCategory(product, targetCategory) {
+        if (targetCategory === 'All Drops') return true;
+
+        const cat = (product.category || '').toLowerCase();
+        const title = (product.title || '').toLowerCase();
+        const desc = (product.description || '').toLowerCase();
+        const tag = (product.tag || '').toLowerCase();
+        const combined = `${cat} ${title} ${desc} ${tag}`;
+
+        const target = targetCategory.toLowerCase();
+
+        if (target === 'trousers') {
+            return combined.includes('trouser') || combined.includes('pant') || combined.includes('lower') || combined.includes('cargo') || combined.includes('track');
+        }
+        if (target === 'jeans') {
+            return combined.includes('jean') || combined.includes('denim');
+        }
+        if (target === 't-shirts') {
+            return combined.includes('t-shirt') || combined.includes('tshirt') || combined.includes('tee') || combined.includes('oversized tee');
+        }
+        if (target === 'shirts') {
+            return combined.includes('shirt') && !combined.includes('t-shirt') && !combined.includes('tshirt');
+        }
+        if (target === 'shoes') {
+            return combined.includes('shoe') || combined.includes('sneaker') || combined.includes('footwear');
+        }
+
+        return combined.includes(target);
+    }
+
     async function fetchRealProducts() {
         try {
             let res = await fetch('/api/products');
@@ -16,7 +59,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
             products = await res.json();
         } catch (err) {
-            console.error("Real products fetch nahi ho paaye:", err);
+            console.error("Products load fail hue:", err);
             products = [];
         }
         renderProducts();
@@ -27,15 +70,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const q = searchQuery.toLowerCase();
 
-        // Category + Title + Full Description multi-field search filter
         let filtered = products.filter(item => {
-            const itemCategory = item.category || '';
-            const categoryMatch = currentCategory === 'All Drops' || 
-                itemCategory.toLowerCase() === currentCategory.toLowerCase();
+            const categoryMatch = matchCategory(item, currentCategory);
             
             const titleMatch = item.title ? item.title.toLowerCase().includes(q) : false;
             const descMatch = item.description ? item.description.toLowerCase().includes(q) : false;
-            const catMatch = itemCategory.toLowerCase().includes(q);
+            const catMatch = item.category ? item.category.toLowerCase().includes(q) : false;
             const tagMatch = item.tag ? item.tag.toLowerCase().includes(q) : false;
 
             const searchMatch = !q || titleMatch || descMatch || catMatch || tagMatch;
@@ -46,34 +86,45 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (filtered.length === 0) {
             gridContainer.innerHTML = `
                 <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #6B7280;">
-                    <p style="font-size: 16px; font-weight: 700;">Koi real product nahi mila!</p>
-                    <p style="font-size: 13px; margin-top: 6px;">Search term ya category badal kar dekho.</p>
+                    <p style="font-size: 16px; font-weight: 700;">No items found in this section!</p>
+                    <p style="font-size: 13px; margin-top: 6px;">Try selecting "All Drops" or searching another keyword.</p>
                 </div>`;
             return;
         }
 
-        gridContainer.innerHTML = filtered.map(product => `
-            <div class="product-card">
-                <div class="card-img-wrap">
-                    ${product.tag ? `<span class="card-badge">${product.tag}</span>` : ''}
-                    <img src="${product.image || product.img_url || 'https://via.placeholder.com/300'}" alt="${product.title}">
-                </div>
-                <div class="card-details">
-                    <h3 class="card-title">${product.title}</h3>
-                    ${product.description ? `<p style="font-size: 12px; color: #6B7280; margin-bottom: 8px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${product.description}</p>` : ''}
-                    <div class="card-price-row">
-                        <span class="card-price">₹${product.price}</span>
-                        <span class="card-tag">${product.category || 'Drop'}</span>
+        gridContainer.innerHTML = filtered.map(product => {
+            const imgUrl = extractImageUrl(product);
+            const title = product.title || 'Streetwear Fit';
+            const price = product.price || 0;
+            const category = product.category || product.tag || 'Drop';
+            const link = product.link || product.affiliate_link || '#';
+            const description = product.description || '';
+
+            return `
+                <div class="product-card">
+                    <div class="card-img-wrap">
+                        ${product.tag ? `<span class="card-badge">${product.tag}</span>` : ''}
+                        <img src="${imgUrl}" 
+                             alt="${title}" 
+                             referrerpolicy="no-referrer" 
+                             onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500';">
                     </div>
-                    <a href="${product.link || product.affiliate_link || '#'}" target="_blank" rel="noopener noreferrer" class="buy-btn">
-                        <span>⚡ Grab Drop</span>
-                    </a>
+                    <div class="card-details">
+                        <h3 class="card-title">${title}</h3>
+                        ${description ? `<p style="font-size: 12px; color: #6B7280; margin-bottom: 8px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${description}</p>` : ''}
+                        <div class="card-price-row">
+                            <span class="card-price">₹${price}</span>
+                            <span class="card-tag">${category}</span>
+                        </div>
+                        <a href="${link}" target="_blank" rel="noopener noreferrer" class="buy-btn">
+                            <span>⚡ Grab Drop</span>
+                        </a>
+                    </div>
                 </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
     }
 
-    // Live search (Title + Description dono match honge)
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
             searchQuery = e.target.value.trim();
@@ -81,7 +132,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Category chips selection
     chips.forEach(chip => {
         chip.addEventListener('click', () => {
             chips.forEach(c => c.classList.remove('active'));
