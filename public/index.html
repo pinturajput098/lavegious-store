@@ -14,6 +14,7 @@
             --purple-light: #DDD6FE;
             --purple-glow: rgba(124, 58, 237, 0.25);
             --bg-glass: rgba(255, 255, 255, 0.85);
+            --bg-glass-dark: rgba(255, 255, 255, 0.15);
             --bg-body: #F8F7FF;
             --text-dark: #1E1B4B;
             --text-muted: #6B7280;
@@ -56,6 +57,30 @@
             border-radius: 50%;
             z-index: -1;
             pointer-events: none;
+        }
+
+        /* Marquee Ticker */
+        .marquee-ticker {
+            background: linear-gradient(90deg, var(--purple-main) 0%, var(--purple-accent) 100%);
+            color: #FFFFFF;
+            padding: 8px 0;
+            font-size: 12px;
+            font-weight: 700;
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .marquee-content {
+            display: inline-block;
+            padding-left: 100%; /* Start off-screen */
+            animation: marquee 25s linear infinite;
+        }
+
+        @keyframes marquee {
+            0%   { transform: translate(0, 0); }
+            100% { transform: translate(-100%, 0); }
         }
 
         header {
@@ -158,6 +183,26 @@
             font-size: 14px;
         }
 
+        .admin-toggle-btn {
+            background: var(--purple-main);
+            color: #FFFFFF;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px var(--purple-glow);
+            border: none;
+            cursor: pointer;
+        }
+
+        .admin-toggle-btn:hover {
+            background: var(--purple-accent);
+            box-shadow: 0 6px 16px var(--purple-glow);
+            transform: translateY(-2px);
+        }
+
         .hero-section {
             max-width: 1280px;
             margin: 20px auto 30px;
@@ -165,7 +210,7 @@
         }
 
         .hero-card {
-            background: linear-gradient(135deg, #4C1D95 0%, #6D28D9 50%, #7C3AED 100%);
+            background: linear-gradient(135deg, var(--purple-main) 0%, var(--purple-accent) 100%);
             border-radius: var(--radius-xl);
             padding: 40px 30px;
             color: #FFFFFF;
@@ -181,7 +226,7 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            background: rgba(255, 255, 255, 0.15);
+            background: var(--bg-glass-dark);
             backdrop-filter: blur(10px);
             padding: 6px 14px;
             border-radius: 30px;
@@ -204,6 +249,26 @@
             opacity: 0.9;
             max-width: 500px;
             line-height: 1.5;
+        }
+
+        .hero-stats-ticker {
+            display: flex;
+            gap: 20px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            background: var(--bg-glass-dark);
+            backdrop-filter: blur(8px);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .section-header {
@@ -385,6 +450,64 @@
             text-decoration: none;
         }
 
+        .trust-section {
+            max-width: 1280px;
+            margin: 60px auto;
+            padding: 0 20px;
+            text-align: center;
+        }
+
+        .trust-section h2 {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 30px;
+        }
+
+        .trust-badges-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .trust-badge-item {
+            background: var(--bg-glass);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(124, 58, 237, 0.1);
+            border-radius: var(--radius-xl);
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .trust-badge-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px -12px rgba(109, 40, 217, 0.18);
+        }
+
+        .trust-badge-icon {
+            font-size: 36px;
+            color: var(--purple-main);
+        }
+
+        .trust-badge-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .trust-badge-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
         footer {
             background: #FFFFFF;
             border-top: 1px solid rgba(124, 58, 237, 0.1);
@@ -407,11 +530,88 @@
             color: var(--text-muted);
             font-weight: 500;
         }
+
+        /* Scrollbar for filter chips */
+        .filter-chips::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .filter-chips::-webkit-scrollbar-track {
+            background: rgba(124, 58, 237, 0.05);
+            border-radius: 2px;
+        }
+
+        .filter-chips::-webkit-scrollbar-thumb {
+            background: var(--purple-light);
+            border-radius: 2px;
+        }
+
+        .filter-chips::-webkit-scrollbar-thumb:hover {
+            background: var(--purple-main);
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .search-box {
+                order: 3; /* Move search below logo */
+                flex-basis: 100%;
+                max-width: 100%;
+            }
+            .admin-toggle-btn {
+                order: 2;
+            }
+            .brand-logo-wrap {
+                order: 1;
+            }
+            .hero-title {
+                font-size: 28px;
+            }
+            .section-title {
+                font-size: 20px;
+            }
+            .product-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-card {
+                padding: 30px 20px;
+            }
+            .hero-title {
+                font-size: 24px;
+            }
+            .hero-subtitle {
+                font-size: 13px;
+            }
+            .hero-stats-ticker {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .stat-item {
+                width: 100%;
+                justify-content: center;
+            }
+            .trust-badges-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="bg-glow-1"></div>
     <div class="bg-glow-2"></div>
+
+    <div class="marquee-ticker">
+        <div class="marquee-content">
+            ⚡ FREE SHIPPING PAN-INDIA • 10% OFF ON FIRST DROP • OVERSIZED FIT • 
+            ⚡ FREE SHIPPING PAN-INDIA • 10% OFF ON FIRST DROP • OVERSIZED FIT • 
+            ⚡ FREE SHIPPING PAN-INDIA • 10% OFF ON FIRST DROP • OVERSIZED FIT • 
+        </div>
+    </div>
 
     <header>
         <div class="nav-container">
@@ -423,9 +623,9 @@
                         <circle cx="5" cy="25" r="2.5"/><circle cx="15" cy="25" r="2.5"/><circle cx="25" cy="25" r="2.5"/>
                     </svg>
                     <svg width="38" height="38" viewBox="0 0 100 100" fill="none">
-                        <circle cx="50" cy="50" r="44" stroke="#6D28D9" stroke-width="8"/>
-                        <text x="32" y="68" font-family="'Cinzel', serif" font-weight="900" font-size="52" fill="#6D28D9">L</text>
-                        <text x="46" y="74" font-family="'Cinzel', serif" font-weight="900" font-size="52" fill="#7C3AED">G</text>
+                        <circle cx="50" cy="50" r="44" stroke="var(--purple-main)" stroke-width="8"/>
+                        <text x="32" y="68" font-family="'Cinzel', serif" font-weight="900" font-size="52" fill="var(--purple-main)">L</text>
+                        <text x="46" y="74" font-family="'Cinzel', serif" font-weight="900" font-size="52" fill="var(--purple-accent)">G</text>
                     </svg>
                 </div>
                 <div class="brand-text-box">
@@ -436,8 +636,9 @@
 
             <div class="search-box">
                 <span class="search-icon">🔍</span>
-                <input type="text" id="lavegiousSearchInput" placeholder="Search jeans, t-shirts, shoes, trousers...">
+                <input type="text" id="lavegiousSearchInput" placeholder="Search drops, categories, tags...">
             </div>
+            <a href="/admin.html" class="admin-toggle-btn">Admin Panel</a>
         </div>
     </header>
 
@@ -446,10 +647,13 @@
             <div class="hero-badge">✨ OFFICIAL STREETWEAR DROPS</div>
             <h1 class="hero-title">ELEVATE YOUR DAILY OUTFIT MATRIX</h1>
             <p class="hero-subtitle">Curated premium oversized fits, aesthetics, and high-fashion streetwear straight from handpicked platforms.</p>
+            <div class="hero-stats-ticker">
+                <div class="stat-item">✅ 5,000+ Fits Delivered</div>
+                <div class="stat-item">⭐ 4.9 Rating (1.2K Reviews)</div>
+            </div>
         </div>
     </section>
 
-    <!-- Updated Category Chips: Jeans, Trousers, T-Shirt, Shirt, Shoes -->
     <div class="section-header">
         <h2 class="section-title">Live Catalog Index</h2>
         <div class="filter-chips">
@@ -459,6 +663,7 @@
             <button class="chip">Jeans</button>
             <button class="chip">Trousers</button>
             <button class="chip">Shoes</button>
+            <button class="chip">Hoodies</button>
         </div>
     </div>
 
@@ -466,14 +671,35 @@
         <div class="product-grid" id="mainProductContainer"></div>
     </main>
 
+    <section class="trust-section">
+        <h2>Why Choose LAVEGIOUS?</h2>
+        <div class="trust-badges-grid">
+            <div class="trust-badge-item">
+                <span class="trust-badge-icon">✨</span>
+                <h3 class="trust-badge-title">Heavyweight Fabric</h3>
+                <p class="trust-badge-desc">Premium, durable materials for lasting comfort and style.</p>
+            </div>
+            <div class="trust-badge-item">
+                <span class="trust-badge-icon">⚡</span>
+                <h3 class="trust-badge-title">Express Shipping</h3>
+                <p class="trust-badge-desc">Get your drops fast, delivered right to your doorstep.</p>
+            </div>
+            <div class="trust-badge-item">
+                <span class="trust-badge-icon">↺</span>
+                <h3 class="trust-badge-title">Easy Returns</h3>
+                <p class="trust-badge-desc">Hassle-free returns and exchanges for your peace of mind.</p>
+            </div>
+        </div>
+    </section>
+
     <footer>
         <div class="footer-container">
             <div class="brand-logo-wrap">
                 <div class="logo-graphics">
                     <svg width="34" height="34" viewBox="0 0 100 100" fill="none">
-                        <circle cx="50" cy="50" r="44" stroke="#6D28D9" stroke-width="8"/>
-                        <text x="32" y="68" font-family="'Cinzel', serif" font-weight="900" font-size="52" fill="#6D28D9">L</text>
-                        <text x="46" y="74" font-family="'Cinzel', serif" font-weight="900" font-size="52" fill="#7C3AED">G</text>
+                        <circle cx="50" cy="50" r="44" stroke="var(--purple-main)" stroke-width="8"/>
+                        <text x="32" y="68" font-family="'Cinzel', serif" font-weight="900" font-size="52" fill="var(--purple-main)">L</text>
+                        <text x="46" y="74" font-family="'Cinzel', serif" font-weight="900" font-size="52" fill="var(--purple-accent)">G</text>
                     </svg>
                 </div>
                 <div class="brand-text-box">

@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const cat = (product.category || '').toLowerCase();
         const title = (product.title || '').toLowerCase();
         const desc = (product.description || '').toLowerCase();
-        const tag = (product.tag || '').toLowerCase();
+        const tag = (product.tag || '').toLowerCase(); // Use product.tag for badging
         const combined = `${cat} ${title} ${desc} ${tag}`;
 
         const target = targetCategory.toLowerCase();
@@ -46,6 +46,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         if (target === 'shoes') {
             return combined.includes('shoe') || combined.includes('sneaker') || combined.includes('footwear');
+        }
+        if (target === 'hoodies') {
+            return combined.includes('hoodie') || combined.includes('sweatshirt') || combined.includes('jumper');
         }
 
         return combined.includes(target);
@@ -76,7 +79,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const titleMatch = item.title ? item.title.toLowerCase().includes(q) : false;
             const descMatch = item.description ? item.description.toLowerCase().includes(q) : false;
             const catMatch = item.category ? item.category.toLowerCase().includes(q) : false;
-            const tagMatch = item.tag ? item.tag.toLowerCase().includes(q) : false;
+            const tagMatch = item.tag ? item.tag.toLowerCase().includes(q) : false; // Search by badge tag as well
 
             const searchMatch = !q || titleMatch || descMatch || catMatch || tagMatch;
 
@@ -96,14 +99,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             const imgUrl = extractImageUrl(product);
             const title = product.title || 'Streetwear Fit';
             const price = product.price || 0;
-            const category = product.category || product.tag || 'Drop';
+            const category = product.category || 'Drop';
+            const badgeTag = product.tag || ''; // Use product.tag for the badge
             const link = product.link || product.affiliate_link || '#';
             const description = product.description || '';
 
             return `
                 <div class="product-card">
                     <div class="card-img-wrap">
-                        ${product.tag ? `<span class="card-badge">${product.tag}</span>` : ''}
+                        ${badgeTag ? `<span class="card-badge">${badgeTag}</span>` : ''}
                         <img src="${imgUrl}" 
                              alt="${title}" 
                              referrerpolicy="no-referrer" 
