@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LAVEGIOUS | Admin App Console</title>
+  <title>LAVEGIOUS | Admin Studio</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Cinzel:wght@700;800&display=swap" rel="stylesheet">
   <style>
     :root {
         --purple-main: #6D28D9;
@@ -20,20 +20,188 @@
         --card-shadow: 0 20px 40px -15px rgba(109, 40, 217, 0.12), 0 8px 16px -6px rgba(0, 0, 0, 0.04);
         --radius-xl: 24px;
     }
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-body); color: var(--text-dark); }
-    .app-box { background: var(--bg-glass); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: var(--radius-xl); border: 1px solid rgba(124, 58, 237, 0.1); box-shadow: var(--card-shadow); }
-    .app-btn { background: linear-gradient(135deg, var(--purple-accent) 0%, var(--purple-main) 100%); color: #FFFFFF; transition: all 0.2s ease; box-shadow: 0 8px 20px var(--purple-glow); }
-    .app-btn:active { transform: scale(0.97); opacity: 0.9; box-shadow: 0 4px 10px var(--purple-glow); }
-    input, select, textarea { background-color: rgba(255,255,255,0.7) !important; border-color: rgba(124, 58, 237, 0.15) !important; }
-    input:focus, select:focus, textarea:focus { border-color: var(--purple-accent) !important; box-shadow: 0 0 0 3px var(--purple-glow) !important; }
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background-color: var(--bg-body);
+        color: var(--text-dark);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+    .bg-glow-1 {
+        position: fixed;
+        top: -100px;
+        right: -100px;
+        width: 450px;
+        height: 450px;
+        background: radial-gradient(circle, rgba(124, 58, 237, 0.15) 0%, rgba(255, 255, 255, 0) 70%);
+        border-radius: 50%;
+        z-index: -1;
+        pointer-events: none;
+    }
+    .bg-glow-2 {
+        position: fixed;
+        bottom: -150px;
+        left: -100px;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(167, 139, 250, 0.18) 0%, rgba(255, 255, 255, 0) 70%);
+        border-radius: 50%;
+        z-index: -1;
+        pointer-events: none;
+    }
+    .app-box {
+        background: var(--bg-glass);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-radius: var(--radius-xl);
+        border: 1px solid rgba(124, 58, 237, 0.1);
+        box-shadow: var(--card-shadow);
+    }
+    .app-btn {
+        background: linear-gradient(135deg, var(--purple-accent) 0%, var(--purple-main) 100%);
+        color: #FFFFFF;
+        transition: all 0.2s ease;
+        box-shadow: 0 8px 20px var(--purple-glow);
+    }
+    .app-btn:active {
+        transform: scale(0.97);
+        opacity: 0.9;
+        box-shadow: 0 4px 10px var(--purple-glow);
+    }
+    input, select, textarea {
+        background-color: rgba(255,255,255,0.7) !important;
+        border-color: rgba(124, 58, 237, 0.15) !important;
+        color: var(--text-dark);
+    }
+    input:focus, select:focus, textarea:focus {
+        border-color: var(--purple-accent) !important;
+        box-shadow: 0 0 0 3px var(--purple-glow) !important;
+    }
+    .brand-title {
+        font-family: 'Cinzel', serif;
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--purple-main);
+        letter-spacing: 2.5px;
+        line-height: 1;
+    }
+    .brand-tagline {
+        font-size: 8px;
+        font-weight: 700;
+        color: #4C1D95;
+        letter-spacing: 1.8px;
+        text-transform: uppercase;
+        margin-top: 3px;
+    }
+    .logo-graphics {
+        position: relative;
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .dot-matrix-bg {
+        position: absolute;
+        top: -6px;
+        left: -8px;
+        width: 24px;
+        height: 24px;
+        opacity: 0.8;
+    }
+    .product-admin-card {
+        background: #FFFFFF;
+        border-radius: 16px;
+        border: 1px solid rgba(124, 58, 237, 0.08);
+        box-shadow: 0 10px 20px -8px rgba(109, 40, 217, 0.1);
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        transition: all 0.2s ease;
+    }
+    .product-admin-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px -10px rgba(109, 40, 217, 0.15);
+    }
+    .product-admin-card img {
+        width: 100%;
+        height: 160px;
+        object-fit: cover;
+        border-radius: 10px;
+        background: #F3F4F6;
+    }
+    .product-admin-card .title {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-dark);
+        line-height: 1.3;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .product-admin-card .meta {
+        font-size: 10px;
+        font-weight: 600;
+        color: var(--purple-600);
+        text-transform: uppercase;
+        margin-top: 4px;
+    }
+    .product-admin-card .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 8px;
+    }
+    .product-admin-card .actions button {
+        flex-grow: 1;
+        padding: 6px 10px;
+        font-size: 9px;
+        font-weight: 700;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+    }
   </style>
 </head>
 <body class="py-10 px-4">
-  <div class="max-w-md mx-auto">
+  <div class="bg-glow-1"></div>
+  <div class="bg-glow-2"></div>
+
+  <div class="max-w-4xl w-full mx-auto space-y-8">
+
+    <!-- Admin Header -->
+    <div class="flex items-center justify-center gap-4 mb-8">
+        <div class="logo-graphics">
+            <svg class="dot-matrix-bg" viewBox="0 0 40 40" fill="#7C3AED">
+                <circle cx="5" cy="5" r="2.5"/><circle cx="15" cy="5" r="2.5"/><circle cx="25" cy="5" r="2.5"/>
+                <circle cx="5" cy="15" r="2.5"/><circle cx="15" cy="15" r="2.5"/><circle cx="25" cy="15" r="2.5"/>
+                <circle cx="5" cy="25" r="2.5"/><circle cx="15" cy="25" r="2.5"/><circle cx="25" cy="25" r="2.5"/>
+            </svg>
+            <svg width="38" height="38" viewBox="0 0 100 100" fill="none">
+                <circle cx="50" cy="50" r="44" stroke="var(--purple-main)" stroke-width="8"/>
+                <text x="32" y="68" font-family="'Cinzel', serif" font-weight="900" font-size="52" fill="var(--purple-main)">L</text>
+                <text x="46" y="74" font-family="'Cinzel', serif" font-weight="900" font-size="52" fill="var(--purple-accent)">G</text>
+            </svg>
+        </div>
+        <div class="brand-text-box">
+            <span class="brand-title">LAVEGIOUS</span>
+            <span class="brand-tagline">Admin Studio</span>
+        </div>
+    </div>
     
     <!-- AUTHENTICATION LAYER GATE -->
-    <div id="loginGate" class="app-box p-8 text-center my-12 shadow-xl">
-      <div class="w-14 h-14 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl font-bold shadow-sm">🔑</div>
+    <div id="loginGate" class="app-box p-8 text-center my-12 shadow-xl max-w-md mx-auto">
+      <div class="w-14 h-14 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl font-bold shadow-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8">
+            <path fill-rule="evenodd" d="M12 1.5a5.25 5.25 0 00-5.25 5.25v3a3 3 0 00-3 3v6.75a3 3 0 003 3h10.5a3 3 0 003-3v-6.75a3 3 0 00-3-3v-3c0-2.9-2.35-5.25-5.25-5.25zm3.75 8.25v-3a3.75 3.75 0 10-7.5 0v3h7.5z" clip-rule="evenodd" />
+        </svg>
+      </div>
       <h2 class="font-extrabold text-2xl text-neutral-900 tracking-tight">Studio Gate</h2>
       <p class="text-neutral-400 text-xs font-bold uppercase tracking-wider mb-6">Verification Framework</p>
       <input type="password" id="gatePass" placeholder="••••••••" class="w-full p-4 border border-neutral-200 rounded-2xl text-center font-black tracking-widest text-lg mb-4 focus:outline-none bg-neutral-50 focus:ring-2 focus:ring-purple-500/20">
@@ -41,7 +209,7 @@
     </div>
 
     <!-- MAIN APP STUDIO DASHBOARD -->
-    <div id="adminTerminal" class="hidden space-y-8">
+    <div id="adminTerminal" class="hidden space-y-8 w-full">
       
       <!-- Dashboard Top Header Row -->
       <div class="flex items-center justify-between border-b border-neutral-200/60 pb-4">
@@ -49,12 +217,17 @@
           <h1 class="font-black text-xl tracking-tight text-neutral-900 uppercase">Lavegious Studio</h1>
           <p class="text-neutral-400 text-[10px] font-black uppercase tracking-widest mt-0.5">App Cloud Control Panel</p>
         </div>
-        <button id="logoutBtn" class="px-4 py-2 bg-white border border-neutral-200 text-red-500 font-extrabold text-xs rounded-xl uppercase tracking-wider shadow-sm">Exit</button>
+        <button id="logoutBtn" class="px-4 py-2 bg-white border border-neutral-200 text-red-500 font-extrabold text-xs rounded-xl uppercase tracking-wider shadow-sm hover:bg-red-50 transition">Exit</button>
       </div>
 
       <!-- Live Catalog Analytics -->
       <div class="app-box p-6 shadow-md">
-        <h2 class="font-extrabold text-sm uppercase tracking-wider text-purple-600 border-b border-neutral-100 pb-2 flex items-center gap-2"><span>📊</span> Live Catalog Analytics</h2>
+        <h2 class="font-extrabold text-sm uppercase tracking-wider text-purple-600 border-b border-neutral-100 pb-2 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                <path fill-rule="evenodd" d="M3 6a3 3 0 013-3h12a3 3 0 013 3v12a3 3 0 01-3 3H6a3 3 0 01-3-3V6zm14.25 1.5a.75.75 0 00-1.5 0v6.75a.75.75 0 001.5 0V7.5zm-4.5 0a.75.75 0 00-1.5 0v9a.75.75 0 001.5 0V7.5zm-4.5 0a.75.75 0 00-1.5 0v4.5a.75.75 0 001.5 0V7.5z" clip-rule="evenodd" />
+            </svg>
+            Live Catalog Analytics
+        </h2>
         <div class="grid grid-cols-2 gap-4 mt-4 text-center">
           <div class="bg-purple-50/50 p-4 rounded-xl border border-purple-100">
             <p class="text-3xl font-extrabold text-purple-800" id="totalProductsCount">0</p>
@@ -70,20 +243,30 @@
 
       <!-- Core Configuration Drop Form -->
       <form id="uploadForm" class="app-box p-6 space-y-5 shadow-md">
-        <h2 class="font-extrabold text-sm uppercase tracking-wider text-purple-600 border-b border-neutral-100 pb-2 flex items-center gap-2"><span>🚀</span> Drop New App Item</h2>
+        <h2 class="font-extrabold text-sm uppercase tracking-wider text-purple-600 border-b border-neutral-100 pb-2 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                <path d="M12 9.75a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0V10.5a.75.75 0 01.75-.75z" />
+                <path fill-rule="evenodd" d="M9.315 7.584c-.055-.118-.103-.244-.145-.376a11.952 11.952 0 01-2.609-.754 1.577 1.577 0 00-1.423.212c-.067.063-.117.13-.16.205L1.424 17.24c-.017.03-.028.067-.04.107-.057.183.021.413.125.496 1.423 1.107 4.59.91 5.73.73 1.49-.22 2.776-.763 3.68-1.023 1.452-.41 2.823-.775 4.2-.602 1.96.24 4.14.082 5.461-.212.144-.03.278-.076.405-.145 1.095-.45 1.333-1.478.62-2.009l-.334-.246a1.125 1.125 0 01-.334-1.265c.095-.1.183-.207.27-.324.488-.696.016-1.639-.53-1.95l-.333-.197a1.125 1.125 0 01-.985-.101 12.066 12.066 0 01-2.878-1.52c-.78-.562-1.693-1.077-2.864-1.469a4.5 4.5 0 00-.78-.24zM12 15.75a.75.75 0 01.75.75v.75a.75.75 0 01-1.5 0v-.75a.75.75 0 01.75-.75z" clip-rule="evenodd" />
+            </svg>
+            Drop New App Item
+        </h2>
         
         <div>
           <label class="block text-[10px] font-black uppercase tracking-wider text-neutral-400 mb-2">Media Gallery Stream</label>
           <div class="relative bg-neutral-50 rounded-2xl p-6 text-center border-2 border-dashed border-neutral-200 hover:bg-neutral-100/50 transition cursor-pointer">
             <input type="file" id="pImg" multiple accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-            <div class="text-2xl mb-1">📸</div>
+            <div class="text-2xl mb-1 text-purple-600">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 mx-auto">
+                    <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5a.75.75 0 00.75-.75v-1.94l-2.432-2.432a1.125 1.125 0 00-1.588 0L9.407 16.07a4.5 4.5 0 01-1.89-1.14L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clip-rule="evenodd" />
+                </svg>
+            </div>
             <p id="statusTxt" class="text-xs font-bold text-neutral-700 uppercase">Tap to add photos from device gallery</p>
             <p class="text-[9px] text-neutral-400 font-medium uppercase tracking-wider mt-0.5">Auto-optimized via rapid engine</p>
           </div>
           <div id="previews" class="flex gap-2.5 mt-3 flex-wrap"></div>
         </div>
 
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label class="block text-[10px] font-black uppercase tracking-wider text-neutral-400 mb-1">Select Category</label>
             <select id="pCategory" class="w-full p-3.5 bg-neutral-50 border border-neutral-200 rounded-xl text-xs font-bold focus:outline-none focus:border-purple-500 cursor-pointer">
@@ -93,6 +276,7 @@
               <option value="Trousers">Trousers</option>
               <option value="Shoes">Shoes</option>
               <option value="Hoodies">Hoodies</option>
+              <option value="Accessories">Accessories</option>
             </select>
           </div>
           <div>
@@ -123,12 +307,18 @@
         </div>
 
         <button type="submit" id="subBtn" class="w-full app-btn font-black py-4 rounded-xl text-xs uppercase tracking-widest shadow-md shadow-purple-600/10">Publish Directly Live</button>
+        <button type="button" id="cancelEditBtn" class="w-full bg-gray-200 text-gray-700 font-black py-4 rounded-xl text-xs uppercase tracking-widest shadow-sm hover:bg-gray-300 transition hidden">Cancel Edit</button>
       </form>
 
       <!-- CONTROL LIVE CATALOG CHANNELS -->
       <div class="space-y-3">
-        <h3 class="text-xs font-black uppercase tracking-wider text-neutral-400 px-1">📋 Live Catalog Index</h3>
-        <div id="catalogList" class="grid grid-cols-1 gap-2.5"></div>
+        <h3 class="text-xs font-black uppercase tracking-wider text-neutral-400 px-1 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 100 13.5 6.75 6.75 0 000-13.5zM2.25 10.5a8.25 8.25 0 1114.59 5.28l4.697 4.698a1.125 1.125 0 11-1.59 1.59l-4.696-4.697A8.25 8.25 0 012.25 10.5z" clip-rule="evenodd" />
+            </svg>
+            Live Catalog Index
+        </h3>
+        <div id="catalogList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"></div>
       </div>
 
     </div>
@@ -137,8 +327,12 @@
   <script>
     let activeToken = localStorage.getItem('studioToken') || '';
     let imagesQueue = [];
+    let allProducts = []; // To store all products for editing
 
-    if(activeToken) {
+    const ADMIN_PASSWORD = 'Yts@12345'; // Hardcoded password as per request
+
+    // Initial check for authentication
+    if(activeToken === ADMIN_PASSWORD) { // Check against the actual password
       document.getElementById('loginGate').classList.add('hidden');
       document.getElementById('adminTerminal').classList.remove('hidden');
       loadCatalog();
@@ -146,17 +340,16 @@
 
     document.getElementById('loginBtn').addEventListener('click', async () => {
       const pass = document.getElementById('gatePass').value;
-      const res = await fetch('/api/admin/verify', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({password: pass})
-      });
-      if(res.ok) {
+      
+      // Client-side password check
+      if(pass === ADMIN_PASSWORD) {
         localStorage.setItem('studioToken', pass);
         activeToken = pass;
-        location.reload();
+        document.getElementById('loginGate').classList.add('hidden');
+        document.getElementById('adminTerminal').classList.remove('hidden');
+        loadCatalog();
       } else {
-        alert('Authentication Error: Token signatures mismatch.');
+        alert('Authentication Error: Invalid password.');
       }
     });
 
@@ -173,10 +366,10 @@
           img.onload = () => {
             const canvas = document.createElement('canvas');
             let w = img.width, h = img.height;
-            if (w > 500) { h = Math.round((h * 500) / w); w = 500; }
+            if (w > 800) { h = Math.round((h * 800) / w); w = 800; } // Increased max width for better quality
             canvas.width = w; canvas.height = h;
             canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-            resolve(canvas.toDataURL('image/jpeg', 0.4));
+            resolve(canvas.toDataURL('image/jpeg', 0.7)); // Increased quality
           };
           img.src = e.target.result;
         };
@@ -185,11 +378,12 @@
     }
 
     document.getElementById('pImg').addEventListener('change', async (e) => {
-      imagesQueue = [];
+      imagesQueue = []; // Clear previous images when new ones are selected
       const previews = document.getElementById('previews');
       previews.innerHTML = '';
       const files = Array.from(e.target.files);
       document.getElementById('statusTxt').innerText = `OPTIMIZING PLOTS... STANDBY`;
+      
       for(let f of files) {
         const b64 = await compressImg(f);
         imagesQueue.push(b64);
@@ -203,36 +397,63 @@
 
     document.getElementById('uploadForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      if(imagesQueue.length === 0) return alert('Input Interruption: Target asset queue empty.');
       
       const btn = document.getElementById('subBtn');
-      btn.innerText = "STREAMING INTO CLOUD DB MAP... WAIT";
+      const editingId = btn.dataset.editingId; // Get ID if editing
+
+      // Only require images for new items, or if existing item has no images and new ones are uploaded
+      if(imagesQueue.length === 0 && !editingId) {
+          return alert('Input Interruption: Target asset queue empty. Please add images for a new product.');
+      }
+      
+      btn.innerText = editingId ? "UPDATING CLOUD DB MAP... WAIT" : "STREAMING INTO CLOUD DB MAP... WAIT";
       btn.disabled = true;
 
       const payload = {
-        images: imagesQueue,
+        images: imagesQueue, // Send all images (newly uploaded base64 or existing URLs)
         title: document.getElementById('pTitle').value,
         price: document.getElementById('pPrice').value,
         description: document.getElementById('pDesc').value,
         link: document.getElementById('pLink').value,
         category: document.getElementById('pCategory').value,
-        tag: document.getElementById('pTag').value // Added badge tag
+        tag: document.getElementById('pTag').value
       };
 
-      const res = await fetch('/api/products', {
-        method: 'POST',
+      const method = editingId ? 'PUT' : 'POST';
+      const url = editingId ? `/api/products/${editingId}` : '/api/products';
+
+      const res = await fetch(url, {
+        method: method,
         headers: {'Content-Type': 'application/json', 'x-admin-password': activeToken},
         body: JSON.stringify(payload)
       });
 
       if(res.ok) {
-        alert('Transaction Confirmed: System locked inside active clusters.');
-        location.reload();
+        alert(`Transaction Confirmed: Item ${editingId ? 'updated' : 'published'} successfully.`);
+        // Clear form and reset to add mode
+        document.getElementById('uploadForm').reset();
+        document.getElementById('previews').innerHTML = '';
+        imagesQueue = [];
+        document.getElementById('statusTxt').innerText = `Tap to add photos from device gallery`;
+        btn.innerText = "Publish Directly Live";
+        delete btn.dataset.editingId; // Remove editing ID
+        document.getElementById('cancelEditBtn').classList.add('hidden'); // Hide cancel button
+        loadCatalog(); // Reload catalog to show changes
       } else {
         alert('Transaction Interrupted: Connection failure nodes.');
-        btn.innerText = "Publish Directly Live";
+        btn.innerText = editingId ? "Update Live Item" : "Publish Directly Live";
         btn.disabled = false;
       }
+    });
+
+    document.getElementById('cancelEditBtn').addEventListener('click', () => {
+        document.getElementById('uploadForm').reset();
+        document.getElementById('previews').innerHTML = '';
+        imagesQueue = [];
+        document.getElementById('statusTxt').innerText = `Tap to add photos from device gallery`;
+        document.getElementById('subBtn').innerText = "Publish Directly Live";
+        delete document.getElementById('subBtn').dataset.editingId;
+        document.getElementById('cancelEditBtn').classList.add('hidden');
     });
 
     window.makeHeroFeatured = async function(id) {
@@ -243,12 +464,52 @@
       if(res.ok) {
         alert('Success: This item is now your website\'s main hero spotlight!');
         loadCatalog();
+      } else {
+        alert('Failed to set hero item.');
       }
+    };
+
+    window.editItem = async function(id) {
+        const productToEdit = allProducts.find(p => p._id === id);
+        if (!productToEdit) return alert('Product not found for editing.');
+
+        // Populate form fields
+        document.getElementById('pTitle').value = productToEdit.title || '';
+        document.getElementById('pPrice').value = productToEdit.price || '';
+        document.getElementById('pDesc').value = productToEdit.description || '';
+        document.getElementById('pLink').value = productToEdit.link || '';
+        document.getElementById('pCategory').value = productToEdit.category || 'Shirts';
+        document.getElementById('pTag').value = productToEdit.tag || '';
+
+        // Handle images: display existing, allow new upload
+        const previews = document.getElementById('previews');
+        previews.innerHTML = '';
+        imagesQueue = []; // Clear current queue
+        if (productToEdit.images && productToEdit.images.length > 0) {
+            productToEdit.images.forEach(imgUrl => {
+                imagesQueue.push(imgUrl); // Add existing image URLs to queue
+                previews.innerHTML += `
+                    <div class="relative w-12 h-14 rounded-xl overflow-hidden border border-neutral-200 shadow-sm">
+                        <img src="${imgUrl}" class="w-full h-full object-cover">
+                    </div>`;
+            });
+            document.getElementById('statusTxt').innerText = `${productToEdit.images.length} EXISTING MEDIA PLOTS`;
+        } else {
+            document.getElementById('statusTxt').innerText = `Tap to add photos from device gallery`;
+        }
+
+        // Change submit button to Update and store ID
+        document.getElementById('subBtn').innerText = "Update Live Item";
+        document.getElementById('subBtn').dataset.editingId = id; // Use dataset for ID
+        document.getElementById('cancelEditBtn').classList.remove('hidden'); // Show cancel button
+        window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to form
     };
 
     async function loadCatalog() {
       const res = await fetch('/api/products');
       const data = await res.json();
+      allProducts = data; // Store fetched data globally
+
       const list = document.getElementById('catalogList');
       const totalProductsCount = document.getElementById('totalProductsCount');
       const totalCategoriesCount = document.getElementById('totalCategoriesCount');
@@ -271,41 +532,48 @@
         categoryBreakdown.innerHTML += '<p class="text-xs text-neutral-400">No categories yet.</p>';
       }
 
-      list.innerHTML = data.length === 0 ? '<p class="text-xs text-neutral-400 font-bold uppercase py-4 text-center app-box">Index Map Empty</p>' : '';
+      list.innerHTML = data.length === 0 ? '<p class="text-xs text-neutral-400 font-bold uppercase py-4 text-center app-box col-span-full">Index Map Empty</p>' : '';
       
       data.forEach(p => {
-        const img = p.images && p.images.length > 0 ? p.images[0] : '';
+        const img = p.images && p.images.length > 0 ? p.images[0] : 'https://via.placeholder.com/300?text=No+Image';
         const heroTag = p.isFeatured ? `<span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-[8px] font-black tracking-wide uppercase">Active Hero</span>` : '';
         const badgeTag = p.tag ? `<span class="bg-purple-50 text-purple-600 px-2 py-0.5 rounded text-[8px] font-black tracking-wide uppercase">${p.tag}</span>` : '';
         
         list.innerHTML += `
-          <div class="flex items-center justify-between p-3 app-box">
-            <div class="flex items-center gap-3 min-w-0">
-              <img src="${img}" class="w-9 h-11 object-cover rounded-xl border border-neutral-100 flex-shrink-0">
-              <div class="min-w-0">
-                <div class="flex items-center gap-1.5 min-w-0">
-                  <span class="text-xs font-extrabold text-neutral-800 truncate block uppercase">${p.title}</span>
-                  ${heroTag}
-                  ${badgeTag}
+          <div class="product-admin-card">
+            <img src="${img}" alt="${p.title}" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500';">
+            <div class="flex flex-col flex-grow">
+                <div class="flex items-center gap-1.5 min-w-0 mb-1">
+                    <span class="title">${p.title}</span>
                 </div>
-                <span class="text-[9px] font-black text-purple-600 uppercase block mt-0.5">${p.category} | ₹${p.price}</span>
-              </div>
-            </div>
-            <div class="flex items-center gap-1.5 flex-shrink-0">
-              <button onclick="makeHeroFeatured('${p._id}')" class="px-2.5 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-600 border border-purple-100 font-extrabold text-[9px] uppercase rounded-xl transition">Set Hero</button>
-              <button onclick="deleteItem('${p._id}')" class="px-2.5 py-1.5 bg-red-50 hover:bg-red-100 text-red-500 font-bold text-[9px] uppercase rounded-xl transition">Delete</button>
+                <div class="flex items-center gap-2 flex-wrap mb-2">
+                    <span class="meta text-purple-600">${p.category}</span>
+                    <span class="meta text-neutral-600">₹${p.price}</span>
+                    ${heroTag}
+                    ${badgeTag}
+                </div>
+                <div class="actions mt-auto">
+                    <button onclick="makeHeroFeatured('${p._id}')" class="bg-purple-50 hover:bg-purple-100 text-purple-600 border border-purple-100">Set Hero</button>
+                    <button onclick="editItem('${p._id}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-100">Edit</button>
+                    <button onclick="deleteItem('${p._id}')" class="bg-red-50 hover:bg-red-100 text-red-500 border border-red-100">Delete</button>
+                </div>
             </div>
           </div>`;
       });
     }
 
     window.deleteItem = async function(id) {
-      if(!confirm('Purge active asset sequence completely?')) return;
+      if(!confirm('Purge active asset sequence completely? This action cannot be undone.')) return;
       const res = await fetch(`/api/products/${id}`, {
         method: 'DELETE',
         headers: {'x-admin-password': activeToken}
       });
-      if(res.ok) { loadCatalog(); }
+      if(res.ok) { 
+        alert('Item deleted successfully.');
+        loadCatalog(); 
+      } else {
+        alert('Failed to delete item.');
+      }
     };
   </script>
 </body>
