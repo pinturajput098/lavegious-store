@@ -220,6 +220,29 @@
         <button id="logoutBtn" class="px-4 py-2 bg-white border border-neutral-200 text-red-500 font-extrabold text-xs rounded-xl uppercase tracking-wider shadow-sm hover:bg-red-50 transition">Exit</button>
       </div>
 
+      <!-- AI Auto-Drop Link Extractor Section -->
+      <div class="app-box p-6 shadow-md">
+        <h2 class="font-extrabold text-sm uppercase tracking-wider text-purple-600 border-b border-neutral-100 pb-2 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 100 13.5 6.75 6.75 0 000-13.5zM2.25 10.5a8.25 8.25 0 1114.59 5.28l4.697 4.698a1.125 1.125 0 11-1.59 1.59l-4.696-4.697A8.25 8.25 0 012.25 10.5z" clip-rule="evenodd" />
+            </svg>
+            ⚡ AI Auto-Drop Link Extractor
+        </h2>
+        <div class="mt-4 space-y-3">
+          <div>
+            <label for="aiProductLink" class="block text-[10px] font-black uppercase tracking-wider text-neutral-400 mb-1">Product/Affiliate Link</label>
+            <input type="url" id="aiProductLink" placeholder="Paste product URL here (e.g., https://amazon.in/product-xyz)" class="w-full p-3.5 bg-neutral-50 border border-neutral-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-purple-500">
+          </div>
+          <button type="button" id="autoFillBtn" class="w-full app-btn font-black py-3 rounded-xl text-xs uppercase tracking-widest shadow-md shadow-purple-600/10 flex items-center justify-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 9a.75.75 0 00-1.5 0v2.25H9a.75.75 0 000 1.5h2.25V15a.75.75 0 001.5 0v-2.25H15a.75.75 0 000-1.5h-2.25V9z" clip-rule="evenodd" />
+            </svg>
+            ✨ Auto Fill Product Details
+          </button>
+          <p id="aiStatusMessage" class="text-xs text-center text-neutral-500 mt-2"></p>
+        </div>
+      </div>
+
       <!-- Live Catalog Analytics -->
       <div class="app-box p-6 shadow-md">
         <h2 class="font-extrabold text-sm uppercase tracking-wider text-purple-600 border-b border-neutral-100 pb-2 flex items-center gap-2">
@@ -575,6 +598,118 @@
         alert('Failed to delete item.');
       }
     };
+
+    // --- AI Auto-Drop Link Extractor Logic ---
+    const aiProductLinkInput = document.getElementById('aiProductLink');
+    const autoFillBtn = document.getElementById('autoFillBtn');
+    const aiStatusMessage = document.getElementById('aiStatusMessage');
+
+    const categoryMap = {
+        't-shirts': 'T-Shirts',
+        'tshirt': 'T-Shirts',
+        'tee': 'T-Shirts',
+        'shirts': 'Shirts',
+        'jeans': 'Jeans',
+        'trousers': 'Trousers',
+        'pants': 'Trousers',
+        'lower': 'Trousers',
+        'shoes': 'Shoes',
+        'sneakers': 'Shoes',
+        'footwear': 'Shoes',
+        'hoodies': 'Hoodies',
+        'sweatshirt': 'Hoodies',
+        'jumper': 'Hoodies',
+        'accessories': 'Accessories'
+    };
+
+    function mapCategoryToDropdown(extractedCategory) {
+        if (!extractedCategory) return 'Shirts'; // Default category
+        const lowerCaseCat = extractedCategory.toLowerCase();
+        for (const key in categoryMap) {
+            if (lowerCaseCat.includes(key)) {
+                return categoryMap[key];
+            }
+        }
+        // If no direct match, try to find a close one or default
+        const availableOptions = Array.from(document.getElementById('pCategory').options).map(opt => opt.value.toLowerCase());
+        if (availableOptions.includes(lowerCaseCat)) {
+            return extractedCategory; // Use as is if it's a valid option
+        }
+        return 'Shirts'; // Fallback
+    }
+
+    autoFillBtn.addEventListener('click', async () => {
+        const productUrl = aiProductLinkInput.value.trim();
+        if (!productUrl) {
+            aiStatusMessage.className = 'text-xs text-center text-red-500 mt-2';
+            aiStatusMessage.innerText = 'Please enter a product link.';
+            return;
+        }
+
+        aiStatusMessage.className = 'text-xs text-center text-purple-600 mt-2';
+        aiStatusMessage.innerText = '⚡ Extracting product details with AI... Please wait.';
+        autoFillBtn.disabled = true;
+
+        try {
+            // IMPORTANT: This client-side code assumes a backend endpoint exists at /api/extract-product-data
+            // that can fetch the external URL's HTML and use a server-side Gemini API (like auto_drop.py does).
+            // Direct client-side scraping of external URLs and direct Gemini API calls with HTML content
+            // are typically blocked by CORS policies and Gemini's input requirements (text, not URL to scrape).
+            const response = await fetch('/api/extract-product-data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-admin-password': activeToken // Pass admin token for authentication if backend requires
+                },
+                body: JSON.stringify({ product_url: productUrl })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to extract product data from backend.');
+            }
+
+            const data = await response.json();
+
+            // Populate form fields
+            document.getElementById('pTitle').value = data.title || '';
+            document.getElementById('pPrice').value = data.price ? parseFloat(data.price).toFixed(0) : ''; // Ensure price is number and formatted
+            document.getElementById('pDesc').value = data.description || '';
+            document.getElementById('pLink').value = productUrl; // Use the input URL as the affiliate link
+            document.getElementById('pCategory').value = mapCategoryToDropdown(data.category);
+            document.getElementById('pTag').value = data.tag || '';
+
+            // Handle images
+            const previews = document.getElementById('previews');
+            previews.innerHTML = '';
+            imagesQueue = [];
+            const imageUrls = Array.isArray(data.images) ? data.images : (data.image ? [data.image] : []);
+
+            if (imageUrls.length > 0) {
+                imageUrls.forEach(imgUrl => {
+                    imagesQueue.push(imgUrl);
+                    previews.innerHTML += `
+                        <div class="relative w-12 h-14 rounded-xl overflow-hidden border border-neutral-200 shadow-sm">
+                            <img src="${imgUrl}" class="w-full h-full object-cover" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='https://via.placeholder.com/300?text=Image+Error';">
+                        </div>`;
+                });
+                document.getElementById('statusTxt').innerText = `${imageUrls.length} MEDIA DROPS SYNC READY (AI Extracted)`;
+            } else {
+                document.getElementById('statusTxt').innerText = `No images extracted. Tap to add photos from device gallery`;
+            }
+
+            aiStatusMessage.className = 'text-xs text-center text-green-600 mt-2';
+            aiStatusMessage.innerText = '✨ Product details auto-filled successfully!';
+            window.scrollTo({ top: document.getElementById('uploadForm').offsetTop, behavior: 'smooth' });
+
+        } catch (error) {
+            console.error('AI Auto-Fill Error:', error);
+            aiStatusMessage.className = 'text-xs text-center text-red-500 mt-2';
+            aiStatusMessage.innerText = `Error: ${error.message || 'Failed to auto-fill product details.'}`; 
+        } finally {
+            autoFillBtn.disabled = false;
+        }
+    });
   </script>
 </body>
 </html>
