@@ -280,7 +280,7 @@
             <input type="file" id="pImg" multiple accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
             <div class="text-2xl mb-1 text-purple-600">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 mx-auto">
-                    <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5a.75.75 0 00.75-.75v-1.94l-2.432-2.432a1.125 1.125 0 00-1.588 0L9.407 16.07a4.5 4.5 0 01-1.89-1.14L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clip-rule="evenodd" />
+                    <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5a.75.75 0 00.75-.75v-1.94l-2.432-2.432a1.125 1.125 0 00-1.588 0L9.407 16.07a4.5 4.5 0 01-1.89-1.14L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 0 01-2.25 0z" clip-rule="evenodd" />
                 </svg>
             </div>
             <p id="statusTxt" class="text-xs font-bold text-neutral-700 uppercase">Tap to add photos from device gallery</p>
@@ -647,21 +647,38 @@
         }
 
         aiStatusMessage.className = 'text-xs text-center text-purple-600 mt-2';
-        aiStatusMessage.innerText = '⚡ Extracting product details with AI... Please wait.';
+        aiStatusMessage.innerText = '⚡ Fetching page HTML via CORS proxy...';
         autoFillBtn.disabled = true;
 
+        const corsProxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(productUrl)}`;
+        let htmlContent = null;
+
         try {
-            // IMPORTANT: This client-side code assumes a backend endpoint exists at /api/extract-product-data
-            // that can fetch the external URL's HTML and use a server-side Gemini API (like auto_drop.py does).
-            // Direct client-side scraping of external URLs and direct Gemini API calls with HTML content
-            // are typically blocked by CORS policies and Gemini's input requirements (text, not URL to scrape).
+            const proxyResponse = await fetch(corsProxyUrl);
+            if (!proxyResponse.ok) {
+                throw new Error(`CORS proxy failed to fetch URL: ${proxyResponse.status} ${proxyResponse.statusText}`);
+            }
+            htmlContent = await proxyResponse.text();
+            
+            // Basic check to see if the proxy returned actual HTML content or an error page
+            if (!htmlContent || htmlContent.trim().startsWith('<') && htmlContent.trim().toLowerCase().includes('<!doctype html>')) {
+                throw new Error('CORS proxy returned an HTML page (possibly an error or redirect) instead of target content.');
+            }
+
+            aiStatusMessage.innerText = '⚡ HTML fetched. Sending to AI for extraction...';
+
+            // IMPORTANT: This client-side code now sends the fetched HTML content to the backend.
+            // The backend endpoint `/api/extract-product-data` MUST be updated to expect `html_content`
+            // in the request body, instead of `product_url`, and then pass this HTML to Gemini.
+            // The `auto_drop.py` script would need to be adapted or integrated into a web server
+            // to handle this new input structure.
             const response = await fetch('/api/extract-product-data', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'x-admin-password': activeToken // Pass admin token for authentication if backend requires
                 },
-                body: JSON.stringify({ product_url: productUrl })
+                body: JSON.stringify({ html_content: htmlContent, original_url: productUrl }) // Send HTML and original URL
             });
 
             if (!response.ok) {
