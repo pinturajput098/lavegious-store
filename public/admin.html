@@ -349,31 +349,10 @@
 
   <script>
     let activeToken = localStorage.getItem('studioToken') || '';
-    let imagesQueue = [];
+    let imagesQueue = []; // Stores base64 for new uploads, or URLs for existing/extracted images
     let allProducts = []; // To store all products for editing
 
     const ADMIN_PASSWORD = 'Yts@12345'; // Hardcoded password as per request
-
-    // --- Gemini API Key Management ---
-    let geminiApiKey = localStorage.getItem('GEMINI_API_KEY');
-
-    function promptForGeminiApiKey() {
-        let key = prompt('Please enter your Gemini API Key. This will be saved securely in your browser\'s local storage for future use in the Admin Studio.');
-        if (key) {
-            localStorage.setItem('GEMINI_API_KEY', key.trim());
-            geminiApiKey = key.trim(); // Update the global variable
-            return true; // Key was set
-        } else {
-            alert('Gemini API Key is required for AI Auto-Fill functionality. Please enter it when prompted.');
-            return false; // Key was not set
-        }
-    }
-
-    // If key is not found on load, prompt immediately
-    if (!geminiApiKey) {
-        promptForGeminiApiKey();
-    }
-    // --- End Gemini API Key Management ---
 
     // Initial check for authentication
     if(activeToken === ADMIN_PASSWORD) { // Check against the actual password
@@ -446,6 +425,8 @@
       const editingId = btn.dataset.editingId; // Get ID if editing
 
       // Only require images for new items, or if existing item has no images and new ones are uploaded
+      // If editing and imagesQueue is empty, it means no new images were uploaded, and we should retain existing ones.
+      // The backend handles this by merging if images are not provided in the payload.
       if(imagesQueue.length === 0 && !editingId) {
           return alert('Input Interruption: Target asset queue empty. Please add images for a new product.');
       }
@@ -466,25 +447,32 @@
       const method = editingId ? 'PUT' : 'POST';
       const url = editingId ? `/api/products/${editingId}` : '/api/products';
 
-      const res = await fetch(url, {
-        method: method,
-        headers: {'Content-Type': 'application/json', 'x-admin-password': activeToken},
-        body: JSON.stringify(payload)
-      });
+      try {
+        const res = await fetch(url, {
+          method: method,
+          headers: {'Content-Type': 'application/json', 'x-admin-password': activeToken},
+          body: JSON.stringify(payload)
+        });
 
-      if(res.ok) {
-        alert(`Transaction Confirmed: Item ${editingId ? 'updated' : 'published'} successfully.`);
-        // Clear form and reset to add mode
-        document.getElementById('uploadForm').reset();
-        document.getElementById('previews').innerHTML = '';
-        imagesQueue = [];
-        document.getElementById('statusTxt').innerText = `Tap to add photos from device gallery`;
-        btn.innerText = "Publish Directly Live";
-        delete btn.dataset.editingId; // Remove editing ID
-        document.getElementById('cancelEditBtn').classList.add('hidden'); // Hide cancel button
-        loadCatalog(); // Reload catalog to show changes
-      } else {
-        alert('Transaction Interrupted: Connection failure nodes.');
+        if(res.ok) {
+          alert(`Transaction Confirmed: Item ${editingId ? 'updated' : 'published'} successfully.`);
+          // Clear form and reset to add mode
+          document.getElementById('uploadForm').reset();
+          document.getElementById('previews').innerHTML = '';
+          imagesQueue = [];
+          document.getElementById('statusTxt').innerText = `Tap to add photos from device gallery`;
+          btn.innerText = "Publish Directly Live";
+          delete btn.dataset.editingId; // Remove editing ID
+          document.getElementById('cancelEditBtn').classList.add('hidden'); // Hide cancel button
+          loadCatalog(); // Reload catalog to show changes
+        } else {
+          const errorData = await res.json();
+          alert(`Transaction Interrupted: ${errorData.error || 'Connection failure nodes.'}`);
+        }
+      } catch (error) {
+        console.error('Form submission error:', error);
+        alert('Transaction Interrupted: Network or server error.');
+      } finally {
         btn.innerText = editingId ? "Update Live Item" : "Publish Directly Live";
         btn.disabled = false;
       }
@@ -509,7 +497,8 @@
         alert('Success: This item is now your website\'s main hero spotlight!');
         loadCatalog();
       } else {
-        alert('Failed to set hero item.');
+        const errorData = await res.json();
+        alert(`Failed to set hero item: ${errorData.error || 'Unknown error'}`);
       }
     };
 
@@ -534,7 +523,7 @@
                 imagesQueue.push(imgUrl); // Add existing image URLs to queue
                 previews.innerHTML += `
                     <div class="relative w-12 h-14 rounded-xl overflow-hidden border border-neutral-200 shadow-sm">
-                        <img src="${imgUrl}" class="w-full h-full object-cover">
+                        <img src="${imgUrl}" class="w-full h-full object-cover" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='https://via.placeholder.com/300?text=Image+Error';">
                     </div>`;
             });
             document.getElementById('statusTxt').innerText = `${productToEdit.images.length} EXISTING MEDIA PLOTS`;
@@ -552,7 +541,7 @@
     async function loadCatalog() {
       const res = await fetch('/api/products');
       const data = await res.json();
-      allProducts = data; // Store fetched data globally
+      allProducts = data;
 
       const list = document.getElementById('catalogList');
       const totalProductsCount = document.getElementById('totalProductsCount');
@@ -616,7 +605,8 @@
         alert('Item deleted successfully.');
         loadCatalog(); 
       } else {
-        alert('Failed to delete item.');
+        const errorData = await res.json();
+        alert(`Failed to delete item: ${errorData.error || 'Unknown error'}`);
       }
     };
 
@@ -667,95 +657,32 @@
             return;
         }
 
-        // Ensure Gemini API Key is available before proceeding
-        if (!geminiApiKey) {
-            if (!promptForGeminiApiKey()) { // If prompt fails to get a key
-                aiStatusMessage.className = 'text-xs text-center text-red-500 mt-2';
-                aiStatusMessage.innerText = 'Error: Gemini API Key is not configured. Please enter it when prompted.';
-                return;
-            }
-        }
-
-        const GEMINI_API_URL_WITH_KEY = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiApiKey}`;
-
         aiStatusMessage.className = 'text-xs text-center text-purple-600 mt-2';
-        aiStatusMessage.innerText = '⚡ Initiating AI Auto-Drop Link Extractor... Sending URL to Gemini...';
+        aiStatusMessage.innerText = '⚡ Initiating AI Auto-Drop Link Extractor... Sending URL to Backend...';
         autoFillBtn.disabled = true;
 
         try {
-            const prompt = `
-            You are an expert at extracting product information from raw HTML.
-            Given the following product URL, extract the following details into a JSON object.
-            Be precise and try to find the most accurate information.
-            If you cannot access the URL directly, state that in the description field.
-
-            Product URL: ${productUrl}
-
-            Extract the following fields:
-            - \`title\`: The main product title.
-            - \`price\`: The current selling price of the product. Extract only the numerical value. If a currency symbol is present, ignore it. Round to 0 decimal places if possible.
-            - \`originalPrice\`: (Optional) The original price if a discount is applied. Extract only the numerical value. If not found, set to \`null\`. Round to 0 decimal places if possible.
-            - \`category\`: A general category for the product (e.g., "T-Shirts", "Jeans", "Shoes", "Accessories"). Infer from title, description, or common page elements.
-            - \`tag\`: (Optional) A short, descriptive tag for the product (e.g., "Oversized", "Trending", "New Drop", "Limited Edition"). If not found, set to \`null\`.
-            - \`image\`: The URL of the primary product image. If multiple images are clearly visible and relevant, provide an array of URLs. Otherwise, provide a single URL string. Prioritize high-quality, clear images.
-            - \`description\`: A concise description of the product, summarizing its key features, material, or style.
-
-            Ensure the output is a valid JSON object, and do not include any other text or markdown outside the JSON block.
-            Example JSON format:
-            {
-              "title": "Example Product Title",
-              "price": 123,
-              "originalPrice": 150,
-              "category": "Shirts",
-              "tag": "New Drop",
-              "image": "https://example.com/image.jpg",
-              "description": "A detailed description of the product features and benefits."
-            }
-            `;
-
-            const geminiResponse = await fetch(GEMINI_API_URL_WITH_KEY, {
+            const response = await fetch('/api/extract', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'x-admin-password': activeToken // Send admin password for authentication
                 },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [{
-                            text: prompt
-                        }]
-                    }]
-                })
+                body: JSON.stringify({ url: productUrl })
             });
 
-            if (!geminiResponse.ok) {
-                const errorData = await geminiResponse.json();
-                throw new Error(errorData.error?.message || 'Failed to get response from Gemini API.');
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to get response from backend extraction API.');
             }
 
-            const geminiJson = await geminiResponse.json();
-            let extractedData = {};
-
-            if (geminiJson.candidates && geminiJson.candidates.length > 0) {
-                const textResponse = geminiJson.candidates[0].content.parts[0].text;
-                // Attempt to find JSON within markdown block
-                const match = textResponse.match(/```json\n(.*)\n```/s); // /s flag for dotall
-                if (match && match[1]) {
-                    extractedData = JSON.parse(match[1]);
-                } else {
-                    // If not in markdown, assume the whole response is JSON
-                    extractedData = JSON.parse(textResponse);
-                }
-            } else {
-                throw new Error('Gemini API returned no candidates or content.');
-            }
+            const extractedData = await response.json();
 
             // Populate form fields
             document.getElementById('pTitle').value = extractedData.title || '';
-            // Ensure price is a number and formatted
             document.getElementById('pPrice').value = extractedData.price ? parseFloat(extractedData.price).toFixed(0) : '';
-            // Note: originalPrice is extracted but there's no dedicated field in the form to populate it.
             document.getElementById('pDesc').value = extractedData.description || '';
-            document.getElementById('pLink').value = ""; // Leave empty as per request
+            document.getElementById('pLink').value = productUrl; // Pre-fill affiliate link with the extracted URL
             document.getElementById('pCategory').value = mapCategoryToDropdown(extractedData.category);
             document.getElementById('pTag').value = extractedData.tag || '';
 
@@ -763,7 +690,7 @@
             const previews = document.getElementById('previews');
             previews.innerHTML = '';
             imagesQueue = [];
-            const imageUrls = Array.isArray(extractedData.image) ? extractedData.image : (extractedData.image ? [extractedData.image] : []);
+            const imageUrls = Array.isArray(extractedData.images) ? extractedData.images : (extractedData.images ? [extractedData.images] : []);
 
             if (imageUrls.length > 0) {
                 imageUrls.forEach(imgUrl => {
@@ -785,7 +712,7 @@
         } catch (error) {
             console.error('AI Auto-Fill Error:', error);
             aiStatusMessage.className = 'text-xs text-center text-red-500 mt-2';
-            aiStatusMessage.innerText = `Error: ${error.message || 'Failed to auto-fill product details.'} (Note: Gemini may not be able to scrape arbitrary URLs directly due to CORS or its capabilities. A server-side proxy might be needed for reliable scraping.)`; 
+            aiStatusMessage.innerText = `Error: ${error.message || 'Failed to auto-fill product details.'}`; 
         } finally {
             autoFillBtn.disabled = false;
         }

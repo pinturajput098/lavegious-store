@@ -10,13 +10,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Multiple Image Key Extractor
     function extractImageUrl(p) {
         if (!p) return 'https://via.placeholder.com/300?text=No+Image';
-        if (typeof p.image === 'string' && p.image.trim()) return p.image;
+        if (Array.isArray(p.images) && p.images.length > 0) return p.images[0]; // Prioritize 'images' array from backend
+        if (typeof p.image === 'string' && p.image.trim()) return p.image; // Fallback to single 'image' string (if old format)
         if (typeof p.imageUrl === 'string' && p.imageUrl.trim()) return p.imageUrl;
         if (typeof p.img_url === 'string' && p.img_url.trim()) return p.img_url;
         if (typeof p.img === 'string' && p.img.trim()) return p.img;
         if (typeof p.photo === 'string' && p.photo.trim()) return p.photo;
-        if (Array.isArray(p.images) && p.images.length > 0) return p.images[0];
-        if (Array.isArray(p.image) && p.image.length > 0) return p.image[0];
         return 'https://via.placeholder.com/300?text=Lavegious+Drop';
     }
 
@@ -58,6 +57,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             let res = await fetch('/api/products');
             if (!res.ok) {
+                console.warn('Failed to fetch from /api/products, falling back to /products.json');
                 res = await fetch('/products.json');
             }
             products = await res.json();
