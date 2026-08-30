@@ -354,10 +354,26 @@
 
     const ADMIN_PASSWORD = 'Yts@12345'; // Hardcoded password as per request
 
-    // IMPORTANT: Replace 'YOUR_GEMINI_API_KEY_HERE' with your actual Gemini API Key.
-    // This key is used for direct browser calls to the Gemini API.
-    const GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE"; 
-    const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+    // --- Gemini API Key Management ---
+    let geminiApiKey = localStorage.getItem('GEMINI_API_KEY');
+
+    function promptForGeminiApiKey() {
+        let key = prompt('Please enter your Gemini API Key. This will be saved securely in your browser\'s local storage for future use in the Admin Studio.');
+        if (key) {
+            localStorage.setItem('GEMINI_API_KEY', key.trim());
+            geminiApiKey = key.trim(); // Update the global variable
+            return true; // Key was set
+        } else {
+            alert('Gemini API Key is required for AI Auto-Fill functionality. Please enter it when prompted.');
+            return false; // Key was not set
+        }
+    }
+
+    // If key is not found on load, prompt immediately
+    if (!geminiApiKey) {
+        promptForGeminiApiKey();
+    }
+    // --- End Gemini API Key Management ---
 
     // Initial check for authentication
     if(activeToken === ADMIN_PASSWORD) { // Check against the actual password
@@ -643,8 +659,6 @@
         return 'Shirts'; // Fallback
     }
 
-    // Removed CORS_PROXIES and tryFetchWithProxies as per user request.
-
     autoFillBtn.addEventListener('click', async () => {
         const productUrl = aiProductLinkInput.value.trim();
         if (!productUrl) {
@@ -653,11 +667,16 @@
             return;
         }
 
-        if (!GEMINI_API_KEY || GEMINI_API_KEY === "YOUR_GEMINI_API_KEY_HERE") {
-            aiStatusMessage.className = 'text-xs text-center text-red-500 mt-2';
-            aiStatusMessage.innerText = 'Error: Gemini API Key is not configured. Please update the script in admin.html.';
-            return;
+        // Ensure Gemini API Key is available before proceeding
+        if (!geminiApiKey) {
+            if (!promptForGeminiApiKey()) { // If prompt fails to get a key
+                aiStatusMessage.className = 'text-xs text-center text-red-500 mt-2';
+                aiStatusMessage.innerText = 'Error: Gemini API Key is not configured. Please enter it when prompted.';
+                return;
+            }
         }
+
+        const GEMINI_API_URL_WITH_KEY = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiApiKey}`;
 
         aiStatusMessage.className = 'text-xs text-center text-purple-600 mt-2';
         aiStatusMessage.innerText = '⚡ Initiating AI Auto-Drop Link Extractor... Sending URL to Gemini...';
@@ -674,8 +693,8 @@
 
             Extract the following fields:
             - \`title\`: The main product title.
-            - \`price\`: The current selling price of the product. Extract only the numerical value. If a currency symbol is present, ignore it.
-            - \`originalPrice\`: (Optional) The original price if a discount is applied. Extract only the numerical value. If not found, set to \`null\`.
+            - \`price\`: The current selling price of the product. Extract only the numerical value. If a currency symbol is present, ignore it. Round to 0 decimal places if possible.
+            - \`originalPrice\`: (Optional) The original price if a discount is applied. Extract only the numerical value. If not found, set to \`null\`. Round to 0 decimal places if possible.
             - \`category\`: A general category for the product (e.g., "T-Shirts", "Jeans", "Shoes", "Accessories"). Infer from title, description, or common page elements.
             - \`tag\`: (Optional) A short, descriptive tag for the product (e.g., "Oversized", "Trending", "New Drop", "Limited Edition"). If not found, set to \`null\`.
             - \`image\`: The URL of the primary product image. If multiple images are clearly visible and relevant, provide an array of URLs. Otherwise, provide a single URL string. Prioritize high-quality, clear images.
@@ -685,8 +704,8 @@
             Example JSON format:
             {
               "title": "Example Product Title",
-              "price": 123.45,
-              "originalPrice": 150.00,
+              "price": 123,
+              "originalPrice": 150,
               "category": "Shirts",
               "tag": "New Drop",
               "image": "https://example.com/image.jpg",
@@ -694,7 +713,7 @@
             }
             `;
 
-            const geminiResponse = await fetch(GEMINI_API_URL, {
+            const geminiResponse = await fetch(GEMINI_API_URL_WITH_KEY, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
