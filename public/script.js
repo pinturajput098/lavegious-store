@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             gridContainer.innerHTML = `
                 <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #6B7280;">
                     <p style="font-size: 16px; font-weight: 700;">No items found in this section!</p>
-                    <p style="font-size: 13px; margin-top: 6px;">Try selecting "All Drops" or searching another keyword.</p>
+                    <p style="font-size: 13px; margin-top: 6px;">Try selecting \"All Drops\" or searching another keyword.</p>
                 </div>`;
             return;
         }
