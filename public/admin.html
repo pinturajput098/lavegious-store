@@ -638,6 +638,46 @@
         return 'Shirts'; // Fallback
     }
 
+    const CORS_PROXIES = [
+        { url: 'https://api.allorigins.win/get?url=', type: 'json' }, // allorigins.win returns JSON with 'contents' key
+        { url: 'https://corsproxy.io/?', type: 'raw' }, // corsproxy.io returns raw content
+        { url: 'https://api.codetabs.com/v1/proxy?quest=', type: 'raw' } // codetabs.com returns raw content
+    ];
+
+    async function tryFetchWithProxies(targetUrl) {
+        for (let i = 0; i < CORS_PROXIES.length; i++) {
+            const proxy = CORS_PROXIES[i];
+            const proxyUrl = `${proxy.url}${encodeURIComponent(targetUrl)}`;
+            aiStatusMessage.innerText = `⚡ Attempting to fetch via proxy ${i + 1}/${CORS_PROXIES.length}...`;
+            try {
+                const response = await fetch(proxyUrl, { cache: 'no-store', mode: 'cors' });
+                if (!response.ok) {
+                    throw new Error(`Proxy ${proxy.url} failed: ${response.status} ${response.statusText}`);
+                }
+
+                let content;
+                if (proxy.type === 'json') {
+                    const jsonResponse = await response.json();
+                    content = jsonResponse.contents;
+                } else { // type === 'raw'
+                    content = await response.text();
+                }
+
+                // Basic check for valid HTML content (not an error page or empty)
+                if (content && typeof content === 'string' && content.trim().length > 100 && content.trim().toLowerCase().includes('<html')) {
+                    console.log(`Successfully fetched HTML via proxy: ${proxy.url}`);
+                    return content;
+                } else {
+                    throw new Error(`Proxy ${proxy.url} returned invalid, empty, or non-HTML content.`);
+                }
+            } catch (error) {
+                console.warn(`Proxy attempt failed (${proxy.url}):`, error.message);
+                // Continue to the next proxy
+            }
+        }
+        return null; // All proxies failed
+    }
+
     autoFillBtn.addEventListener('click', async () => {
         const productUrl = aiProductLinkInput.value.trim();
         if (!productUrl) {
@@ -647,38 +687,30 @@
         }
 
         aiStatusMessage.className = 'text-xs text-center text-purple-600 mt-2';
-        aiStatusMessage.innerText = '⚡ Fetching page HTML via CORS proxy...';
+        aiStatusMessage.innerText = '⚡ Initiating AI Auto-Drop Link Extractor...';
         autoFillBtn.disabled = true;
 
-        const corsProxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(productUrl)}`;
         let htmlContent = null;
+        let payload = {};
 
         try {
-            const proxyResponse = await fetch(corsProxyUrl);
-            if (!proxyResponse.ok) {
-                throw new Error(`CORS proxy failed to fetch URL: ${proxyResponse.status} ${proxyResponse.statusText}`);
-            }
-            htmlContent = await proxyResponse.text();
-            
-            // Basic check to see if the proxy returned actual HTML content or an error page
-            if (!htmlContent || htmlContent.trim().startsWith('<') && htmlContent.trim().toLowerCase().includes('<!doctype html>')) {
-                throw new Error('CORS proxy returned an HTML page (possibly an error or redirect) instead of target content.');
+            htmlContent = await tryFetchWithProxies(productUrl);
+
+            if (htmlContent) {
+                aiStatusMessage.innerText = '⚡ HTML fetched via proxy. Sending to AI for extraction...';
+                payload = { html_content: htmlContent, original_url: productUrl };
+            } else {
+                aiStatusMessage.innerText = '⚡ All CORS proxies failed. Sending URL directly to AI for server-side fetching...';
+                payload = { original_url: productUrl }; // Backend must handle fetching
             }
 
-            aiStatusMessage.innerText = '⚡ HTML fetched. Sending to AI for extraction...';
-
-            // IMPORTANT: This client-side code now sends the fetched HTML content to the backend.
-            // The backend endpoint `/api/extract-product-data` MUST be updated to expect `html_content`
-            // in the request body, instead of `product_url`, and then pass this HTML to Gemini.
-            // The `auto_drop.py` script would need to be adapted or integrated into a web server
-            // to handle this new input structure.
             const response = await fetch('/api/extract-product-data', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'x-admin-password': activeToken // Pass admin token for authentication if backend requires
+                    'x-admin-password': activeToken
                 },
-                body: JSON.stringify({ html_content: htmlContent, original_url: productUrl }) // Send HTML and original URL
+                body: JSON.stringify(payload)
             });
 
             if (!response.ok) {
