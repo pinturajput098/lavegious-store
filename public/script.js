@@ -101,11 +101,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             const price = product.price || 0;
             const category = product.category || 'Drop';
             const badgeTag = product.tag || ''; // Use product.tag for the badge
-            const link = product.link || product.affiliate_link || '#';
+            const link = product.link || product.affiliate_link || '#'; // Ensure link is available
             const description = product.description || '';
 
             return `
-                <div class="product-card">
+                <div class="product-card" data-affiliate-link="${link}">
                     <div class="card-img-wrap">
                         ${badgeTag ? `<span class="card-badge">${badgeTag}</span>` : ''}
                         <img src="${imgUrl}" 
@@ -120,13 +120,23 @@ document.addEventListener('DOMContentLoaded', async () => {
                             <span class="card-price">₹${price}</span>
                             <span class="card-tag">${category}</span>
                         </div>
-                        <a href="${link}" target="_blank" rel="noopener noreferrer" class="buy-btn">
+                        <button class="buy-btn">
                             <span>⚡ Grab Drop</span>
-                        </a>
+                        </button>
                     </div>
                 </div>
             `;
         }).join('');
+
+        // Add event listeners to newly rendered product cards
+        document.querySelectorAll('.product-card').forEach(card => {
+            card.addEventListener('click', (event) => {
+                const affiliateLink = card.dataset.affiliateLink;
+                if (affiliateLink && affiliateLink !== '#') {
+                    window.open(affiliateLink, '_blank');
+                }
+            });
+        });
     }
 
     if (searchInput) {

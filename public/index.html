@@ -350,6 +350,7 @@
             justify-content: space-between;
             transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
+            cursor: pointer; /* Indicate clickable */
         }
 
         .product-card:hover {
@@ -447,7 +448,7 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            text-decoration: none;
+            /* text-decoration: none; REMOVED: Now a button, not an anchor */
         }
 
         .trust-section {
@@ -574,6 +575,53 @@
             }
             .product-grid {
                 grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+        }
+
+        @media (max-width: 580px) { /* New breakpoint for 2-column mobile layout */
+            .catalog-container {
+                padding: 0 10px; /* More compact container padding */
+            }
+            .product-grid {
+                grid-template-columns: repeat(2, 1fr); /* Force 2 columns */
+                gap: 12px; /* Compact gap */
+            }
+            .product-card {
+                padding: 8px; /* Compact padding inside card */
+                border-radius: 16px; /* Slightly smaller radius */
+            }
+            .card-img-wrap {
+                height: 140px; /* More compact image height */
+                border-radius: 12px;
+            }
+            .card-badge {
+                font-size: 9px;
+                padding: 3px 8px;
+                top: 8px;
+                left: 8px;
+            }
+            .card-details {
+                padding: 10px 2px 4px; /* Compact details padding */
+            }
+            .card-title {
+                font-size: 13px; /* Smaller font size */
+                margin-bottom: 4px;
+                -webkit-line-clamp: 2; /* Ensure 2 lines still work */
+            }
+            .card-price-row {
+                margin-bottom: 8px; /* Smaller margin */
+            }
+            .card-price {
+                font-size: 15px; /* Smaller price font */
+            }
+            .card-tag {
+                font-size: 9px; /* Smaller tag font */
+                padding: 2px 6px;
+            }
+            .buy-btn {
+                padding: 8px; /* Smaller button padding */
+                font-size: 12px; /* Smaller button font */
+                border-radius: 10px;
             }
         }
 
