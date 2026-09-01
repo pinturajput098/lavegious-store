@@ -1,3 +1,5 @@
 {
-  "cleanUrls": true
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "https://lavegious-store.onrender.com/api/:path*" }
+  ]
 }
