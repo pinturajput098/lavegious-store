@@ -55,9 +55,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function fetchRealProducts() {
         try {
-            let res = await fetch('/api/products');
+            let res = await fetch('https://lavegious-store.onrender.com/api/products');
             if (!res.ok) {
-                console.warn('Failed to fetch from /api/products, falling back to /products.json');
+                console.warn('Failed to fetch from https://lavegious-store.onrender.com/api/products, falling back to /products.json');
                 res = await fetch('/products.json');
             }
             products = await res.json();

@@ -63,7 +63,7 @@
             const link = document.getElementById('editLink').value;
             const description = document.getElementById('editDescription').value;
 
-            fetch(`/api/products/update/${id}`, {
+            fetch(`https://lavegious-store.onrender.com/api/products/update/${id}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ title, price, description, link })
