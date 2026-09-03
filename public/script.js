@@ -1,7 +1,9 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const gridContainer = document.getElementById('mainProductContainer');
     const searchInput = document.getElementById('lavegiousSearchInput');
-    const chips = document.querySelectorAll('.chip');
+    const autocompleteSuggestions = document.getElementById('autocompleteSuggestions');
+    const filterChipsContainer = document.getElementById('filterChipsContainer');
+    const categoryBarContainer = document.getElementById('categoryBarContainer');
 
     // Modal elements
     const checkoutModal = document.getElementById('checkoutModal');
@@ -32,7 +34,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const nextBtn = document.querySelector('.next-btn');
     const carouselDotsContainer = document.getElementById('carouselDots');
     let currentIndex = 0;
-    const itemWidth = carouselItems[0] ? carouselItems[0].clientWidth : 0; // Ensure items exist
     let autoSlideInterval;
 
     let products = [];
@@ -105,7 +106,54 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.error("Products load fail hue:", err);
             products = [];
         }
+        renderCategories();
+        renderFilterChips();
         renderProducts();
+    }
+
+    function renderCategories() {
+        if (!categoryBarContainer) return;
+
+        const uniqueCategories = ['All Drops', ...new Set(products.map(p => p.category).filter(Boolean))];
+        const predefinedCategories = ['Oversized Tees', 'Hoodies', 'Accessories']; // As per request
+        const finalCategories = Array.from(new Set([...predefinedCategories, ...uniqueCategories]));
+
+        categoryBarContainer.innerHTML = finalCategories.map(cat => `
+            <div class="category-card ${cat === currentCategory ? 'active' : ''}" data-category="${cat}">
+                <img src="https://via.placeholder.com/60?text=${cat.split(' ')[0]}" alt="${cat}" class="category-card-img">
+                <span class="category-card-title">${cat}</span>
+            </div>
+        `).join('');
+
+        document.querySelectorAll('.category-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.category-card').forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+                currentCategory = card.dataset.category;
+                renderProducts();
+            });
+        });
+    }
+
+    function renderFilterChips() {
+        if (!filterChipsContainer) return;
+
+        const uniqueCategories = ['All Drops', ...new Set(products.map(p => p.category).filter(Boolean))];
+        const predefinedCategories = ['T-Shirts', 'Hoodies', 'Oversized', 'Accessories', 'Shoes', 'Shirts', 'Jeans', 'Trousers']; // From original HTML
+        const finalCategories = Array.from(new Set([...uniqueCategories, ...predefinedCategories]));
+
+        filterChipsContainer.innerHTML = finalCategories.map(cat => `
+            <button class="chip ${cat === currentCategory ? 'active' : ''}" data-category="${cat}">${cat}</button>
+        `).join('');
+
+        document.querySelectorAll('.chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                currentCategory = chip.dataset.category;
+                renderProducts();
+            });
+        });
     }
 
     function renderProducts() {
@@ -128,9 +176,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (filtered.length === 0) {
             gridContainer.innerHTML = `
-                <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #6B7280;">
-                    <p style="font-size: 16px; font-weight: 700;">No items found in this section!</p>
-                    <p style="font-size: 13px; margin-top: 6px;">Try selecting \"All Drops\" or searching another keyword.</p>
+                <div class="no-items-found">
+                    <p>No items found in this section!</p>
+                    <p>Try selecting "All Drops" or searching another keyword.</p>
                 </div>`;
             return;
         }
@@ -140,7 +188,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             const title = product.title || 'Streetwear Fit';
             const price = product.price || 0;
             const originalPrice = product.originalPrice || null;
-            const category = product.category || 'Drop';
             const badgeTag = product.tag || '';
 
             let discountBadge = '';
@@ -177,7 +224,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             <button class="size-btn" data-size="XXL">XXL</button>
                         </div>
                         <button class="buy-btn" data-product-id="${product._id}">
-                            <span>⚡ Buy Now</span>
+                            <span><i class="fas fa-bag-shopping"></i> Buy Now</span>
                         </button>
                     </div>
                 </div>
@@ -292,22 +339,57 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    // Existing search and filter logic
+    // Search and Autocomplete Logic
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
             searchQuery = e.target.value.trim();
             renderProducts();
+            // Basic autocomplete simulation
+            if (searchQuery.length > 2) {
+                const matchingTitles = products
+                    .filter(p => p.title.toLowerCase().includes(searchQuery.toLowerCase()))
+                    .map(p => p.title);
+                displayAutocompleteSuggestions(matchingTitles);
+            } else {
+                autocompleteSuggestions.innerHTML = '';
+                autocompleteSuggestions.style.display = 'none';
+            }
+        });
+
+        searchInput.addEventListener('focus', () => {
+            if (autocompleteSuggestions.children.length > 0) {
+                autocompleteSuggestions.style.display = 'block';
+            }
+        });
+
+        searchInput.addEventListener('blur', () => {
+            // Delay hiding to allow click on suggestion
+            setTimeout(() => {
+                autocompleteSuggestions.style.display = 'none';
+            }, 150);
         });
     }
 
-    chips.forEach(chip => {
-        chip.addEventListener('click', () => {
-            chips.forEach(c => c.classList.remove('active'));
-            chip.classList.add('active');
-            currentCategory = chip.textContent.trim();
-            renderProducts();
-        });
-    });
+    function displayAutocompleteSuggestions(suggestions) {
+        autocompleteSuggestions.innerHTML = '';
+        if (suggestions.length > 0) {
+            suggestions.slice(0, 5).forEach(suggestion => {
+                const div = document.createElement('div');
+                div.classList.add('autocomplete-item');
+                div.textContent = suggestion;
+                div.addEventListener('mousedown', () => { // Use mousedown to prevent blur event from firing first
+                    searchInput.value = suggestion;
+                    searchQuery = suggestion;
+                    renderProducts();
+                    autocompleteSuggestions.style.display = 'none';
+                });
+                autocompleteSuggestions.appendChild(div);
+            });
+            autocompleteSuggestions.style.display = 'block';
+        } else {
+            autocompleteSuggestions.style.display = 'none';
+        }
+    }
 
     // --- Authentication Modal Logic ---
     loginSignupBtn.addEventListener('click', () => {
@@ -345,7 +427,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     // --- Banner Carousel Logic ---
     function updateCarousel() {
         if (!carouselTrack || carouselItems.length === 0) return;
-        carouselTrack.style.transform = `translateX(${-currentIndex * carouselItems[0].clientWidth}px)`;
+        const itemWidth = carouselItems[0].clientWidth; // Recalculate on update
+        carouselTrack.style.transform = `translateX(${-currentIndex * itemWidth}px)`;
         updateDots();
     }
 
@@ -391,7 +474,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (carouselItems.length > 0) {
         prevBtn.addEventListener('click', () => { prevSlide(); resetAutoSlide(); });
         nextBtn.addEventListener('click', () => { nextSlide(); resetAutoSlide(); });
-        window.addEventListener('resize', updateCarousel); // Adjust on resize
+        window.addEventListener('resize', () => {
+            updateCarousel(); // Adjust on resize
+            resetAutoSlide(); // Reset auto-slide to prevent jumps
+        }); 
         updateCarousel(); // Initial render
         startAutoSlide(); // Start auto-sliding
     }
