@@ -183,6 +183,66 @@
             font-size: 14px;
         }
 
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-action-btn {
+            background: var(--purple-main);
+            color: #FFFFFF;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px var(--purple-glow);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .header-action-btn:hover {
+            background: var(--purple-accent);
+            box-shadow: 0 6px 16px var(--purple-glow);
+            transform: translateY(-2px);
+        }
+
+        .cart-icon {
+            background: #FFFFFF;
+            color: var(--purple-main);
+            border: 1.5px solid rgba(124, 58, 237, 0.2);
+            box-shadow: 0 4px 12px rgba(109, 40, 217, 0.04);
+            padding: 8px 12px;
+            position: relative;
+        }
+
+        .cart-icon:hover {
+            background: var(--purple-light);
+            color: var(--purple-accent);
+            border-color: var(--purple-accent);
+        }
+
+        #cartItemCount {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #EF4444;
+            color: #FFFFFF;
+            font-size: 9px;
+            font-weight: 700;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         .admin-toggle-btn {
             background: var(--purple-main);
             color: #FFFFFF;
@@ -271,6 +331,92 @@
             gap: 6px;
         }
 
+        /* Banner Carousel */
+        .banner-carousel-section {
+            max-width: 1280px;
+            margin: 30px auto;
+            padding: 0 20px;
+            position: relative;
+        }
+
+        .carousel-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: var(--radius-xl);
+            box-shadow: 0 20px 40px -15px rgba(109, 40, 217, 0.12);
+        }
+
+        .carousel-track {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .carousel-item {
+            min-width: 100%;
+            flex-shrink: 0;
+            height: 250px; /* Fixed height for banners */
+        }
+
+        .carousel-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: var(--radius-xl);
+        }
+
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: #FFFFFF;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 24px;
+            z-index: 10;
+            border-radius: 8px;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+
+        .carousel-btn:hover {
+            opacity: 1;
+        }
+
+        .prev-btn {
+            left: 10px;
+        }
+
+        .next-btn {
+            right: 10px;
+        }
+
+        .carousel-dots {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .dot.active {
+            background: var(--purple-accent);
+            width: 12px;
+            height: 12px;
+        }
+
         .section-header {
             max-width: 1280px;
             margin: 0 auto 20px;
@@ -350,7 +496,6 @@
             justify-content: space-between;
             transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
-            /* cursor: pointer; REMOVED: Now button handles click */
         }
 
         .product-card:hover {
@@ -394,6 +539,20 @@
             z-index: 2;
         }
 
+        .discount-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #EF4444;
+            color: #FFFFFF;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            z-index: 2;
+        }
+
         .card-details {
             padding: 14px 4px 6px;
         }
@@ -413,8 +572,8 @@
         .card-price-row {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            margin-bottom: 14px;
+            gap: 8px;
+            margin-bottom: 10px;
         }
 
         .card-price {
@@ -423,13 +582,42 @@
             color: var(--purple-main);
         }
 
-        .card-tag {
-            font-size: 11px;
-            font-weight: 600;
+        .original-price {
+            font-size: 13px;
             color: var(--text-muted);
-            background: var(--bg-body);
-            padding: 3px 8px;
-            border-radius: 6px;
+            text-decoration: line-through;
+            font-weight: 500;
+        }
+
+        .size-selection {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+
+        .size-btn {
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(124, 58, 237, 0.15);
+            background: #FFFFFF;
+            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .size-btn:hover {
+            border-color: var(--purple-accent);
+            color: var(--purple-main);
+        }
+
+        .size-btn.selected {
+            background: var(--purple-main);
+            color: #FFFFFF;
+            border-color: var(--purple-main);
+            box-shadow: 0 4px 10px var(--purple-glow);
         }
 
         .buy-btn {
@@ -708,7 +896,7 @@
                 flex-basis: 100%;
                 max-width: 100%;
             }
-            .admin-toggle-btn {
+            .nav-actions {
                 order: 2;
             }
             .brand-logo-wrap {
@@ -730,6 +918,9 @@
                 flex-direction: column;
                 text-align: center;
             }
+            .carousel-item {
+                height: 180px;
+            }
         }
 
         @media (max-width: 580px) { /* New breakpoint for 2-column mobile layout */
@@ -748,11 +939,15 @@
                 height: 140px; /* More compact image height */
                 border-radius: 12px;
             }
-            .card-badge {
+            .card-badge, .discount-badge {
                 font-size: 9px;
                 padding: 3px 8px;
                 top: 8px;
                 left: 8px;
+            }
+            .discount-badge {
+                left: auto;
+                right: 8px;
             }
             .card-details {
                 padding: 10px 2px 4px; /* Compact details padding */
@@ -768,14 +963,25 @@
             .card-price {
                 font-size: 15px; /* Smaller price font */
             }
-            .card-tag {
-                font-size: 9px; /* Smaller tag font */
-                padding: 2px 6px;
+            .original-price {
+                font-size: 11px;
+            }
+            .size-selection {
+                gap: 4px;
+                margin-bottom: 10px;
+            }
+            .size-btn {
+                padding: 5px 10px;
+                font-size: 11px;
+                border-radius: 6px;
             }
             .buy-btn {
                 padding: 8px; /* Smaller button padding */
                 font-size: 12px; /* Smaller button font */
                 border-radius: 10px;
+            }
+            .carousel-item {
+                height: 150px;
             }
         }
 
@@ -799,6 +1005,13 @@
             }
             .trust-badges-grid {
                 grid-template-columns: 1fr;
+            }
+            .carousel-item {
+                height: 120px;
+            }
+            .carousel-btn {
+                padding: 8px 12px;
+                font-size: 20px;
             }
         }
     </style>
@@ -841,6 +1054,11 @@
                 <input type="text" id="lavegiousSearchInput" placeholder="Search drops, categories, tags...">
             </div>
             
+            <div class="nav-actions">
+                <button id="loginSignupBtn" class="header-action-btn">Login / Signup</button>
+                <a href="/cart" class="header-action-btn cart-icon">🛒 <span id="cartItemCount">0</span></a>
+                <a href="/admin" class="admin-toggle-btn">Admin Mode</a>
+            </div>
         </div>
     </header>
 
@@ -856,16 +1074,32 @@
         </div>
     </section>
 
+    <!-- Flipkart-Style Banner Carousel -->
+    <section class="banner-carousel-section">
+        <div class="carousel-container">
+            <div class="carousel-track" id="bannerCarouselTrack">
+                <div class="carousel-item"><img src="https://images.unsplash.com/photo-1607082348894-d40ce580da2b?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Promotional Banner 1"></div>
+                <div class="carousel-item"><img src="https://images.unsplash.com/photo-1593642632823-8f785ba67e45?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Promotional Banner 2"></div>
+                <div class="carousel-item"><img src="https://images.unsplash.com/photo-1523275335684-c62162fe219a?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Promotional Banner 3"></div>
+            </div>
+            <button class="carousel-btn prev-btn">&lt;</button>
+            <button class="carousel-btn next-btn">&gt;</button>
+            <div class="carousel-dots" id="carouselDots"></div>
+        </div>
+    </section>
+
     <div class="section-header">
         <h2 class="section-title">Live Catalog Index</h2>
         <div class="filter-chips">
             <button class="chip active">All Drops</button>
-            <button class="chip">Shirts</button>
             <button class="chip">T-Shirts</button>
+            <button class="chip">Hoodies</button>
+            <button class="chip">Oversized</button>
+            <button class="chip">Accessories</button>
+            <button class="chip">Shoes</button>
+            <button class="chip">Shirts</button>
             <button class="chip">Jeans</button>
             <button class="chip">Trousers</button>
-            <button class="chip">Shoes</button>
-            <button class="chip">Hoodies</button>
         </div>
     </div>
 
@@ -914,7 +1148,7 @@
     </footer>
 
     <!-- Checkout Modal Window -->
-    <div id="checkoutModal" class="modal-overlay hidden">
+    <div id="checkoutModal" class="modal-overlay">
         <div class="modal-content">
             <button class="modal-close-btn">&times;</button>
             <h2 style="font-size: 22px; font-weight: 800; color: var(--text-dark); text-align: center; margin-bottom: 10px;">Confirm Your Drop</h2>
@@ -970,6 +1204,24 @@
                 <button type="submit" class="modal-submit-btn">
                     <span>✅ Place Order & Pay</span>
                 </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Authentication Modal -->
+    <div id="authModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close-btn auth-close-btn">&times;</button>
+            <h2 style="font-size: 22px; font-weight: 800; color: var(--text-dark); text-align: center; margin-bottom: 10px;">Login or Signup</h2>
+            <form id="authForm">
+                <div class="modal-form-group">
+                    <label for="authInput">Mobile Number / Email</label>
+                    <input type="text" id="authInput" placeholder="Enter your mobile number or email" required>
+                </div>
+                <button type="submit" class="modal-submit-btn">
+                    <span>Continue</span>
+                </button>
+                <p class="text-center text-sm text-gray-500 mt-4">By continuing, you agree to Lavegious's Terms of Use and Privacy Policy.</p>
             </form>
         </div>
     </div>

@@ -300,6 +300,7 @@
               <option value="Shoes">Shoes</option>
               <option value="Hoodies">Hoodies</option>
               <option value="Accessories">Accessories</option>
+              <option value="Oversized">Oversized</option>
             </select>
           </div>
           <div>
@@ -308,14 +309,35 @@
           </div>
         </div>
 
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-[10px] font-black uppercase tracking-wider text-neutral-400 mb-1">Supplier</label>
+                <select id="pSupplier" class="w-full p-3.5 bg-neutral-50 border border-neutral-200 rounded-xl text-xs font-bold focus:outline-none focus:border-purple-500 cursor-pointer">
+                    <option value="QIKINK">QIKINK</option>
+                    <option value="CJ_DROPSHIPPING">CJ_DROPSHIPPING</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-[10px] font-black uppercase tracking-wider text-neutral-400 mb-1">Supplier SKU</label>
+                <input type="text" id="pSupplierSku" placeholder="e.g., QK12345" class="w-full p-3.5 bg-neutral-50 border border-neutral-200 rounded-xl text-xs font-bold focus:outline-none focus:border-purple-500">
+            </div>
+        </div>
+
         <div class="space-y-4">
           <div>
             <label class="block text-[10px] font-black uppercase tracking-wider text-neutral-400 mb-1">Product Title</label>
             <input type="text" id="pTitle" placeholder="e.g., Premium Regular Fit Striped Shirt" required class="w-full p-3.5 bg-neutral-50 border border-neutral-200 rounded-xl text-xs font-bold focus:outline-none focus:border-purple-500">
           </div>
-          <div>
-            <label class="block text-[10px] font-black uppercase tracking-wider text-neutral-400 mb-1">Price Tag (Plain Number Only)</label>
-            <input type="text" id="pPrice" placeholder="e.g., 448" required class="w-full p-3.5 bg-neutral-50 border border-neutral-200 rounded-xl text-xs font-black focus:outline-none focus:border-purple-500">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block text-[10px] font-black uppercase tracking-wider text-neutral-400 mb-1">Price Tag (Plain Number Only)</label>
+                <input type="text" id="pPrice" placeholder="e.g., 448" required class="w-full p-3.5 bg-neutral-50 border border-neutral-200 rounded-xl text-xs font-black focus:outline-none focus:border-purple-500">
+            </div>
+            <div>
+                <label class="block text-[10px] font-black uppercase tracking-wider text-neutral-400 mb-1">Original Price (Optional, for discount)</label>
+                <input type="text" id="pOriginalPrice" placeholder="e.g., 599" class="w-full p-3.5 bg-neutral-50 border border-neutral-200 rounded-xl text-xs font-black focus:outline-none focus:border-purple-500">
+            </div>
           </div>
         </div>
 
@@ -437,11 +459,14 @@
       const payload = {
         images: imagesQueue, // Send all images (newly uploaded base64 or existing URLs)
         title: document.getElementById('pTitle').value,
-        price: document.getElementById('pPrice').value,
+        price: parseFloat(document.getElementById('pPrice').value),
+        originalPrice: document.getElementById('pOriginalPrice').value ? parseFloat(document.getElementById('pOriginalPrice').value) : null,
         description: document.getElementById('pDesc').value,
         link: document.getElementById('pLink').value,
         category: document.getElementById('pCategory').value,
-        tag: document.getElementById('pTag').value
+        tag: document.getElementById('pTag').value || null,
+        supplier: document.getElementById('pSupplier').value,
+        supplierSku: document.getElementById('pSupplierSku').value || null
       };
 
       const method = editingId ? 'PUT' : 'POST';
@@ -509,10 +534,13 @@
         // Populate form fields
         document.getElementById('pTitle').value = productToEdit.title || '';
         document.getElementById('pPrice').value = productToEdit.price || '';
+        document.getElementById('pOriginalPrice').value = productToEdit.originalPrice || '';
         document.getElementById('pDesc').value = productToEdit.description || '';
         document.getElementById('pLink').value = productToEdit.link || '';
         document.getElementById('pCategory').value = productToEdit.category || 'Shirts';
         document.getElementById('pTag').value = productToEdit.tag || '';
+        document.getElementById('pSupplier').value = productToEdit.supplier || 'QIKINK';
+        document.getElementById('pSupplierSku').value = productToEdit.supplierSku || '';
 
         // Handle images: display existing, allow new upload
         const previews = document.getElementById('previews');
@@ -630,7 +658,8 @@
         'hoodies': 'Hoodies',
         'sweatshirt': 'Hoodies',
         'jumper': 'Hoodies',
-        'accessories': 'Accessories'
+        'accessories': 'Accessories',
+        'oversized': 'Oversized'
     };
 
     function mapCategoryToDropdown(extractedCategory) {
@@ -681,10 +710,13 @@
             // Populate form fields
             document.getElementById('pTitle').value = extractedData.title || '';
             document.getElementById('pPrice').value = extractedData.price ? parseFloat(extractedData.price).toFixed(0) : '';
+            document.getElementById('pOriginalPrice').value = extractedData.originalPrice ? parseFloat(extractedData.originalPrice).toFixed(0) : '';
             document.getElementById('pDesc').value = extractedData.description || '';
             document.getElementById('pLink').value = productUrl; // Pre-fill affiliate link with the extracted URL
             document.getElementById('pCategory').value = mapCategoryToDropdown(extractedData.category);
             document.getElementById('pTag').value = extractedData.tag || '';
+            document.getElementById('pSupplier').value = extractedData.supplier || 'Other'; // Default to 'Other' if not extracted
+            document.getElementById('pSupplierSku').value = extractedData.supplierSku || '';
 
             // Handle images
             const previews = document.getElementById('previews');

@@ -62,8 +62,10 @@ def extract_product_data_with_gemini(html_content, product_url):
     - `originalPrice`: (Optional) The original price if a discount is applied. Extract only the numerical value. If not found, set to `null`.
     - `category`: A general category for the product (e.g., "T-Shirts", "Jeans", "Shoes", "Accessories"). Infer from title, description, or common page elements.
     - `tag`: (Optional) A short, descriptive tag for the product (e.g., "Oversized", "Trending", "New Drop", "Limited Edition"). If not found, set to `null`.
-    - `image`: The URL of the primary product image. If multiple images are clearly visible and relevant, provide an array of URLs. Otherwise, provide a single URL string. Prioritize high-quality, clear images.
+    - `images`: An array of URLs for product images. Prioritize high-quality, clear images. If only one image is found, provide an array with one URL.
     - `description`: A concise description of the product, summarizing its key features, material, or style.
+    - `supplier`: (Optional) The supplier name (e.g., "QIKINK", "CJ_DROPSHIPPING"). Infer if possible, otherwise `null`.
+    - `supplierSku`: (Optional) The supplier's SKU or product ID. If not found, set to `null`.
 
     Ensure the output is a valid JSON object, and do not include any other text or markdown outside the JSON block.
     Example JSON format:
@@ -73,8 +75,10 @@ def extract_product_data_with_gemini(html_content, product_url):
       "originalPrice": 150.00,
       "category": "Shirts",
       "tag": "New Drop",
-      "image": "https://example.com/image.jpg",
-      "description": "A detailed description of the product features and benefits."
+      "images": ["https://example.com/image1.jpg", "https://example.com/image2.jpg"],
+      "description": "A detailed description of the product features and benefits.",
+      "supplier": "QIKINK",
+      "supplierSku": "QK12345"
     }}
     """
     
@@ -117,8 +121,8 @@ def clean_and_format_product_data(data, product_url, affiliate_url):
     else:
         data['originalPrice'] = None
 
-    # Ensure image is a list of strings
-    image_data = data.get('image')
+    # Ensure images is a list of strings
+    image_data = data.get('images')
     if isinstance(image_data, str):
         data['images'] = [image_data]
     elif isinstance(image_data, list):
@@ -126,10 +130,6 @@ def clean_and_format_product_data(data, product_url, affiliate_url):
     else:
         data['images'] = []
     
-    # Remove the single 'image' key if 'images' is used
-    if 'image' in data:
-        del data['image']
-
     # Add required fields
     data['_id'] = str(uuid.uuid4())
     data['timestamp'] = datetime.now().isoformat()
@@ -141,6 +141,8 @@ def clean_and_format_product_data(data, product_url, affiliate_url):
     data['category'] = str(data.get('category', 'General')).strip()
     data['tag'] = str(data.get('tag', '')).strip() if data.get('tag') else None
     data['description'] = str(data.get('description', '')).strip()
+    data['supplier'] = str(data.get('supplier', 'Other')).strip() if data.get('supplier') else 'Other'
+    data['supplierSku'] = str(data.get('supplierSku', '')).strip() if data.get('supplierSku') else None
 
     return data
 
