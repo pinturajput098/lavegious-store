@@ -3,6 +3,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     const searchInput = document.getElementById('lavegiousSearchInput');
     const chips = document.querySelectorAll('.chip');
 
+    // Modal elements
+    const checkoutModal = document.getElementById('checkoutModal');
+    const modalCloseBtn = checkoutModal.querySelector('.modal-close-btn');
+    const modalProductImg = document.getElementById('modalProductImg');
+    const modalProductTitle = document.getElementById('modalProductTitle');
+    const modalProductPrice = document.getElementById('modalProductPrice');
+    const modalProductId = document.getElementById('modalProductId');
+    const checkoutForm = document.getElementById('checkoutForm');
+    const sizeSelect = document.getElementById('sizeSelect');
+    const fullNameInput = document.getElementById('fullName');
+    const phoneNumberInput = document.getElementById('phoneNumber');
+    const fullAddressInput = document.getElementById('fullAddress');
+    const pincodeInput = document.getElementById('pincode');
+    const cityInput = document.getElementById('city');
+
     let products = [];
     let currentCategory = 'All Drops';
     let searchQuery = '';
@@ -55,15 +70,28 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function fetchRealProducts() {
         try {
-            let res = await fetch('https://lavegious-store.onrender.com/api/products');
+            // Try fetching from the local server's API first
+            let res = await fetch('/api/products'); 
             if (!res.ok) {
-                console.warn('Failed to fetch from https://lavegious-store.onrender.com/api/products, falling back to /products.json');
-                res = await fetch('/products.json');
+                console.warn('Failed to fetch from /api/products, falling back to external API or /products.json');
+                // Fallback to external API if local server fails or is not running
+                res = await fetch('https://lavegious-store.onrender.com/api/products');
+                if (!res.ok) {
+                    console.warn('Failed to fetch from external API, falling back to /products.json');
+                    res = await fetch('/products.json');
+                }
             }
             products = await res.json();
         } catch (err) {
             console.error("Products load fail hue:", err);
-            products = [];
+            // Final fallback if all network requests fail
+            try {
+                const res = await fetch('/products.json');
+                products = await res.json();
+            } catch (localErr) {
+                console.error("Failed to load products from local JSON:", localErr);
+                products = [];
+            }
         }
         renderProducts();
     }
@@ -101,11 +129,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             const price = product.price || 0;
             const category = product.category || 'Drop';
             const badgeTag = product.tag || ''; // Use product.tag for the badge
-            const link = product.link || product.affiliate_link || '#'; // Ensure link is available
-            const description = product.description || '';
+            // const link = product.link || product.affiliate_link || '#'; // Affiliate link is now handled by the modal
 
             return `
-                <div class="product-card" data-affiliate-link="${link}">
+                <div class="product-card" data-product-id="${product._id}">
                     <div class="card-img-wrap">
                         ${badgeTag ? `<span class="card-badge">${badgeTag}</span>` : ''}
                         <img src="${imgUrl}" 
@@ -115,30 +142,104 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </div>
                     <div class="card-details">
                         <h3 class="card-title">${title}</h3>
-                        ${description ? `<p style="font-size: 12px; color: #6B7280; margin-bottom: 8px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${description}</p>` : ''}
                         <div class="card-price-row">
                             <span class="card-price">₹${price}</span>
                             <span class="card-tag">${category}</span>
                         </div>
-                        <button class="buy-btn">
-                            <span>⚡ Grab Drop</span>
+                        <button class="buy-btn" data-product-id="${product._id}">
+                            <span>⚡ Buy Now</span>
                         </button>
                     </div>
                 </div>
             `;
         }).join('');
 
-        // Add event listeners to newly rendered product cards
-        document.querySelectorAll('.product-card').forEach(card => {
-            card.addEventListener('click', (event) => {
-                const affiliateLink = card.dataset.affiliateLink;
-                if (affiliateLink && affiliateLink !== '#') {
-                    window.open(affiliateLink, '_blank');
-                }
+        // Add event listeners to newly rendered 'Buy Now' buttons
+        document.querySelectorAll('.buy-btn').forEach(button => {
+            button.addEventListener('click', (event) => {
+                const productId = event.target.closest('.buy-btn').dataset.productId;
+                openModal(productId);
             });
         });
     }
 
+    // Modal Functions
+    function openModal(productId) {
+        const product = products.find(p => p._id === productId);
+        if (!product) {
+            alert('Product not found!');
+            return;
+        }
+
+        modalProductImg.src = extractImageUrl(product);
+        modalProductTitle.textContent = product.title;
+        modalProductPrice.textContent = `₹${product.price}`;
+        modalProductId.value = product._id;
+
+        checkoutModal.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Prevent scrolling background
+    }
+
+    function closeModal() {
+        checkoutModal.classList.remove('active');
+        document.body.style.overflow = ''; // Restore scrolling
+        checkoutForm.reset(); // Clear form fields
+    }
+
+    // Modal Event Listeners
+    modalCloseBtn.addEventListener('click', closeModal);
+    checkoutModal.addEventListener('click', (event) => {
+        if (event.target === checkoutModal) {
+            closeModal();
+        }
+    });
+
+    checkoutForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const orderDetails = {
+            productId: modalProductId.value,
+            size: sizeSelect.value,
+            fullName: fullNameInput.value,
+            phoneNumber: phoneNumberInput.value,
+            fullAddress: fullAddressInput.value,
+            pincode: pincodeInput.value,
+            city: cityInput.value,
+            // Add product details for backend processing
+            productTitle: modalProductTitle.textContent,
+            productPrice: parseFloat(modalProductPrice.textContent.replace('₹', '')),
+            productImage: modalProductImg.src
+        };
+
+        if (!orderDetails.size) {
+            alert('Please select a size.');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/order/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(orderDetails)
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                alert(`Order placed successfully! Order ID: ${result.orderId}`);
+                closeModal();
+            } else {
+                const errorData = await response.json();
+                alert(`Failed to place order: ${errorData.error || 'Unknown error'}`);
+            }
+        } catch (error) {
+            console.error('Error placing order:', error);
+            alert('An error occurred while placing your order. Please try again.');
+        }
+    });
+
+    // Existing search and filter logic
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
             searchQuery = e.target.value.trim();
